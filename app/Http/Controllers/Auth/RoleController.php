@@ -18,15 +18,10 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|unique:roles,name',
-            'permissions' => 'array' // optional
+            'name' => 'required|string|unique:roles,name'           
         ]);
 
-        $role = Role::create(['name' => $request->name]);
-
-        if ($request->has('permissions')) {
-            $role->givePermissionTo($request->permissions);
-        }
+        $role = Role::create(['name' => $request->name]);        
 
         return response()->json(['message' => 'Role created', 'role' => $role]);
     }
@@ -34,7 +29,7 @@ class RoleController extends Controller
     // Show single role
     public function show($id)
     {
-        $role = Role::with('permissions')->findOrFail($id);
+        $role = Role::findOrFail($id);
         return response()->json($role);
     }
 
