@@ -21,7 +21,10 @@ class PermissionController extends Controller
             'name' => 'required|string|unique:permissions,name',
         ]);
 
-        $permission = Permission::create(['name' => $request->name]);
+        $permission = Permission::create([
+            'name'       => $request->name,
+            'guard_name' => 'web',  // Always set guard
+        ]);
 
         return response()->json(['message' => 'Permission created', 'permission' => $permission]);
     }
@@ -48,11 +51,13 @@ class PermissionController extends Controller
     }
 
     // Delete permission
+
+
     public function destroy($id)
     {
         $permission = Permission::findOrFail($id);
         $permission->delete();
 
-        return response()->json(['message' => 'Permission deleted']);
+        return response()->json(['message' => 'Permission deleted successfully']);
     }
 }

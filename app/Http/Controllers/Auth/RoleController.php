@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Throwable;
 
 class RoleController extends Controller
 {
@@ -18,10 +19,13 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|unique:roles,name'           
+            'name' => 'required|string|unique:roles,name'
         ]);
 
-        $role = Role::create(['name' => $request->name]);        
+        $role = Role::create([
+            'name' => $request->name,
+            'guard_name' => 'web', 
+        ]);
 
         return response()->json(['message' => 'Role created', 'role' => $role]);
     }

@@ -43,7 +43,19 @@ class AuthController extends Controller
     // Authenticated User Info
     // -----------------------
     public function me(Request $request)
-    {
-        return response()->json($request->user());
-    }
+{
+    $user = $request->user();
+
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'roles' => $user->getRoleNames(), 
+            'permissions' => $user->getAllPermissions()->pluck('name')
+        ]
+    ]);
+}
+
 }
