@@ -41,36 +41,36 @@ git clone https://github.com/your-username/sales-management.git
 cd sales-management
 composer install
 npm install
-2️⃣ Setup environment file
-bash
-Copy code
+```
+### 2️⃣ Setup environment file
+```bash
 cp .env.example .env
-Update database credentials inside .env:
-
-makefile
-Copy code
+```
+### Update database credentials inside .env:
+```bash
 DB_DATABASE=sales_management
 DB_USERNAME=root
 DB_PASSWORD=
-3️⃣ Generate application key
-bash
-Copy code
+```
+### 3️⃣ Generate application key
+```bash
 php artisan key:generate
-4️⃣ Run database migrations
-bash
-Copy code
+```
+### 4️⃣ Run database migrations
+```bash
 php artisan migrate
-5️⃣ Seed required data
-bash
-Copy code
+```
+### 5️⃣ Seed required data
+```bash
 php artisan db:seed --class=DesignationSeeder
 php artisan db:seed --class=RoleSeeder
 php artisan db:seed --class=AdminSeeder
-6️⃣ Start Laravel server
-bash
-Copy code
+```
+### 6️⃣ Start Laravel server
+```bash
 php artisan serve
-7️⃣ Run frontend assets
-bash
-Copy code
+```
+### 7️⃣ Run frontend assets
+```bash
 npm run dev
+```
