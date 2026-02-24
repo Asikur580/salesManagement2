@@ -12,7 +12,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles {
+        hasPermissionTo as traitHasPermissionTo;
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +29,7 @@ class User extends Authenticatable
 
     protected $guarded = ['id'];
 
-     protected $guard_name = 'web';
+    protected $guard_name = 'web';
 
     /**
      * The attributes that should be hidden for serialization.
@@ -50,5 +52,37 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function employeeDetail()
+    {
+        return $this->hasOne(EmployeeDetail::class);
+    }
+
+    /**
+     * Check if user is Super Admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super-admin');
+    }
+
+    /**
+     * Override hasPermissionTo to always return true for Super Admin
+     */
+    public function hasPermissionTo($permission, $guardName = null): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->hasPermissionToFromTrait($permission, $guardName);
+    }
+
+    /**
+     * Alias for hasPermissionTo from HasRoles trait to avoid recursion.
+     */
+    public function hasPermissionToFromTrait($permission, $guardName = null): bool
+    {
+        return $this->traitHasPermissionTo($permission, $guardName);
     }
 }

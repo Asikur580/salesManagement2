@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Carbon\Carbon;
+use App\Models\Designation;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DesignationSeeder extends Seeder
 {
@@ -14,20 +12,26 @@ class DesignationSeeder extends Seeder
      */
     public function run(): void
     {
-        $now = Carbon::now();
-
         $designations = [
-            ['name' => 'Admin', 'slug' => 'admin', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'RSM', 'slug' => 'rsm', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Manager', 'slug' => 'manager', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Officer', 'slug' => 'officer', 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'Admin', 'description' => 'System Administrator', 'status' => 'active'],
+            ['name' => 'R S M', 'description' => 'Regional Sales Manager', 'status' => 'active'],
+            ['name' => 'Manager', 'description' => 'General Manager', 'status' => 'active'],
+            ['name' => 'Officer', 'description' => 'Field Officer', 'status' => 'active'],
+            ['name' => 'Sr. Manager', 'description' => 'Senior Manager', 'status' => 'active'],
+            ['name' => 'Area Manager', 'description' => 'Area Sales Manager', 'status' => 'active'],
+            ['name' => 'Marketing Executive', 'description' => 'Marketing Specialist', 'status' => 'active'],
+            ['name' => 'Territory Manager', 'description' => 'Territory Lead', 'status' => 'active'],
+            ['name' => 'Sr. RSM', 'description' => 'Senior Regional Sales Manager', 'status' => 'active'],
+            ['name' => 'Deputy Manager', 'description' => 'Assistant Manager', 'status' => 'active'],
         ];
 
         foreach ($designations as $designation) {
-            DB::table('designations')->updateOrInsert(
-                ['slug' => $designation['slug']],
+            Designation::updateOrCreate(
+                ['name' => $designation['name']],
                 $designation
             );
         }
+
+        $this->command->info('10 designations successfully seeded.');
     }
 }

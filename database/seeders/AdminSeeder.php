@@ -13,24 +13,29 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        // Check if admin role exists
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        // Check if super-admin role exists
+        $superAdminRole = Role::firstOrCreate(['name' => 'super-admin']);
 
         $now = Carbon::now();
 
-        // Create admin user
-        $admin = User::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@example.com',
-            'phone' => '01700000000',
-            'password' => Hash::make('admin123'),
-            'designation_id' => 1,
-            'parent_id' => null,
-            'created_at' => $now,
-            'updated_at' => $now
-        ]);
+        // Check if admin user already exists
+        $existingAdmin = User::where('email', 'superadmin@example.com')->first();
 
-        // Assign admin role
-        $admin->assignRole($adminRole);
+        if (!$existingAdmin) {
+            // Create super admin user
+            $admin = User::create([
+                'name' => 'Super Admin',
+                'email' => 'superadmin@example.com',
+                'password' => Hash::make('admin123'),
+                'created_at' => $now,
+                'updated_at' => $now
+            ]);
+
+            // Assign super-admin role
+            $admin->assignRole($superAdminRole);
+        } else {
+            // Update existing admin to super-admin role
+            $existingAdmin->syncRoles([$superAdminRole]);
+        }
     }
 }

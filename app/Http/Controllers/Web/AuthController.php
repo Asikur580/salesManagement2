@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\Web;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AuthController extends Controller
 {
-    // Login page দেখাবে
-    public function showLoginForm()
+    public function showLogin()
     {
-        return view('auth.login');
+        return Inertia::render('Login');
     }
 
-    // Login process
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -24,20 +23,22 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+
+            return redirect()->intended('dashboard');
         }
 
         return back()->withErrors([
-            'email' => 'Invalid credentials. Please try again.',
-        ]);
-    }  
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
 
-    // Logout
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 }
