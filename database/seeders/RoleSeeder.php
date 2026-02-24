@@ -117,10 +117,9 @@ class RoleSeeder extends Seeder
         $superAdmin->syncPermissions(Permission::all());
 
         // Create other roles
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $rsm = Role::firstOrCreate(['name' => 'rsm']);
-        $manager = Role::firstOrCreate(['name' => 'manager']);
-        $officer = Role::firstOrCreate(['name' => 'officer']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);      
+        $sales = Role::firstOrCreate(['name' => 'sales']);
+        $accountant = Role::firstOrCreate(['name' => 'accountant']);
 
         // Assign permissions to Admin (all except role/permission management)
         $admin->syncPermissions([
@@ -162,6 +161,8 @@ class RoleSeeder extends Seeder
             'designation.view',
             'designation.create',
             'designation.update',
+            'sale.view',
+            'sale.print',
             'report.sales',
             'report.customer',
             'report.inventory',
@@ -173,43 +174,38 @@ class RoleSeeder extends Seeder
             'expense.create',
             'expense.update',
             'expense.delete',
-        ]);
+        ]);              
+        
 
-        // Assign permissions to RSM
-        $rsm->syncPermissions([
-            'employee.view',
+        // Assign permissions to Sales
+        $sales->syncPermissions([
             'customer.view',
             'customer.create',
             'customer.update',
-            'order.view',
-            'order.create',
-            'report.sales',
-            'report.customer',
-        ]);
-
-        // Assign permissions to Manager
-        $manager->syncPermissions([
-            'employee.view',
-            'customer.view',
-            'customer.create',
-            'customer.update',
-            'order.view',
-            'order.create',
-            'order.approve',
-            'stock.view',
-            'report.sales',
-            'report.customer',
-        ]);
-
-        // Assign permissions to Officer
-        $officer->syncPermissions([
-            'customer.view',
-            'customer.create',
-            'customer.update',
-            'order.view',
-            'order.create',
             'product.view',
+            'order.view',
+            'order.create',
+            'order.update',
+            'sale.view',
+            'sale.print',
             'stock.view',
+        ]);
+
+        // Assign permissions to Accountant
+        $accountant->syncPermissions([
+            'expense_category.view',
+            'expense_category.create',
+            'expense_category.update',
+            'expense_category.delete',
+            'expense.view',
+            'expense.create',
+            'expense.update',
+            'expense.delete',
+            'report.sales',
+            'report.customer',
+            'report.inventory',
+            'sale.view',
+            'order.view',
         ]);
     }
 }

@@ -1,105 +1,82 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TrendingUp, AlertCircle, Eye, EyeOff } from "lucide-react";
-import { Link, router } from "@inertiajs/react";
-import { useAuth } from "@/hooks/useAuth";
+import { Card, CardContent } from "@/components/ui/card";
+import { Head, router } from "@inertiajs/react";
+import { ShopLayout } from "@/components/layout/ShopLayout";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const { login, user } = useAuth();
-  useEffect(() => {
-    // Redirect if already logged in
-    if (user) {
-      router.visit("/dashboard");
-    }
-  }, [user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
-
-    const result = await login(email, password);
-
-    if (!result.success) {
-      setError(result.error || "Login failed");
-    }
-
-    setIsLoading(false);
+    
+    // For now, redirecting to dashboard as per current flow 
+    // real implementation would involve OTP etc.
+    router.post("/login", { phone }, {
+      onFinish: () => setIsLoading(false)
+    });
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/30">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary mb-4">
-            <TrendingUp className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="john@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
+    <ShopLayout>
+      <Head title="Login - OrenMart" />
+      <main className="min-h-[70vh] flex items-center justify-center p-4 py-12">
+        <Card className="w-full max-w-[480px] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-xl py-6">
+          <CardContent className="flex flex-col items-center pt-6 px-8 md:px-12">
+            {/* Logo Section */}
+            <div className="flex flex-col items-center gap-3 mb-8">
+              <div className="w-16 h-16 border-[4px] border-[#FF4F17] rounded-full flex items-center justify-center">
+                 <div className="w-10 h-10 rounded-full border-[3px] border-[#FF4F17] relative flex items-center justify-center">
+                    <div className="w-[2px] h-full bg-[#FF4F17] absolute" />
+                    <div className="w-full h-[2px] bg-[#FF4F17] absolute" />
+                    <div className="w-3 h-3 rounded-full bg-[#FF4F17] z-10" />
+                 </div>
               </div>
+              <h1 className="text-4xl font-black italic tracking-tighter text-[#FF4F17]">
+                OrenMart
+              </h1>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
 
-        </CardContent>
-      </Card>
-    </main>
+            {/* Welcome Text */}
+            <div className="text-center mb-10">
+              <p className="text-gray-900 font-bold text-base leading-snug">
+                Welcome to OrenMart. Please enter your phone number to login.
+              </p>
+            </div>
+
+            {/* Login Form */}
+            <form onSubmit={handleSubmit} className="w-full space-y-8">
+              <div className="space-y-3">
+                <Label htmlFor="phone" className="text-sm font-bold text-gray-800">
+                  Phone <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="01XXXXXXXXX"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="h-12 border-gray-200 focus:border-[#FF4F17] focus:ring-0 rounded-md placeholder:text-gray-300 font-medium text-lg"
+                  required
+                />
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-[#FF4F17] hover:bg-[#e64615] text-white text-lg font-black rounded-lg transition-all duration-300 shadow-md shadow-orange-200"
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Submit"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
+    </ShopLayout>
   );
 };
 

@@ -37,6 +37,7 @@ export interface OrderItem {
   dbId?: number; // Backend ID
   productId: number | null;
   productName: string;
+  customItemName?: string;
   packSize: string;
   priceType: "tp" | "flat";
   price: number;
@@ -62,11 +63,21 @@ export const OrderItemRow = ({ item, products, onUpdate, onRemove }: OrderItemRo
       onUpdate(item.id, {
         productId: product.id,
         productName: product.name,
+        customItemName: undefined,
         packSize: product.packSize,
         price,
         total: price * item.quantity,
       });
     }
+  };
+
+  const handleCustomNameChange = (value: string) => {
+    onUpdate(item.id, {
+      productId: null,
+      productName: value,
+      customItemName: value,
+      packSize: "N/A",
+    });
   };
 
   const handlePriceTypeChange = (priceType: "tp" | "flat") => {
@@ -118,18 +129,33 @@ export const OrderItemRow = ({ item, products, onUpdate, onRemove }: OrderItemRo
               className="h-9 w-full justify-between font-normal"
             >
               <span className="truncate">
-                {selectedProduct
-                  ? `${selectedProduct.name} (${selectedProduct.packSize})`
-                  : "Select product"}
+                {item.productId ? `${item.productName} (${item.packSize})` : (item.customItemName || "Select or enter product")}
               </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0" align="start">
             <Command>
-              <CommandInput placeholder="Search product..." />
+              <CommandInput 
+                placeholder="Search or enter custom name..." 
+                onValueChange={(val) => {
+                    // This is a bit tricky with Command, usually we want to allow enter to select custom
+                }}
+              />
               <CommandList>
-                <CommandEmpty>No product found.</CommandEmpty>
+                <CommandEmpty>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start font-normal"
+                    onClick={() => {
+                        const input = document.querySelector('[cmdk-input]') as HTMLInputElement;
+                        handleCustomNameChange(input?.value || "Custom Item");
+                        setProductOpen(false);
+                    }}
+                  >
+                    Add custom item
+                  </Button>
+                </CommandEmpty>
                 <CommandGroup>
                   {products.map((product) => (
                     <CommandItem

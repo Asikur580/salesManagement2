@@ -29,6 +29,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -46,6 +47,8 @@ const navigation = [
   { name: "Brands", href: "/brands", icon: Tag },
   { name: "Categories", href: "/categories", icon: FolderTree },
   { name: "Products", href: "/products", icon: Package },
+  { name: "Technicians", href: "/technicians", icon: Users },
+  { name: "Services", href: "/services", icon: Briefcase },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
   { name: "Sales", href: "/sales", icon: TrendingUp },
 ];
@@ -70,6 +73,7 @@ const othersItems = [
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const isMobile = useIsMobile();
   const { url: pathname } = usePage();
   const [rolesOpen, setRolesOpen] = useState(
     pathname.startsWith("/users") || 
@@ -94,10 +98,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       {/* Mobile overlay */}
-      {isOpen && (
+      {isOpen && isMobile && (
         <div
           className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
 
@@ -133,6 +138,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 if (item.name === "Brands") return hasPermission('brand.view');
                 if (item.name === "Categories") return hasPermission('category.view');
                 if (item.name === "Products") return hasPermission('product.view');
+                if (item.name === "Technicians") return hasPermission('technician.view');
+                if (item.name === "Services") return hasPermission('service.view');
                 if (item.name === "Orders") return hasPermission('order.view');
                 if (item.name === "Sales") return hasPermission('sale.view');
                 return true;

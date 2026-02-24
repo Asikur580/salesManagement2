@@ -47,14 +47,19 @@ export interface Customer {
 export interface Order {
   id: string;
   internalId?: number;
+  type: "sales" | "service";
   customerId: number;
   customerName: string;
   employeeName: string;
   employeeId?: number;
+  technicianId?: number | null;
+  technicianName?: string;
   date: Date;
   paymentMethod: "cash" | "credit";
   discount: number;
   discountType: "percentage" | "fixed";
+  serviceCharge: number;
+  serviceNotes?: string;
   items: OrderItem[];
   subtotal: number;
   discountAmount: number;
@@ -68,6 +73,8 @@ interface OrderFormDialogProps {
   order: Order | null;
   customers: Customer[];
   products: Product[];
+  technicians?: any[];
+  services?: any[];
   onSave: (order: Omit<Order, "id"> & { id?: string }) => void;
   mode: "create" | "edit";
 }
@@ -83,9 +90,12 @@ export const OrderFormDialog = ({
   order,
   customers,
   products,
+  technicians = [],
+  services = [],
   onSave,
   mode,
 }: OrderFormDialogProps) => {
+  const [type, setType] = useState<Order["type"]>("sales");
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [customerOpen, setCustomerOpen] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
@@ -94,9 +104,13 @@ export const OrderFormDialog = ({
   const [discountType, setDiscountType] = useState<"percentage" | "fixed">("percentage");
   const [items, setItems] = useState<OrderItem[]>([]);
   const [status, setStatus] = useState<Order["status"]>("pending");
+  const [technicianId, setTechnicianId] = useState<number | null>(null);
+  const [serviceCharge, setServiceCharge] = useState<number>(0);
+  const [serviceNotes, setServiceNotes] = useState<string>("");
 
   useEffect(() => {
     if (order && mode === "edit") {
+      setType(order.type || "sales");
       setCustomerId(order.customerId);
       setDate(new Date(order.date));
       setPaymentMethod(order.paymentMethod);
@@ -104,12 +118,16 @@ export const OrderFormDialog = ({
       setDiscountType(order.discountType);
       setItems(order.items);
       setStatus(order.status);
+      setTechnicianId(order.technicianId || null);
+      setServiceCharge(order.serviceCharge || 0);
+      setServiceNotes(order.serviceNotes || "");
     } else {
       resetForm();
     }
   }, [order, mode, open]);
 
   const resetForm = () => {
+    setType("sales");
     setCustomerId(null);
     setDate(new Date());
     setPaymentMethod("cash");
@@ -117,6 +135,9 @@ export const OrderFormDialog = ({
     setDiscountType("percentage");
     setItems([]);
     setStatus("pending");
+    setTechnicianId(null);
+    setServiceCharge(0);
+    setServiceNotes("");
   };
 
   const selectedCustomer = customers.find((c) => c.id === customerId);
@@ -147,7 +168,7 @@ export const OrderFormDialog = ({
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
   const discountAmount =
     discountType === "percentage" ? (subtotal * discount) / 100 : discount;
-  const total = subtotal - discountAmount;
+  const total = (subtotal + serviceCharge) - discountAmount;
 
   const handleSave = () => {
     if (!customerId) {
@@ -158,8 +179,8 @@ export const OrderFormDialog = ({
       toast.error("Please add at least one item");
       return;
     }
-    if (items.some((item) => !item.productId)) {
-      toast.error("Please select a product for all items");
+    if (items.some((item) => !item.productId && !item.customItemName)) {
+      toast.error("Please select a product or enter a name for all items");
       return;
     }
 
@@ -167,14 +188,18 @@ export const OrderFormDialog = ({
 
     onSave({
       id: order?.id,
+      type,
       customerId,
       customerName: customer.name,
       employeeName: customer.employeeName,
-      employeeId: customer.employeeId, // Passing employeeId
+      employeeId: customer.employeeId,
+      technicianId,
       date,
       paymentMethod,
       discount,
       discountType,
+      serviceCharge,
+      serviceNotes,
       items,
       subtotal,
       discountAmount,
@@ -184,6 +209,13 @@ export const OrderFormDialog = ({
 
     onOpenChange(false);
     resetForm();
+  };
+
+  const handleServiceSelect = (serviceId: string) => {
+    const service = services.find(s => s.id === parseInt(serviceId));
+    if (service) {
+        setServiceCharge(parseFloat(service.standard_charge as any));
+    }
   };
 
   return (
@@ -197,6 +229,24 @@ export const OrderFormDialog = ({
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
+          {/* Order Type Toggle */}
+          <div className="flex gap-4 p-1 bg-muted rounded-lg w-fit">
+            <Button 
+                variant={type === "sales" ? "default" : "ghost"} 
+                size="sm" 
+                onClick={() => setType("sales")}
+            >
+                Sales
+            </Button>
+            <Button 
+                variant={type === "service" ? "default" : "ghost"} 
+                size="sm" 
+                onClick={() => setType("service")}
+            >
+                Service
+            </Button>
+          </div>
+
           {/* Customer & Employee */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -255,6 +305,54 @@ export const OrderFormDialog = ({
               />
             </div>
           </div>
+
+          {/* Service Fields (if type is service) */}
+          {type === "service" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg bg-muted/30">
+                <div className="grid gap-2">
+                    <Label>Technician</Label>
+                    <Select value={technicianId?.toString() || ""} onValueChange={(v) => setTechnicianId(parseInt(v))}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Technician" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {technicians.map(tech => (
+                                <SelectItem key={tech.id} value={tech.id.toString()}>{tech.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid gap-2">
+                    <Label>Select Service (to set charge)</Label>
+                    <Select onValueChange={handleServiceSelect}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Quick select service" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {services.map(s => (
+                                <SelectItem key={s.id} value={s.id.toString()}>{s.name} (৳{s.standard_charge})</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid gap-2 md:col-span-2">
+                    <Label>Service Charge</Label>
+                    <Input 
+                        type="number" 
+                        value={serviceCharge} 
+                        onChange={(e) => setServiceCharge(parseFloat(e.target.value) || 0)} 
+                    />
+                </div>
+                <div className="grid gap-2 md:col-span-2">
+                    <Label>Service Notes</Label>
+                    <Input 
+                        value={serviceNotes} 
+                        onChange={(e) => setServiceNotes(e.target.value)} 
+                        placeholder="Diagnosis, repairs done, etc."
+                    />
+                </div>
+            </div>
+          )}
 
           {/* Date & Payment Method */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -395,9 +493,15 @@ export const OrderFormDialog = ({
           {/* Summary */}
           <div className="bg-muted/50 rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Subtotal:</span>
+              <span>Parts Subtotal:</span>
               <span>৳{subtotal.toFixed(2)}</span>
             </div>
+            {type === "service" && (
+                <div className="flex justify-between text-sm">
+                    <span>Service Charge:</span>
+                    <span>৳{serviceCharge.toFixed(2)}</span>
+                </div>
+            )}
             <div className="flex justify-between text-sm text-muted-foreground">
               <span>Discount ({discountType === "percentage" ? `${discount}%` : `৳${discount}`}):</span>
               <span>-৳{discountAmount.toFixed(2)}</span>

@@ -20,15 +20,19 @@ use App\Http\Controllers\Web\ExpenseCategoryController;
 use App\Http\Controllers\Web\ExpenseController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\NotificationController;
+use App\Http\Controllers\Web\TechnicianController;
+use App\Http\Controllers\Web\ServiceController;
+use App\Http\Controllers\Web\ShopController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::get('/', [ShopController::class, 'index'])->name('shop.index');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', [DashboardController::class, 'index']);
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/register', function () {
@@ -57,6 +61,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('brands', BrandController::class);
 
     Route::get('/categories', [CategoryController::class, 'index']);
+
+    Route::resource('technicians', TechnicianController::class);
+    Route::resource('services', ServiceController::class);
 
     Route::get('/products', [ProductController::class, 'index']);
 

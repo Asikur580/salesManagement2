@@ -54,16 +54,20 @@ interface OrdersProps {
   customers: Customer[];
   products: Product[];
   employees: any[];
+  technicians: any[];
+  services: any[];
   filters: any;
 }
 
-const Orders = ({ initialOrders, customers: initialCustomers, products: initialProducts, employees: initialEmployees, filters }: OrdersProps) => {
+const Orders = ({ initialOrders, customers: initialCustomers, products: initialProducts, employees: initialEmployees, technicians: initialTechnicians, services: initialServices, filters }: OrdersProps) => {
   const { flash } = usePage<any>().props;
   const { user } = useAuth();
   // Initialize state from props
   const [orders, setOrders] = useState<Order[]>(initialOrders || []);
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers || []);
   const [products, setProducts] = useState<Product[]>(initialProducts || []);
+  const [technicians, setTechnicians] = useState<any[]>(initialTechnicians || []);
+  const [services, setServices] = useState<any[]>(initialServices || []);
   const [currentEmployeeId, setCurrentEmployeeId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -99,6 +103,8 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
     setOrders(initialOrders || []);
     setCustomers(initialCustomers || []);
     setProducts(initialProducts || []);
+    setTechnicians(initialTechnicians || []);
+    setServices(initialServices || []);
 
     // Set current employee based on initialEmployees prop
     if (user?.email && initialEmployees) {
@@ -169,20 +175,25 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
 
   const handleSave = (orderData: Omit<Order, "id"> & { id?: string }) => {
     const payload = {
+      type:           orderData.type,
       customer_id:    orderData.customerId,
       employee_id:    (orderData as any).employeeId || currentEmployeeId,
+      technician_id:  orderData.technicianId,
       order_date:     format(orderData.date, 'yyyy-MM-dd'),
       payment_method: orderData.paymentMethod,
       discount:       orderData.discount,
       discount_type:  orderData.discountType,
+      service_charge: orderData.serviceCharge,
+      service_notes:  orderData.serviceNotes,
       note:           "",
       items: orderData.items.map(item => ({
-        id:             item.dbId,
-        product_id:     item.productId,
-        quantity:       item.quantity,
-        unit_price:     item.price,
-        price_type:     item.priceType,
-        bonus_quantity: item.bonusQuantity,
+        id:               item.dbId,
+        product_id:       item.productId,
+        custom_item_name: (item as any).customItemName,
+        quantity:         item.quantity,
+        unit_price:       item.price,
+        price_type:       item.priceType,
+        bonus_quantity:   item.bonusQuantity,
       })),
     };
 
@@ -481,6 +492,8 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
         order={selectedOrder}
         customers={customers}
         products={products}
+        technicians={technicians}
+        services={services}
         onSave={handleSave}
         mode={formMode}
       />
@@ -495,6 +508,10 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
           {selectedOrder && (
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-2">
+                <span className="font-medium text-muted-foreground">Order Type:</span>
+                <Badge variant="secondary" className="w-fit capitalize">{selectedOrder.type}</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 <span className="font-medium text-muted-foreground">Customer:</span>
                 <span>{selectedOrder.customerName}</span>
               </div>
@@ -502,6 +519,12 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
                 <span className="font-medium text-muted-foreground">Employee:</span>
                 <span>{selectedOrder.employeeName}</span>
               </div>
+              {selectedOrder.technicianName && (
+                <div className="grid grid-cols-2 gap-2">
+                    <span className="font-medium text-muted-foreground">Technician:</span>
+                    <span>{selectedOrder.technicianName}</span>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-2">
                 <span className="font-medium text-muted-foreground">Date:</span>
                 <span>{format(new Date(selectedOrder.date), "PPP")}</span>
@@ -519,7 +542,7 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
 
               {/* Order Items */}
               <div className="border-t pt-4 mt-2">
-                <h4 className="font-medium mb-3">Order Items</h4>
+                <h4 className="font-medium mb-3">Parts / Items</h4>
                 <div className="space-y-2">
                   {selectedOrder.items.map((item) => (
                     <div key={item.id} className="flex justify-between items-center text-sm bg-muted/50 p-2 rounded">
@@ -540,9 +563,15 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
               {/* Totals */}
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
+                  <span>Parts Subtotal:</span>
                   <span>৳{selectedOrder.subtotal.toFixed(2)}</span>
                 </div>
+                {selectedOrder.serviceCharge > 0 && (
+                    <div className="flex justify-between text-sm">
+                        <span>Service Charge:</span>
+                        <span>৳{selectedOrder.serviceCharge.toFixed(2)}</span>
+                    </div>
+                )}
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Discount ({selectedOrder.discountType === "percentage" ? `${selectedOrder.discount}%` : `৳${selectedOrder.discount}`}):</span>
                   <span>-৳{selectedOrder.discountAmount.toFixed(2)}</span>
@@ -551,6 +580,12 @@ const Orders = ({ initialOrders, customers: initialCustomers, products: initialP
                   <span>Total:</span>
                   <span>৳{selectedOrder.total.toFixed(2)}</span>
                 </div>
+                {selectedOrder.serviceNotes && (
+                    <div className="mt-2 pt-2 border-t text-sm">
+                        <span className="font-medium text-muted-foreground block mb-1">Service Notes:</span>
+                        <p className="text-balance">{selectedOrder.serviceNotes}</p>
+                    </div>
+                )}
               </div>
             </div>
           )}
