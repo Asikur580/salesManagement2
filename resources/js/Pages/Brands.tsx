@@ -91,6 +91,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
         processing,
         errors,
         reset,
+        transform,
     } = useForm({
         name: "",
         slug: "",
@@ -185,28 +186,41 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
     };
 
     const handleSubmit = () => {
+        const prepareData = (d: typeof data) => ({
+            ...d,
+            image: d.image instanceof File ? d.image : undefined,
+        });
+
         if (editingBrand) {
-            // Use post with _method: 'PUT' for file uploads in Laravel/Inertia
-            post(`/brands/${editingBrand.id}`, {
-                _method: "PUT",
-                forceFormData: true,
-                onSuccess: () => {
-                    handleCloseDialog();
-                    toast({
-                        title: "Success",
-                        description: "Brand updated successfully",
-                    });
+            // Use post with _method spoofing for file uploads in Laravel
+            router.post(
+                `/brands/${editingBrand.id}`,
+                {
+                    ...prepareData(data),
+                    _method: "PUT",
                 },
-                onError: () => {
-                    toast({
-                        title: "Error",
-                        description: "Failed to update brand",
-                        variant: "destructive",
-                    });
+                {
+                    forceFormData: true,
+                    onSuccess: () => {
+                        handleCloseDialog();
+                        toast({
+                            title: "Success",
+                            description: "Brand updated successfully",
+                        });
+                    },
+                    onError: (err) => {
+                        toast({
+                            title: "Error",
+                            description:
+                                Object.values(err)[0] ||
+                                "Failed to update brand",
+                            variant: "destructive",
+                        });
+                    },
                 },
-            } as any);
+            );
         } else {
-            post("/brands", {
+            transform(prepareData).post("/brands", {
                 forceFormData: true,
                 onSuccess: () => {
                     handleCloseDialog();
@@ -215,10 +229,11 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                         description: "Brand created successfully",
                     });
                 },
-                onError: () => {
+                onError: (err) => {
                     toast({
                         title: "Error",
-                        description: "Failed to create brand",
+                        description:
+                            Object.values(err)[0] || "Failed to create brand",
                         variant: "destructive",
                     });
                 },

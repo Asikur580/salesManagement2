@@ -32,21 +32,28 @@ class ProductController extends Controller
         $products = $query->latest()->get()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'categoryId' => (int)$item->category_id,
-                'brandId' => (int)$item->brand_id,
+                'categoryId' => (int) $item->category_id,
+                'brandId' => (int) $item->brand_id,
                 'name' => $item->name,
                 'packSize' => $item->pack_size,
-                'purchasePrice' => (float)$item->purchase_price,
-                'salePrice' => (float)$item->sale_price,
-                'flatPrice' => (float)$item->flat_price,
-                'quantity' => (int)$item->quantity,
+                'purchasePrice' => (float) $item->purchase_price,
+                'salePrice' => (float) $item->sale_price,
+                'flatPrice' => (float) $item->flat_price,
+                'quantity' => (int) $item->quantity,
                 'expirationDate' => $item->expiration_date,
                 'image' => $item->image
             ];
         });
 
-        $categories = Category::all()->map(function ($c) {
-            return ['id' => $c->id, 'name' => $c->name];
+        $categories = Category::with('parent')->get()->map(function ($c) {
+            $name = $c->name;
+            if ($c->parent) {
+                $name = $c->parent->name . ' > ' . $name;
+                if ($c->parent->parent) {
+                    $name = $c->parent->parent->name . ' > ' . $name;
+                }
+            }
+            return ['id' => $c->id, 'name' => $name];
         });
 
         $brands = Brand::all()->map(function ($b) {
