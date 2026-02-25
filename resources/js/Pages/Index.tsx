@@ -3,139 +3,147 @@ import { Head, Link } from "@inertiajs/react";
 import { ShopLayout } from "@/components/layout/ShopLayout";
 import { ShopHero } from "@/components/shop/ShopHero";
 import { CategoryGrid } from "@/components/shop/CategoryGrid";
+import { NewArrivals } from "@/components/shop/NewArrivals";
+import { PopularBrands } from "@/components/shop/PopularBrands";
+import { YouMayLike } from "@/components/shop/YouMayLike";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Truck, ShieldCheck, Clock } from "lucide-react";
 
 interface IndexProps {
-  products: any[];
-  categories: any[];
-  brands: any[];
+    products: any[];
+    categories: any[];
+    brands: any[];
 }
 
 const Index = ({ products, categories, brands }: IndexProps) => {
-  return (
-    <ShopLayout>
-      <Head title="Premium Car Parts & Accessories" />
-      
-      {/* Hero Section */}
-      <ShopHero />
+    return (
+        <ShopLayout>
+            <Head title="OrenMart | Premium Car Accessories & Ceramic Coating" />
 
-      {/* Trust Badges */}
-      <div className="bg-white border-y py-8">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
-           <div className="flex items-center gap-4 group">
-              <div className="p-3 bg-orange-50 rounded-full group-hover:bg-[#FF4E00] group-hover:text-white transition-colors text-[#FF4E00]">
-                <Truck className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm">Free Delivery</h4>
-                <p className="text-xs text-gray-500">Orders over ৳5000</p>
-              </div>
-           </div>
-           <div className="flex items-center gap-4 group">
-              <div className="p-3 bg-orange-50 rounded-full group-hover:bg-[#FF4E00] group-hover:text-white transition-colors text-[#FF4E00]">
-                <ShieldCheck className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm">Genuine Parts</h4>
-                <p className="text-xs text-gray-500">100% Guaranteed</p>
-              </div>
-           </div>
-           <div className="flex items-center gap-4 group">
-              <div className="p-3 bg-orange-50 rounded-full group-hover:bg-[#FF4E00] group-hover:text-white transition-colors text-[#FF4E00]">
-                <Clock className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm">24/7 Support</h4>
-                <p className="text-xs text-gray-500">Dedicated Team</p>
-              </div>
-           </div>
-           <div className="flex items-center gap-4 group">
-              <div className="p-3 bg-orange-50 rounded-full group-hover:bg-[#FF4E00] group-hover:text-white transition-colors text-[#FF4E00]">
-                <Star className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm">Top Rated</h4>
-                <p className="text-xs text-gray-500">Thousands of Reviews</p>
-              </div>
-           </div>
-        </div>
-      </div>
+            {/* Hero Section */}
+            <ShopHero />
 
-      {/* Top Categories */}
-      <CategoryGrid categories={categories} />
+            {/* Top Categories */}
+            <CategoryGrid categories={categories} />
 
-      {/* Featured Products Section */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-8 border-b pb-4">
-           <div>
-              <h3 className="text-2xl font-black text-[#333]">NEW ARRIVALS</h3>
-              <p className="text-sm text-gray-500">Check out our latest premium car parts.</p>
-           </div>
-           <Button variant="outline" className="border-[#FF4E00] text-[#FF4E00] hover:bg-[#FF4E00] hover:text-white font-bold rounded-lg group">
-              View All <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-           </Button>
-        </div>
+            {/* New Arrivals Section */}
+            <NewArrivals />
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {products.length > 0 ? (
-            products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))
-          ) : (
-            <div className="col-span-full py-20 text-center">
-               <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="h-10 w-10 text-gray-300" />
-               </div>
-               <h4 className="text-xl font-bold text-gray-400">No Products Available</h4>
-               <p className="text-gray-500">Stay tuned for new stock!</p>
+            {/* Popular Brands Section (Matched to Screenshot) */}
+            <PopularBrands />
+
+            {/* You May Like Section */}
+            <YouMayLike />
+
+            {/* Services Section - Ceramic Coating */}
+            <div className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex flex-col lg:flex-row items-center gap-12">
+                        <div className="flex-1 relative">
+                            <div className="absolute -top-6 -left-6 w-32 h-32 bg-orange-100 rounded-full mix-blend-multiply opacity-70 animate-blob" />
+                            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-yellow-100 rounded-full mix-blend-multiply opacity-70 animate-blob animation-delay-2000" />
+                            <img
+                                src="https://images.unsplash.com/photo-1619642751034-765dfdf7358e?auto=format&fit=crop&q=80&w=1374"
+                                className="relative rounded-[2.5rem] shadow-2xl z-10 border-8 border-gray-50"
+                                alt="Ceramic Coating Service"
+                            />
+                        </div>
+                        <div className="flex-1 space-y-6">
+                            <div className="bg-orange-50 text-[#FF4E00] text-xs font-black px-4 py-1.5 rounded-full inline-block uppercase tracking-[0.2em]">
+                                Premium Services
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight uppercase italic">
+                                Nano Ceramic <br />
+                                <span className="text-[#FF4E00]">
+                                    Coating Service
+                                </span>
+                            </h2>
+                            <p className="text-gray-600 text-lg leading-relaxed font-medium">
+                                Protect your vehicle's paint with our
+                                world-class 9H & 10H Nano Ceramic Coating.
+                                Experience unmatched gloss, UV protection, and
+                                hydrophobic properties that keep your car
+                                looking brand new for years.
+                            </p>
+                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                                {[
+                                    "9H & 10H Protection",
+                                    "3-5 Years Durability",
+                                    "Self-Cleaning Effect",
+                                    "Maximum UV Resistance",
+                                    "Scratch Resistance",
+                                    "Interior Cleaning Free",
+                                ].map((item, i) => (
+                                    <li
+                                        key={i}
+                                        className="flex items-center gap-3"
+                                    >
+                                        <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                                            <ShieldCheck className="h-4 w-4 text-green-600" />
+                                        </div>
+                                        <span className="font-bold text-gray-700">
+                                            {item}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="pt-6">
+                                <Button className="bg-black hover:bg-[#FF4E00] text-white font-black px-10 py-7 rounded-xl text-lg transition-all shadow-xl group">
+                                    BOOK APPOINTMENT
+                                    <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Promotional Section (Horizontal Banners) */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="h-44 rounded-xl relative overflow-hidden group shadow-md">
-               <img src="https://images.unsplash.com/photo-1619642751034-765dfdf7358e?auto=format&fit=crop&q=80&w=1374" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-               <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center p-8 text-white">
-                  <h4 className="text-2xl font-black mb-2">Engine Care</h4>
-                  <p className="text-sm font-medium opacity-90 mb-4">Quality lubricants and tools for <br />your engine's health.</p>
-                  <Link className="text-[#FF4E00] font-bold text-sm hover:underline">LEARN MORE</Link>
-               </div>
+            {/* Promotional Banners */}
+            <div className="bg-[#F8F9FA] py-16">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="h-56 rounded-[2rem] relative overflow-hidden group shadow-2xl">
+                            <img
+                                src="https://images.unsplash.com/photo-1621359953476-ebcc4b0be84b?auto=format&fit=crop&q=80&w=1374"
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent flex flex-col justify-center p-10 text-white">
+                                <h4 className="text-3xl font-black mb-2 uppercase italic">
+                                    Engine Care
+                                </h4>
+                                <p className="text-sm font-bold opacity-80 mb-6 max-w-[240px] uppercase tracking-wider">
+                                    Premium Lubricants & Performance Tools
+                                </p>
+                                <Link className="inline-flex items-center text-[#FF4E00] font-black text-sm group/btn uppercase tracking-widest bg-white py-2 px-4 rounded-full w-fit">
+                                    LEARN MORE{" "}
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="h-56 rounded-[2rem] relative overflow-hidden group shadow-2xl">
+                            <img
+                                src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80&w=1501"
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent flex flex-col justify-center p-10 text-white">
+                                <h4 className="text-3xl font-black mb-2 uppercase italic">
+                                    Exclusive Combos
+                                </h4>
+                                <p className="text-sm font-bold opacity-80 mb-6 max-w-[240px] uppercase tracking-wider">
+                                    Best Value Packs for Your Car
+                                </p>
+                                <Link className="inline-flex items-center text-[#FF4E00] font-black text-sm group/btn uppercase tracking-widest bg-white py-2 px-4 rounded-full w-fit">
+                                    SAVE NOW{" "}
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="h-44 rounded-xl relative overflow-hidden group shadow-md">
-               <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80&w=1501" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-               <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center p-8 text-white">
-                  <h4 className="text-2xl font-black mb-2">Exclusive Combos</h4>
-                  <p className="text-sm font-medium opacity-90 mb-4">Save more on our specially <br />curated combo packs.</p>
-                  <Link className="text-[#FF4E00] font-bold text-sm hover:underline">SAVE NOW</Link>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      {/* Popular Brands (Bottom Bar) */}
-      <div className="max-w-7xl mx-auto px-4 py-12 border-t text-center">
-         <h3 className="text-lg font-bold text-gray-400 mb-8 uppercase tracking-widest">Popular Brands</h3>
-         <div className="flex flex-wrap justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-            {brands.map((brand, i) => (
-              <span key={i} className="text-xl font-black italic text-gray-600 hover:text-[#FF4E00] cursor-pointer transition-colors">
-                 {brand.name.toUpperCase()}
-              </span>
-            ))}
-            {/* Fallback mock brands if none in DB */}
-            {brands.length === 0 && ["Castrol", "Michelin", "Bosch", "Brembo", "Mobil1", "Shell"].map((b, i) => (
-              <span key={i} className="text-xl font-black italic text-gray-500 hover:text-[#FF4E00] cursor-pointer transition-colors">
-                 {b}
-              </span>
-            ))}
-         </div>
-      </div>
-    </ShopLayout>
-  );
+        </ShopLayout>
+    );
 };
 
 export default Index;

@@ -27,9 +27,15 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [ShopController::class, 'index'])->name('shop.index');
+Route::get('/new-arrivals', [ShopController::class, 'newArrivals'])->name('shop.new-arrivals');
+Route::get('/all-brands', [ShopController::class, 'allBrands'])->name('shop.all-brands');
+Route::get('/category/{category:slug}', [ShopController::class, 'categoryProducts'])->name('shop.category');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {

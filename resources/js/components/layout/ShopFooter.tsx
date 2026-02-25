@@ -52,20 +52,20 @@ export function ShopFooter() {
 
         <div>
            <h4 className="font-bold text-[#333] mb-6 border-b-2 border-[#FF4E00] pb-2 inline-block">CONTACT</h4>
-           <ul className="space-y-4 text-sm text-gray-600">
-             <li className="flex items-start gap-2">
-               <MapPin className="h-4 w-4 text-[#FF4E00] mt-0.5" />
-               <span>House # 37, Road # 01, Dhaka Uddyan, Dhaka</span>
-             </li>
-             <li className="flex items-center gap-2">
-               <Phone className="h-4 w-4 text-[#FF4E00]" />
-               <span>Phone: 01799446675</span>
-             </li>
-             <li className="flex items-center gap-2">
-               <Mail className="h-4 w-4 text-[#FF4E00]" />
-               <span>Email: contact@orenmart.com</span>
-             </li>
-           </ul>
+            <ul className="space-y-4 text-sm text-gray-600">
+              <li className="flex items-start gap-2">
+                <MapPin className="h-4 w-4 text-[#FF4E00] mt-0.5" />
+                <span>220/D/04 Begum Rokeya Sarani Metro Pillar 328, Mirpur Shewrapara, Dhaka-1207</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-[#FF4E00]" />
+                <span>Phone: 09613821382, 01999906676</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-[#FF4E00]" />
+                <span>Email: contactorenmart@gmail.com</span>
+              </li>
+            </ul>
         </div>
       </div>
 

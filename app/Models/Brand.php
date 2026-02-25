@@ -11,5 +11,18 @@ class Brand extends Model
 
     protected $fillable = [
         'name',
+        'slug',
+        'image',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($brand) {
+            if (empty($brand->slug)) {
+                $brand->slug = \Illuminate\Support\Str::slug($brand->name);
+            }
+        });
+    }
 }

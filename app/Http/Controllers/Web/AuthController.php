@@ -14,14 +14,25 @@ class AuthController extends Controller
         return Inertia::render('Login');
     }
 
+    public function showAdminLogin()
+    {
+        return Inertia::render('AdminLogin');
+    }
+
     public function login(Request $request)
+    {
+        // ... (standard user login logic if ever needed, or keep for compatibility)
+        return $this->adminLogin($request);
+    }
+
+    public function adminLogin(Request $request)
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
 
             return redirect()->intended('dashboard');
