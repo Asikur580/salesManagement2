@@ -7,14 +7,18 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Supplier;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'brand']);
+        $query = Product::with(['category', 'brand', 'variants.attributeValues.attribute']);
 
         if ($request->search) {
             $search = $request->search;
@@ -41,7 +45,24 @@ class ProductController extends Controller
                 'flatPrice' => (float) $item->flat_price,
                 'quantity' => (int) $item->quantity,
                 'expirationDate' => $item->expiration_date,
-                'image' => $item->image
+                'image' => $item->image,
+                'variants' => $item->variants->map(function ($v) {
+                    return [
+                        'id' => $v->id,
+                        'sku' => $v->sku,
+                        'price' => (float) $v->price,
+                        'stock' => (int) $v->stock,
+                        'image' => $v->image,
+                        'attributeValues' => $v->attributeValues->map(function ($av) {
+                            return [
+                                'id' => $av->id,
+                                'attributeId' => $av->attribute_id,
+                                'attributeName' => $av->attribute->name,
+                                'value' => $av->value
+                            ];
+                        })
+                    ];
+                })
             ];
         });
 
@@ -69,7 +90,105 @@ class ProductController extends Controller
             'initialCategories' => $categories,
             'initialBrands' => $brands,
             'initialSuppliers' => $suppliers,
+            'attributes' => Attribute::with('values')->get(),
             'filters' => $request->only(['search', 'category_id', 'brand_id'])
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'name' => 'required|string|max:255',
+            'pack_size' => 'nullable|string|max:255',
+            'purchase_price' => 'nullable|numeric',
+            'sale_price' => 'nullable|numeric',
+            'flat_price' => 'nullable|numeric',
+            'expiration_date' => 'nullable|date',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+            'variants' => 'nullable|array',
+            'variants.*.sku' => 'nullable|string|max:255',
+            'variants.*.price' => 'nullable|numeric',
+            'variants.*.stock' => 'nullable|integer',
+            'variants.*.attribute_values' => 'nullable|array',
+        ]);
+
+        return DB::transaction(function () use ($validated) {
+            $product = Product::create($validated);
+
+            if (!empty($validated['variants'])) {
+                foreach ($validated['variants'] as $variantData) {
+                    $variant = $product->variants()->create([
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? $product->sale_price,
+                        'stock' => $variantData['stock'] ?? 0,
+                        'image' => $variantData['image'] ?? null,
+                    ]);
+
+                    if (!empty($variantData['attribute_values'])) {
+                        $variant->attributeValues()->sync($variantData['attribute_values']);
+                    }
+                }
+            }
+
+            return redirect()->back()->with('success', 'Product created successfully');
+        });
+    }
+
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'name' => 'required|string|max:255',
+            'pack_size' => 'nullable|string|max:255',
+            'purchase_price' => 'nullable|numeric',
+            'sale_price' => 'nullable|numeric',
+            'flat_price' => 'nullable|numeric',
+            'expiration_date' => 'nullable|date',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+            'variants' => 'nullable|array',
+        ]);
+
+        return DB::transaction(function () use ($product, $validated) {
+            $product->update($validated);
+
+            if (isset($validated['variants'])) {
+                // For simplicity, we'll replace variants or update them. 
+                // A more complex implementation would match by ID.
+                // For now, let's sync them by recreating if IDs are not provided.
+                $product->variants()->each(function ($v) {
+                    $v->attributeValues()->detach();
+                    $v->delete();
+                });
+
+                foreach ($validated['variants'] as $variantData) {
+                    $variant = $product->variants()->create([
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? $product->sale_price,
+                        'stock' => $variantData['stock'] ?? 0,
+                        'image' => $variantData['image'] ?? null,
+                    ]);
+
+                    if (!empty($variantData['attribute_values'])) {
+                        $variant->attributeValues()->sync($variantData['attribute_values']);
+                    }
+                }
+            }
+
+            return redirect()->back()->with('success', 'Product updated successfully');
+        });
+    }
+
+    public function destroy($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return redirect()->back()->with('success', 'Product deleted successfully');
     }
 }

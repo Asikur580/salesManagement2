@@ -30,6 +30,8 @@ Route::get('/', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/new-arrivals', [ShopController::class, 'newArrivals'])->name('shop.new-arrivals');
 Route::get('/all-brands', [ShopController::class, 'allBrands'])->name('shop.all-brands');
 Route::get('/category/{category:slug}', [ShopController::class, 'categoryProducts'])->name('shop.category');
+Route::get('/product/{product:slug}', [ShopController::class, 'show'])->name('shop.product.show');
+Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -46,7 +48,7 @@ Route::middleware('auth')->group(function () {
     })->name('register');
 
     Route::resource('customers', CustomerController::class);
-    Route::get('/products', [ProductController::class, 'index']);
+    Route::resource('products', ProductController::class);
 
 
     Route::resource('employees', EmployeeController::class);
@@ -70,8 +72,6 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('technicians', TechnicianController::class);
     Route::resource('services', ServiceController::class);
-
-    Route::get('/products', [ProductController::class, 'index']);
 
     Route::resource('orders', OrderController::class)->except(['show', 'create', 'edit']);
     Route::post('/orders/{id}/approve', [OrderController::class, 'approve']);

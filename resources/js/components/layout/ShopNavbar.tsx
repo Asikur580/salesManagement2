@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import {
     Search,
     ShoppingCart,
@@ -27,6 +27,9 @@ import {
     Shirt,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+
+// ─── 3-Level Category Data ────────────────────────────────────────────────────
+// ... (CATEGORIES constant remains the same, I will skip it in replace_file_content if possible but I'll include enough context)
 
 // ─── 3-Level Category Data ────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -608,6 +611,15 @@ export function ShopNavbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMegaOpen, setIsMegaOpen] = useState(false);
+    const [query, setQuery] = useState("");
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (query.trim()) {
+            router.get(route("shop.search"), { q: query });
+            setIsSearchOpen(false);
+        }
+    };
 
     return (
         <header className="w-full sticky top-0 z-50 shadow-md transition-all duration-300">
@@ -651,16 +663,24 @@ export function ShopNavbar() {
                 </Link>
 
                 {/* Search Bar (Desktop) */}
-                <div className="hidden lg:flex flex-1 max-w-2xl relative items-center">
+                <form
+                    onSubmit={handleSearch}
+                    className="hidden lg:flex flex-1 max-w-2xl relative items-center"
+                >
                     <Input
                         type="search"
                         placeholder="Search products, categories..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
                         className="w-full pl-6 pr-4 h-11 border-0 focus-visible:ring-0 rounded-l-full text-gray-800 placeholder:text-gray-400 font-medium bg-white ring-0 focus:ring-0 focus-visible:outline-none shadow-none"
                     />
-                    <button className="h-11 px-7 bg-black text-white rounded-r-full hover:bg-gray-800 transition-colors flex items-center justify-center shrink-0">
+                    <button
+                        type="submit"
+                        className="h-11 px-7 bg-black text-white rounded-r-full hover:bg-gray-800 transition-colors flex items-center justify-center shrink-0"
+                    >
                         <Search className="h-5 w-5" />
                     </button>
-                </div>
+                </form>
 
                 {/* Actions */}
                 <div className="flex items-center gap-4 md:gap-6 shrink-0">
@@ -688,17 +708,22 @@ export function ShopNavbar() {
             {/* Mobile Search (Collapsible) */}
             {isSearchOpen && (
                 <div className="lg:hidden bg-[#FF4E00] px-4 pb-3 animate-in slide-in-from-top duration-200">
-                    <div className="flex items-center">
+                    <form onSubmit={handleSearch} className="flex items-center">
                         <Input
                             type="search"
                             placeholder="Search products..."
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
                             className="w-full h-11 pl-5 border-0 focus-visible:ring-0 rounded-l-full text-gray-800 bg-white ring-0 focus:ring-0 focus-visible:outline-none shadow-none"
                             autoFocus
                         />
-                        <button className="h-11 px-5 bg-black text-white rounded-r-full">
+                        <button
+                            type="submit"
+                            className="h-11 px-5 bg-black text-white rounded-r-full"
+                        >
                             <Search className="h-5 w-5" />
                         </button>
-                    </div>
+                    </form>
                 </div>
             )}
 
@@ -780,9 +805,17 @@ export function ShopNavbar() {
                                 All Categories
                             </p>
                             {CATEGORIES.map((cat) => (
-                                <div
+                                <Link
                                     key={cat.name}
-                                    className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0"
+                                    href={route(
+                                        "shop.category",
+                                        cat.name
+                                            .toLowerCase()
+                                            .replace(/ & /g, "-")
+                                            .replace(/\s+/g, "-"),
+                                    )}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors"
                                 >
                                     <span className="text-[#FF4E00]">
                                         {cat.icon}
@@ -793,7 +826,7 @@ export function ShopNavbar() {
                                     <span className="ml-auto text-xs text-gray-400">
                                         {cat.sub.length} sub
                                     </span>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                         <div className="flex flex-col p-4 gap-4">

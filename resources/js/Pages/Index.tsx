@@ -28,13 +28,13 @@ const Index = ({ products, categories, brands }: IndexProps) => {
             <CategoryGrid categories={categories} />
 
             {/* New Arrivals Section */}
-            <NewArrivals />
+            <NewArrivals products={products} />
 
             {/* Popular Brands Section (Matched to Screenshot) */}
             <PopularBrands />
 
             {/* You May Like Section */}
-            <YouMayLike />
+            <YouMayLike products={products} />
 
             {/* Services Section - Ceramic Coating */}
             <div className="py-20 bg-white">

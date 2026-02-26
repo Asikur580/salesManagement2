@@ -32,28 +32,32 @@ interface CategoryPageProps {
     };
 }
 
-const CategoryPage = ({
-    category,
-    products,
-    brands,
-    filters,
-}: CategoryPageProps) => {
-    const [minPrice, setMinPrice] = useState(filters.min_price || "");
-    const [maxPrice, setMaxPrice] = useState(filters.max_price || "");
+const CategoryPage = (props: CategoryPageProps) => {
+    // Ultra-safe prop handling
+    const category = props?.category || ({} as Category);
+    const products = props?.products || { data: [], links: [], total: 0 };
+    const brands = props?.brands || [];
+    const filters = props?.filters || {};
+
+    const [minPrice, setMinPrice] = useState(filters?.min_price || "");
+    const [maxPrice, setMaxPrice] = useState(filters?.max_price || "");
     const [selectedBrands, setSelectedBrands] = useState<string[]>(
-        filters.brands ? filters.brands.split(",") : [],
+        filters?.brands ? String(filters.brands).split(",") : [],
     );
-    const [sort, setSort] = useState(filters.sort || "default");
+    const [currentSort, setCurrentSort] = useState(filters?.sort || "default");
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const applyFilters = () => {
+        const slug = category?.slug || "";
+        if (!slug) return;
+
         router.get(
-            route("shop.category", category.slug),
+            route("shop.category", slug),
             {
-                min_price: minPrice,
-                max_price: maxPrice,
+                min_price: minPrice || "",
+                max_price: maxPrice || "",
                 brands: selectedBrands.join(","),
-                sort: sort,
+                sort: currentSort || "default",
             },
             { preserveState: true },
         );
@@ -68,15 +72,15 @@ const CategoryPage = ({
     };
 
     const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSort(e.target.value);
+        setCurrentSort(e.target.value);
     };
 
     // Auto apply sort change
     useEffect(() => {
-        if (sort !== filters.sort) {
+        if (currentSort !== (filters?.sort || "default")) {
             applyFilters();
         }
-    }, [sort]);
+    }, [currentSort]);
 
     return (
         <ShopLayout>
@@ -111,7 +115,7 @@ const CategoryPage = ({
                 <div className="max-w-[100rem] mx-auto px-4">
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Sidebar Filters */}
-                        <aside className="w-full lg:w-64 shrink-0 space-y-8">
+                        <aside className="w-full lg:w-72 shrink-0 space-y-8">
                             {/* Price Filter */}
                             <div>
                                 <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight mb-4 border-b pb-2">
@@ -119,36 +123,44 @@ const CategoryPage = ({
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2">
-                                        <input
-                                            type="number"
-                                            placeholder="Min"
-                                            value={minPrice}
-                                            onChange={(e) =>
-                                                setMinPrice(e.target.value)
-                                            }
-                                            className="w-full border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
-                                        />
-                                        <span className="text-gray-400">-</span>
-                                        <input
-                                            type="number"
-                                            placeholder="Max"
-                                            value={maxPrice}
-                                            onChange={(e) =>
-                                                setMaxPrice(e.target.value)
-                                            }
-                                            className="w-full border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
-                                        />
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">
+                                                ৳
+                                            </span>
+                                            <input
+                                                type="number"
+                                                placeholder="Min"
+                                                value={minPrice}
+                                                onChange={(e) =>
+                                                    setMinPrice(e.target.value)
+                                                }
+                                                className="w-full pl-7 pr-3 py-2 border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
+                                            />
+                                        </div>
+                                        <span className="text-gray-400 font-bold">
+                                            -
+                                        </span>
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">
+                                                ৳
+                                            </span>
+                                            <input
+                                                type="number"
+                                                placeholder="Max"
+                                                value={maxPrice}
+                                                onChange={(e) =>
+                                                    setMaxPrice(e.target.value)
+                                                }
+                                                className="w-full pl-7 pr-3 py-2 border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
+                                            />
+                                        </div>
                                     </div>
                                     <button
                                         onClick={applyFilters}
-                                        className="w-full bg-[#FF4E00] text-white py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition-colors"
+                                        className="w-full bg-[#FF4E00] text-white py-2.5 rounded-lg text-sm font-black hover:bg-orange-600 transition-all shadow-lg shadow-orange-100"
                                     >
                                         Filter
                                     </button>
-                                    <p className="text-xs text-gray-500 font-bold">
-                                        Price: ৳{minPrice || 0} — ৳
-                                        {maxPrice || "3000+"}
-                                    </p>
                                 </div>
                             </div>
 
@@ -161,7 +173,7 @@ const CategoryPage = ({
                                     {brands.map((brand) => (
                                         <label
                                             key={brand.id}
-                                            className="flex items-center justify-between group cursor-pointer"
+                                            className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group"
                                         >
                                             <span className="text-sm font-bold text-gray-600 group-hover:text-[#FF4E00] transition-colors">
                                                 {brand.name}
@@ -187,7 +199,7 @@ const CategoryPage = ({
                                 </div>
                                 <button
                                     onClick={applyFilters}
-                                    className="w-full mt-4 bg-gray-100 text-gray-800 py-2 rounded-lg text-sm font-bold hover:bg-gray-200 transition-colors"
+                                    className="w-full mt-4 bg-gray-900 text-white py-2.5 rounded-lg text-sm font-black hover:bg-gray-800 transition-all"
                                 >
                                     Apply Brands
                                 </button>
@@ -197,19 +209,29 @@ const CategoryPage = ({
                         {/* Main Content */}
                         <div className="flex-1">
                             {/* Toolbar */}
-                            <div className="flex items-center justify-between mb-8 bg-gray-50 p-4 rounded-2xl">
-                                <div className="text-sm font-bold text-gray-600">
-                                    Showing {products.data.length} of{" "}
-                                    {products.total} results for{" "}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 bg-gray-50 p-4 rounded-2xl border border-gray-100 gap-4">
+                                <div className="text-sm font-bold text-gray-700">
+                                    Showing{" "}
                                     <span className="text-[#FF4E00]">
+                                        {products.data.length}
+                                    </span>{" "}
+                                    of{" "}
+                                    <span className="text-[#FF4E00]">
+                                        {products.total}
+                                    </span>{" "}
+                                    results for{" "}
+                                    <span className="italic">
                                         "{category.name}"
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-4">
+                                    <span className="text-xs font-black text-gray-400 uppercase tracking-wider">
+                                        Sort By:
+                                    </span>
                                     <select
-                                        value={sort}
+                                        value={currentSort}
                                         onChange={handleSortChange}
-                                        className="border-0 bg-transparent text-sm font-bold text-gray-900 focus:ring-0 cursor-pointer"
+                                        className="border-gray-200 bg-white rounded-lg text-sm font-bold text-gray-900 focus:ring-[#FF4E00] focus:border-[#FF4E00] cursor-pointer"
                                     >
                                         <option value="default">
                                             Default Sorting

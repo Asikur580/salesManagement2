@@ -13,6 +13,7 @@ class Product extends Model
         'category_id',
         'brand_id',
         'name',
+        'slug',
         'pack_size',
         'purchase_price',
         'sale_price',
@@ -20,7 +21,23 @@ class Product extends Model
         'quantity',
         'expiration_date',
         'image',
+        'description',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = \Illuminate\Support\Str::slug($product->name);
+            }
+        });
+        static::updating(function ($product) {
+            if ($product->isDirty('name') && empty($product->slug)) {
+                $product->slug = \Illuminate\Support\Str::slug($product->name);
+            }
+        });
+    }
 
     public function category()
     {
@@ -35,5 +52,10 @@ class Product extends Model
     public function stocks()
     {
         return $this->hasMany(Stock::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 }
