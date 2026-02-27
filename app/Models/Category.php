@@ -4,18 +4,35 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'slug',
-        'image',
-        'parent_id',
-    ];
+    protected $guarded = [];   
 
+    /*
+    |--------------------------------------------------------------------------
+    | Boot – auto-generate slug from name
+    |--------------------------------------------------------------------------
+    */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function (Category $category) {
+            if (empty($category->slug)) {
+                $category->slug = Str::slug($category->name);
+            }
+        });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
@@ -24,17 +41,6 @@ class Category extends Model
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($category) {
-            if (empty($category->slug)) {
-                $category->slug = \Illuminate\Support\Str::slug($category->name);
-            }
-        });
     }
 
     public function products()

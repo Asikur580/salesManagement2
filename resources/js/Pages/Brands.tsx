@@ -11,6 +11,7 @@ import {
     ChevronLeft,
     ChevronRight,
     ArrowUp,
+    RefreshCw,
 } from "lucide-react";
 import {
     Table,
@@ -29,7 +30,10 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
     Select,
@@ -51,11 +55,31 @@ import {
 import { BrandCard } from "@/components/brands/BrandCard";
 import { useAuth } from "@/hooks/useAuth";
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Convert a string to a URL-friendly slug (mirrors PHP's Str::slug). */
+const toSlug = (value: string) =>
+    value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/[\s_]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 interface Brand {
     id: number;
     name: string;
     slug: string;
-    image: string | null;
+    logo: string | null;
+    description: string | null;
+    is_active: boolean;
+    order: number;
 }
 
 interface BrandsProps {
@@ -70,6 +94,10 @@ interface BrandsProps {
     };
 }
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 const Brands = ({ initialBrands, filters }: BrandsProps) => {
     const { toast } = useToast();
     const { user } = useAuth();
@@ -82,24 +110,44 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
         }
     }, [initialBrands]);
 
-    const {
-        data,
-        setData,
-        post,
-        put,
-        delete: destroy,
-        processing,
-        errors,
-        reset,
-        transform,
-    } = useForm({
+    // -------------------------------------------------------------------------
+    // Form state
+    // -------------------------------------------------------------------------
+
+    const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         slug: "",
-        image: null as File | string | null,
+        logo: null as File | string | null,
+        description: "",
+        is_active: true as boolean,
+        order: 0 as number,
     });
 
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    /** When true, the user has manually edited the slug – stop auto-generating. */
+    const slugManuallyEdited = useRef(false);
 
+    /** Auto-generate slug from name unless the user has overridden it. */
+    useEffect(() => {
+        if (!slugManuallyEdited.current) {
+            setData("slug", toSlug(data.name));
+        }
+    }, [data.name]);
+
+    const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        slugManuallyEdited.current = true;
+        setData("slug", e.target.value);
+    };
+
+    const handleResetSlug = () => {
+        slugManuallyEdited.current = false;
+        setData("slug", toSlug(data.name));
+    };
+
+    // -------------------------------------------------------------------------
+    // UI state
+    // -------------------------------------------------------------------------
+
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState(filters.search || "");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -107,9 +155,12 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
     const [deleteBrandId, setDeleteBrandId] = useState<number | null>(null);
     const [showScrollTop, setShowScrollTop] = useState(false);
 
-    // Search effect
+    // -------------------------------------------------------------------------
+    // Search
+    // -------------------------------------------------------------------------
+
     useEffect(() => {
-        const timeoutId = setTimeout(() => {
+        const id = setTimeout(() => {
             if (searchTerm !== (filters.search || "")) {
                 router.get(
                     "/brands",
@@ -118,23 +169,24 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                 );
             }
         }, 300);
-
-        return () => clearTimeout(timeoutId);
+        return () => clearTimeout(id);
     }, [searchTerm]);
 
-    // Scroll to top detection
-    useEffect(() => {
-        const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 300);
-        };
+    // -------------------------------------------------------------------------
+    // Scroll-to-top
+    // -------------------------------------------------------------------------
 
+    useEffect(() => {
+        const handleScroll = () => setShowScrollTop(window.scrollY > 300);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+    const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // -------------------------------------------------------------------------
+    // Pagination
+    // -------------------------------------------------------------------------
 
     const currentMeta = initialBrands.meta;
     const paginationLinks = initialBrands.links;
@@ -148,20 +200,29 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
     };
 
     const handlePageChange = (url: string | null) => {
-        if (url) {
-            router.get(url, {}, { preserveState: true });
-        }
+        if (url) router.get(url, {}, { preserveState: true });
     };
 
+    // -------------------------------------------------------------------------
+    // Dialog helpers
+    // -------------------------------------------------------------------------
+
     const handleOpenDialog = (brand?: Brand) => {
+        slugManuallyEdited.current = false;
+
         if (brand) {
             setEditingBrand(brand);
             setData({
                 name: brand.name,
                 slug: brand.slug,
-                image: null,
+                logo: null,
+                description: brand.description ?? "",
+                is_active: brand.is_active,
+                order: brand.order,
             });
-            setPreviewUrl(brand.image);
+            setPreviewUrl(brand.logo);
+            // Editing an existing brand – slug is already set, treat as manual
+            slugManuallyEdited.current = true;
         } else {
             setEditingBrand(null);
             reset();
@@ -175,75 +236,76 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
         setEditingBrand(null);
         reset();
         setPreviewUrl(null);
+        slugManuallyEdited.current = false;
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setData("image", file);
+            setData("logo", file);
             setPreviewUrl(URL.createObjectURL(file));
         }
     };
 
+    // -------------------------------------------------------------------------
+    // Submit
+    // -------------------------------------------------------------------------
+
     const handleSubmit = () => {
-        const prepareData = (d: typeof data) => ({
-            ...d,
-            image: d.image instanceof File ? d.image : undefined,
-        });
+        const payload: Record<string, any> = {
+            name: data.name,
+            slug: data.slug,
+            description: data.description,
+            is_active: data.is_active ? 1 : 0,
+            order: data.order,
+        };
+
+        if (data.logo instanceof File) {
+            payload.logo = data.logo;
+        }
+
+        const options = {
+            forceFormData: true,
+            onSuccess: () => {
+                handleCloseDialog();
+                toast({
+                    title: "Success",
+                    description: editingBrand
+                        ? "Brand updated successfully"
+                        : "Brand created successfully",
+                });
+            },
+            onError: (err: Record<string, string>) => {
+                toast({
+                    title: "Error",
+                    description:
+                        Object.values(err)[0] ||
+                        (editingBrand
+                            ? "Failed to update brand"
+                            : "Failed to create brand"),
+                    variant: "destructive",
+                });
+            },
+        };
 
         if (editingBrand) {
-            // Use post with _method spoofing for file uploads in Laravel
             router.post(
                 `/brands/${editingBrand.id}`,
-                {
-                    ...prepareData(data),
-                    _method: "PUT",
-                },
-                {
-                    forceFormData: true,
-                    onSuccess: () => {
-                        handleCloseDialog();
-                        toast({
-                            title: "Success",
-                            description: "Brand updated successfully",
-                        });
-                    },
-                    onError: (err) => {
-                        toast({
-                            title: "Error",
-                            description:
-                                Object.values(err)[0] ||
-                                "Failed to update brand",
-                            variant: "destructive",
-                        });
-                    },
-                },
+                { ...payload, _method: "PUT" },
+                options,
             );
         } else {
-            transform(prepareData).post("/brands", {
-                forceFormData: true,
-                onSuccess: () => {
-                    handleCloseDialog();
-                    toast({
-                        title: "Success",
-                        description: "Brand created successfully",
-                    });
-                },
-                onError: (err) => {
-                    toast({
-                        title: "Error",
-                        description:
-                            Object.values(err)[0] || "Failed to create brand",
-                        variant: "destructive",
-                    });
-                },
-            });
+            router.post("/brands", payload, options);
         }
     };
 
+    // -------------------------------------------------------------------------
+    // Delete
+    // -------------------------------------------------------------------------
+
     const handleDelete = () => {
         if (deleteBrandId) {
-            destroy(`/brands/${deleteBrandId}`, {
+            router.delete(`/brands/${deleteBrandId}`, {
                 onSuccess: () => {
                     setIsDeleteDialogOpen(false);
                     setDeleteBrandId(null);
@@ -268,9 +330,14 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
         setIsDeleteDialogOpen(true);
     };
 
+    // -------------------------------------------------------------------------
+    // Render
+    // -------------------------------------------------------------------------
+
     return (
         <DashboardLayout>
             <div className="space-y-4 md:space-y-6">
+                {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-2xl md:text-3xl font-bold">
@@ -291,6 +358,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                     )}
                 </div>
 
+                {/* Table Card */}
                 <Card>
                     <CardHeader>
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -310,6 +378,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                             </div>
                         </div>
                     </CardHeader>
+
                     <CardContent>
                         {/* Mobile Card View */}
                         <div className="md:hidden">
@@ -336,13 +405,17 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                     <Table>
                                         <TableHeader className="sticky top-0 bg-background z-10">
                                             <TableRow>
-                                                <TableHead className="w-[80px]">
-                                                    Image
+                                                <TableHead className="w-[70px]">
+                                                    Logo
                                                 </TableHead>
                                                 <TableHead>
                                                     Brand Name
                                                 </TableHead>
                                                 <TableHead>Slug</TableHead>
+                                                <TableHead>Status</TableHead>
+                                                <TableHead className="w-[60px] text-center">
+                                                    Order
+                                                </TableHead>
                                                 <TableHead className="text-right">
                                                     Actions
                                                 </TableHead>
@@ -352,7 +425,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                             {brands.length === 0 ? (
                                                 <TableRow>
                                                     <TableCell
-                                                        colSpan={4}
+                                                        colSpan={6}
                                                         className="text-center py-8 text-muted-foreground"
                                                     >
                                                         No brands found
@@ -362,10 +435,10 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                                 brands.map((brand) => (
                                                     <TableRow key={brand.id}>
                                                         <TableCell>
-                                                            {brand.image ? (
+                                                            {brand.logo ? (
                                                                 <img
                                                                     src={
-                                                                        brand.image
+                                                                        brand.logo
                                                                     }
                                                                     alt={
                                                                         brand.name
@@ -374,7 +447,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                                                 />
                                                             ) : (
                                                                 <div className="w-10 h-10 bg-accent rounded flex items-center justify-center text-[10px] text-muted-foreground">
-                                                                    No Image
+                                                                    No Logo
                                                                 </div>
                                                             )}
                                                         </TableCell>
@@ -382,9 +455,25 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                                             {brand.name}
                                                         </TableCell>
                                                         <TableCell>
-                                                            <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                                                            <span className="text-xs bg-muted px-2 py-0.5 rounded font-mono">
                                                                 {brand.slug}
                                                             </span>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge
+                                                                variant={
+                                                                    brand.is_active
+                                                                        ? "default"
+                                                                        : "secondary"
+                                                                }
+                                                            >
+                                                                {brand.is_active
+                                                                    ? "Active"
+                                                                    : "Inactive"}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="text-center text-sm">
+                                                            {brand.order}
                                                         </TableCell>
                                                         <TableCell className="text-right">
                                                             <div className="flex justify-end gap-1">
@@ -470,10 +559,6 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                             const isNext =
                                                 idx ===
                                                 paginationLinks.length - 1;
-                                            const isActive = link.active;
-                                            const label = link.label
-                                                .replace("&laquo; Previous", "")
-                                                .replace("Next &raquo;", "");
 
                                             if (isPrev) {
                                                 return (
@@ -524,11 +609,15 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                                 );
                                             }
 
+                                            const label = link.label
+                                                .replace("&laquo; Previous", "")
+                                                .replace("Next &raquo;", "");
+
                                             return (
                                                 <Button
                                                     key={idx}
                                                     variant={
-                                                        isActive
+                                                        link.active
                                                             ? "default"
                                                             : "outline"
                                                     }
@@ -551,6 +640,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                     </CardContent>
                 </Card>
 
+                {/* Create / Edit Dialog */}
                 <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
                     <DialogContent className="max-w-md">
                         <DialogHeader>
@@ -564,7 +654,8 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div className="space-y-4 py-4">
+                        <div className="space-y-4 py-2 max-h-[65vh] overflow-y-auto pr-1">
+                            {/* Name */}
                             <div className="space-y-2">
                                 <Label htmlFor="name">Brand Name *</Label>
                                 <Input
@@ -582,15 +673,35 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                 )}
                             </div>
 
+                            {/* Slug – auto-generated, manually overrideable */}
                             <div className="space-y-2">
-                                <Label htmlFor="slug">Slug</Label>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="slug">
+                                        Slug
+                                        {!slugManuallyEdited.current &&
+                                            data.name && (
+                                                <span className="ml-2 text-[10px] font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                                                    auto
+                                                </span>
+                                            )}
+                                    </Label>
+                                    {slugManuallyEdited.current && (
+                                        <button
+                                            type="button"
+                                            onClick={handleResetSlug}
+                                            className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                                        >
+                                            <RefreshCw className="h-3 w-3" />
+                                            Auto-generate
+                                        </button>
+                                    )}
+                                </div>
                                 <Input
                                     id="slug"
                                     value={data.slug}
-                                    onChange={(e) =>
-                                        setData("slug", e.target.value)
-                                    }
-                                    placeholder="brand-slug (optional)"
+                                    onChange={handleSlugChange}
+                                    placeholder="brand-slug"
+                                    className="font-mono text-sm"
                                 />
                                 {errors.slug && (
                                     <p className="text-sm text-red-500">
@@ -599,8 +710,28 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                 )}
                             </div>
 
+                            {/* Description */}
                             <div className="space-y-2">
-                                <Label htmlFor="image">Brand Logo</Label>
+                                <Label htmlFor="description">Description</Label>
+                                <Textarea
+                                    id="description"
+                                    value={data.description}
+                                    onChange={(e) =>
+                                        setData("description", e.target.value)
+                                    }
+                                    placeholder="Brand description (optional)"
+                                    rows={3}
+                                />
+                                {errors.description && (
+                                    <p className="text-sm text-red-500">
+                                        {errors.description}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Logo upload */}
+                            <div className="space-y-2">
+                                <Label htmlFor="logo">Brand Logo</Label>
                                 <div className="flex flex-col gap-3">
                                     {previewUrl && (
                                         <div className="relative w-24 h-24 rounded-lg overflow-hidden border bg-accent/20">
@@ -612,18 +743,70 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                                         </div>
                                     )}
                                     <Input
-                                        id="image"
+                                        id="logo"
                                         type="file"
                                         onChange={handleFileChange}
                                         accept="image/*"
                                         className="cursor-pointer"
                                     />
+                                    <p className="text-[11px] text-muted-foreground leading-snug">
+                                        Recommended size:{" "}
+                                        <span className="font-medium text-foreground">
+                                            200 × 200 px
+                                        </span>{" "}
+                                        (square). Max{" "}
+                                        <span className="font-medium text-foreground">
+                                            2 MB
+                                        </span>
+                                        . Accepted formats: JPG, PNG, SVG, WebP.
+                                    </p>
                                 </div>
-                                {errors.image && (
+                                {errors.logo && (
                                     <p className="text-sm text-red-500">
-                                        {errors.image}
+                                        {errors.logo}
                                     </p>
                                 )}
+                            </div>
+
+                            {/* Is Active + Order (side-by-side) */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="is_active">Active</Label>
+                                    <div className="flex items-center gap-2 pt-1">
+                                        <Switch
+                                            id="is_active"
+                                            checked={data.is_active}
+                                            onCheckedChange={(checked) =>
+                                                setData("is_active", checked)
+                                            }
+                                        />
+                                        <span className="text-sm text-muted-foreground">
+                                            {data.is_active ? "Yes" : "No"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="order">Display Order</Label>
+                                    <Input
+                                        id="order"
+                                        type="number"
+                                        min={0}
+                                        value={data.order}
+                                        onChange={(e) =>
+                                            setData(
+                                                "order",
+                                                parseInt(e.target.value) || 0,
+                                            )
+                                        }
+                                        placeholder="0"
+                                    />
+                                    {errors.order && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.order}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -648,6 +831,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                     </DialogContent>
                 </Dialog>
 
+                {/* Delete Confirmation */}
                 <AlertDialog
                     open={isDeleteDialogOpen}
                     onOpenChange={setIsDeleteDialogOpen}
@@ -669,7 +853,7 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                     </AlertDialogContent>
                 </AlertDialog>
 
-                {/* Scroll to Top Button - Mobile Only */}
+                {/* Scroll to Top – Mobile Only */}
                 {showScrollTop && (
                     <Button
                         onClick={scrollToTop}

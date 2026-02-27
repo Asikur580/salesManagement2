@@ -3,33 +3,39 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Brand;
+use App\Http\Requests\Brand\StoreBrandRequest;
+use App\Http\Requests\Brand\UpdateBrandRequest;
+use App\Repositories\Interfaces\BrandRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BrandController extends Controller
 {
+    public function __construct(protected BrandRepositoryInterface $brands)
+    {
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | index – list with search & pagination
+    |--------------------------------------------------------------------------
+    */
     public function index(Request $request)
     {
-        $query = Brand::query();
-
-        if ($request->search) {
-            $query->where('name', 'like', "%{$request->search}%")
-                ->orWhere('slug', 'like', "%{$request->search}%");
-        }
-
-        $perPage = $request->input('per_page', 10);
-        $paginated = $query->latest()->paginate($perPage)->withQueryString();
+        $perPage = (int) $request->input('per_page', 10);
+        $filters = $request->only(['search', 'is_active']);
+        $paginated = $this->brands->paginate($filters, $perPage);
 
         $brands = [
-            'data' => collect($paginated->items())->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'slug' => $item->slug,
-                    'image' => $item->image,
-                ];
-            }),
+            'data' => collect($paginated->items())->map(fn($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'slug' => $item->slug,
+                'logo' => $item->logo,
+                'description' => $item->description,
+                'is_active' => $item->is_active,
+                'order' => $item->order,
+            ]),
             'links' => $paginated->linkCollection()->toArray(),
             'meta' => [
                 'current_page' => $paginated->currentPage(),
@@ -39,73 +45,62 @@ class BrandController extends Controller
                 'per_page' => $paginated->perPage(),
                 'to' => $paginated->lastItem(),
                 'total' => $paginated->total(),
-            ]
+            ],
         ];
 
         return Inertia::render('Brands', [
             'initialBrands' => $brands,
-            'filters' => $request->only(['search', 'per_page'])
+            'filters' => $request->only(['search', 'per_page', 'is_active']),
         ]);
     }
 
-    public function store(Request $request)
+    /*
+    |--------------------------------------------------------------------------
+    | store – create a new brand
+    |--------------------------------------------------------------------------
+    */
+    public function store(StoreBrandRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:brands,name',
-            'slug' => 'nullable|string|max:255|unique:brands,slug',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        $data = $request->validated();
 
-        $data = $request->only('name', 'slug');
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('brands', 'public');
-            $data['image'] = '/storage/' . $path;
+        // Attach the uploaded file object so the repository can handle it
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo');
         }
 
-        Brand::create($data);
+        $this->brands->create($data);
 
         return redirect()->back()->with('success', 'Brand created successfully.');
     }
 
-    public function update(Request $request, $id)
+    /*
+    |--------------------------------------------------------------------------
+    | update – update an existing brand
+    |--------------------------------------------------------------------------
+    */
+    public function update(UpdateBrandRequest $request, int $id)
     {
-        $brand = Brand::findOrFail($id);
+        $brand = $this->brands->findById($id);
+        $data = $request->validated();
 
-        $request->validate([
-            'name' => 'required|string|max:255|unique:brands,name,' . $id,
-            'slug' => 'nullable|string|max:255|unique:brands,slug,' . $id,
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        $data = $request->only('name', 'slug');
-
-        if ($request->hasFile('image')) {
-            // Delete old image if it exists
-            if ($brand->image) {
-                $oldPath = str_replace('/storage/', '', $brand->image);
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
-            }
-
-            $path = $request->file('image')->store('brands', 'public');
-            $data['image'] = '/storage/' . $path;
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo');
         }
 
-        $brand->update($data);
+        $this->brands->update($brand, $data);
 
         return redirect()->back()->with('success', 'Brand updated successfully.');
     }
 
-    public function destroy($id)
+    /*
+    |--------------------------------------------------------------------------
+    | destroy – delete a brand
+    |--------------------------------------------------------------------------
+    */
+    public function destroy(int $id)
     {
-        $brand = Brand::findOrFail($id);
-
-        if ($brand->image) {
-            $oldPath = str_replace('/storage/', '', $brand->image);
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
-        }
-
-        $brand->delete();
+        $brand = $this->brands->findById($id);
+        $this->brands->delete($brand);
 
         return redirect()->back()->with('success', 'Brand deleted successfully.');
     }

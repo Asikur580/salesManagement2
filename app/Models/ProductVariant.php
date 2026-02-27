@@ -12,18 +12,52 @@ class ProductVariant extends Model
     protected $fillable = [
         'product_id',
         'sku',
+        'barcode',
         'price',
+        'cost_price',
         'stock',
-        'image',
+        'low_stock_alert',
+        'is_active',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'price' => 'decimal:2',
+        'cost_price' => 'decimal:2',
+        'stock' => 'integer',
+        'low_stock_alert' => 'integer',
+    ];
+
+    public function getProfitAttribute()
+    {
+        return $this->price - $this->cost_price;
+    }
+
+    public function getIsLowStockAttribute()
+    {
+        if ($this->low_stock_alert === null) {
+            return false;
+        }
+        return $this->stock <= $this->low_stock_alert;
+    }
 
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
 
-    public function attributeValues()
+    public function attributeValues() // fixed camelCase
     {
-        return $this->belongsToMany(AttributeValue::class, 'variant_attribute_values');
+        return $this->belongsToMany(AttributeValue::class, 'product_variant_attribute_values');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(VariantImage::class)->orderBy('sort_order');
+    }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(VariantImage::class)->where('is_primary', true)->latestOfMany();
     }
 }

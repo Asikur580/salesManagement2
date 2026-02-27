@@ -5,71 +5,89 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Http\Requests\StoreAttributeRequest;
+use App\Http\Requests\UpdateAttributeRequest;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 
-class AttributeController extends Controller
+class AttributeController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            // Using placeholder generic product permissions or creating new ones based on the user's needs
+            // In a real environment, you might define 'attribute.view' etc. For now, since they manipulate Product meta:
+            new Middleware('permission:product.view', only: ['index']),
+            new Middleware('permission:product.create', only: ['store']),
+            new Middleware('permission:product.edit', only: ['update']),
+            new Middleware('permission:product.delete', only: ['destroy']),
+        ];
+    }
+
     public function index()
     {
-        return response()->json(Attribute::with('values')->get());
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:attributes,name',
-            'values' => 'nullable|array',
-            'values.*' => 'string|max:255',
+        $attributes = Attribute::with('values')->orderBy('name')->get();
+        return Inertia::render('Attributes/Index', [
+            'attributes' => $attributes
         ]);
-
-        $attribute = Attribute::create(['name' => $request->name]);
-
-        if (!empty($request->values)) {
-            foreach ($request->values as $value) {
-                $attribute->values()->create(['value' => $value]);
-            }
-        }
-
-        return response()->json($attribute->load('values'), 201);
     }
 
-    public function update(Request $request, $id)
+    public function store(StoreAttributeRequest $request)
+    {
+        DB::transaction(function () use ($request) {
+            $attribute = Attribute::create(['name' => $request->name]);
+
+            if (!empty($request->values)) {
+                $values = array_map(function ($val) {
+                    // $val is an array like ['value' => 'Small']
+                    return ['value' => $val['value']];
+                }, $request->values);
+
+                $attribute->values()->createMany($values);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Attribute created successfully.');
+    }
+
+    public function update(UpdateAttributeRequest $request, $id)
     {
         $attribute = Attribute::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255|unique:attributes,name,' . $id,
-            'values' => 'nullable|array',
-            'values.*' => 'string|max:255',
-        ]);
+        DB::transaction(function () use ($request, $attribute) {
+            $attribute->update(['name' => $request->name]);
 
-        $attribute->update(['name' => $request->name]);
+            if (isset($request->values)) {
+                $existingValueIds = collect($request->values)->pluck('id')->filter()->toArray();
 
-        if (isset($request->values)) {
-            // Simple sync: remove old values and add new ones
-            // In a better implementation, we would keep existing values to avoid breaking variant links
-            // But for now, let's keep it simple.
-            $attribute->values()->delete();
-            foreach ($request->values as $value) {
-                $attribute->values()->create(['value' => $value]);
+                // Delete removed values
+                $attribute->values()->whereNotIn('id', $existingValueIds)->delete();
+
+                foreach ($request->values as $v) {
+                    if (isset($v['id'])) {
+                        // Update existing
+                        $attribute->values()->where('id', $v['id'])->update(['value' => $v['value']]);
+                    } else {
+                        // Create new
+                        $attribute->values()->create(['value' => $v['value']]);
+                    }
+                }
+            } else {
+                $attribute->values()->delete();
             }
-        }
+        });
 
-        return response()->json($attribute->load('values'));
+        return redirect()->back()->with('success', 'Attribute updated successfully.');
     }
 
     public function destroy($id)
     {
         $attribute = Attribute::findOrFail($id);
-        $attribute->delete();
-        return response()->json(['message' => 'Attribute deleted successfully']);
-    }
-
-    public function addValue(Request $request, $attributeId)
-    {
-        $attribute = Attribute::findOrFail($attributeId);
-        $request->validate(['value' => 'required|string|max:255']);
-        $value = $attribute->values()->create(['value' => $request->value]);
-        return response()->json($value, 201);
+        $attribute->delete(); // Values should be deleted if there is a DB cascade, or handle explicitly
+        return redirect()->back()->with('success', 'Attribute deleted successfully.');
     }
 }
+

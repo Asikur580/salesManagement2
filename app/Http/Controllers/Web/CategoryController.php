@@ -3,98 +3,106 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
+    public function __construct(protected CategoryRepositoryInterface $categories)
+    {
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | index
+    |--------------------------------------------------------------------------
+    */
     public function index(Request $request)
     {
-        $query = Category::with('parent');
+        $perPage = (int) $request->input('per_page', 15);
+        $filters = $request->only(['search', 'is_active', 'parent_id']);
+        $paginated = $this->categories->paginate($filters, $perPage);
 
-        if ($request->search) {
-            $query->where('name', 'like', "%{$request->search}%");
-        }
-
-        $categories = $query->latest()->get()->map(function ($item) {
-            return [
+        $categories = [
+            'data' => collect($paginated->items())->map(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'slug' => $item->slug,
                 'image' => $item->image,
+                'icon' => $item->icon,
                 'parent_id' => $item->parent_id,
                 'parent_name' => $item->parent?->name,
-            ];
-        });
+                'is_active' => $item->is_active,
+                'order' => $item->order,
+            ]),
+            'links' => $paginated->linkCollection()->toArray(),
+            'meta' => [
+                'current_page' => $paginated->currentPage(),
+                'from' => $paginated->firstItem(),
+                'last_page' => $paginated->lastPage(),
+                'path' => $paginated->path(),
+                'per_page' => $paginated->perPage(),
+                'to' => $paginated->lastItem(),
+                'total' => $paginated->total(),
+            ],
+        ];
 
         return Inertia::render('Categories', [
             'initialCategories' => $categories,
-            'allCategories' => Category::select('id', 'name')->get(),
-            'filters' => $request->only(['search'])
+            'allCategories' => $this->categories->allForSelect(),
+            'filters' => $request->only(['search', 'per_page', 'is_active', 'parent_id']),
         ]);
     }
 
-    public function store(Request $request)
+    /*
+    |--------------------------------------------------------------------------
+    | store
+    |--------------------------------------------------------------------------
+    */
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-            'slug' => 'nullable|string|max:255|unique:categories,slug',
-            'parent_id' => 'nullable|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-        ]);
-
-        $data = $request->only('name', 'slug', 'parent_id');
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
-            $data['image'] = '/storage/' . $path;
+            $data['image'] = $request->file('image');
         }
 
-        Category::create($data);
+        $this->categories->create($data);
 
         return redirect()->back()->with('success', 'Category created successfully.');
     }
 
-    public function update(Request $request, $id)
+    /*
+    |--------------------------------------------------------------------------
+    | update
+    |--------------------------------------------------------------------------
+    */
+    public function update(UpdateCategoryRequest $request, int $id)
     {
-        $category = Category::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $id,
-            'slug' => 'nullable|string|max:255|unique:categories,slug,' . $id,
-            'parent_id' => 'nullable|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-        ]);
-
-        $data = $request->only('name', 'slug', 'parent_id');
+        $category = $this->categories->findById($id);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            if ($category->image) {
-                $oldPath = str_replace('/storage/', '', $category->image);
-                Storage::disk('public')->delete($oldPath);
-            }
-
-            $path = $request->file('image')->store('categories', 'public');
-            $data['image'] = '/storage/' . $path;
+            $data['image'] = $request->file('image');
         }
 
-        $category->update($data);
+        $this->categories->update($category, $data);
 
         return redirect()->back()->with('success', 'Category updated successfully.');
     }
 
-    public function destroy($id)
+    /*
+    |--------------------------------------------------------------------------
+    | destroy
+    |--------------------------------------------------------------------------
+    */
+    public function destroy(int $id)
     {
-        $category = Category::findOrFail($id);
-
-        if ($category->image) {
-            $oldPath = str_replace('/storage/', '', $category->image);
-            Storage::disk('public')->delete($oldPath);
-        }
-
-        $category->delete();
+        $category = $this->categories->findById($id);
+        $this->categories->delete($category);
 
         return redirect()->back()->with('success', 'Category deleted successfully.');
     }

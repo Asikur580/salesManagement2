@@ -9,7 +9,10 @@ use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DesignationController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\UnitController;
+use App\Http\Controllers\Web\AttributeController;
 use App\Http\Controllers\Web\RoleController;
+use App\Http\Controllers\Web\PosController;
 use App\Http\Controllers\Web\PermissionController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\OrderController;
@@ -48,7 +51,11 @@ Route::middleware('auth')->group(function () {
     })->name('register');
 
     Route::resource('customers', CustomerController::class);
+    // Product Management System
     Route::resource('products', ProductController::class);
+    Route::get('/products/barcode/{barcode}', [ProductController::class, 'barcodeSearch'])->name('products.barcode.search');
+    Route::resource('units', UnitController::class)->except(['create', 'show', 'edit']);
+    Route::resource('attributes', AttributeController::class)->except(['create', 'show', 'edit']);
 
 
     Route::resource('employees', EmployeeController::class);
@@ -75,6 +82,10 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('orders', OrderController::class)->except(['show', 'create', 'edit']);
     Route::post('/orders/{id}/approve', [OrderController::class, 'approve']);
+
+    // Point of Sale (POS)
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+    Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
 
     Route::get('/sales', [SaleController::class, 'index']);
 

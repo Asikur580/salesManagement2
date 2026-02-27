@@ -55,6 +55,12 @@ class RoleSeeder extends Seeder
             'product.update',
             'product.delete',
 
+            // Unit Management
+            'unit.view',
+            'unit.create',
+            'unit.update',
+            'unit.delete',
+
             // Category Management
             'category.view',
             'category.create',
@@ -117,7 +123,7 @@ class RoleSeeder extends Seeder
         $superAdmin->syncPermissions(Permission::all());
 
         // Create other roles
-        $admin = Role::firstOrCreate(['name' => 'admin']);      
+        $admin = Role::firstOrCreate(['name' => 'admin']);
         $sales = Role::firstOrCreate(['name' => 'sales']);
         $accountant = Role::firstOrCreate(['name' => 'accountant']);
 
@@ -142,6 +148,10 @@ class RoleSeeder extends Seeder
             'product.create',
             'product.update',
             'product.delete',
+            'unit.view',
+            'unit.create',
+            'unit.update',
+            'unit.delete',
             'category.view',
             'category.create',
             'category.update',
@@ -174,8 +184,8 @@ class RoleSeeder extends Seeder
             'expense.create',
             'expense.update',
             'expense.delete',
-        ]);              
-        
+        ]);
+
 
         // Assign permissions to Sales
         $sales->syncPermissions([

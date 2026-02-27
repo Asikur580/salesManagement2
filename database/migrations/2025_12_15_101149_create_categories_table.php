@@ -14,7 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->string('name')->unique();
             $table->string('slug')->unique();
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->string('image')->nullable();
+            $table->string('icon')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->unsignedInteger('order')->default(0);
             $table->timestamps();
         });
     }

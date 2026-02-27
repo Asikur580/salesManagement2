@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -12,29 +13,29 @@ class Product extends Model
     protected $fillable = [
         'category_id',
         'brand_id',
+        'unit_id',
         'name',
         'slug',
-        'pack_size',
-        'purchase_price',
-        'sale_price',
-        'flat_price',
-        'quantity',
-        'expiration_date',
-        'image',
         'description',
+        'product_type',
+        'base_price',
+        'sku',
+        'barcode',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'base_price' => 'decimal:2',
     ];
 
     protected static function boot()
     {
         parent::boot();
-        static::creating(function ($product) {
+
+        static::saving(function (Product $product) {
             if (empty($product->slug)) {
-                $product->slug = \Illuminate\Support\Str::slug($product->name);
-            }
-        });
-        static::updating(function ($product) {
-            if ($product->isDirty('name') && empty($product->slug)) {
-                $product->slug = \Illuminate\Support\Str::slug($product->name);
+                $product->slug = Str::slug($product->name);
             }
         });
     }
@@ -49,13 +50,23 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    public function stocks()
+    public function unit()
     {
-        return $this->hasMany(Stock::class);
+        return $this->belongsTo(Unit::class);
     }
 
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+    }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true)->latestOfMany();
     }
 }
