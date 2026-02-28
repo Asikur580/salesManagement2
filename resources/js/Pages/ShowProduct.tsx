@@ -7,6 +7,7 @@ import {
     Edit,
     Trash2,
     Image as ImageIcon,
+    FileText,
 } from "lucide-react";
 import { Link, router } from "@inertiajs/react";
 import {
@@ -65,10 +66,10 @@ interface ProductVariant {
     sku: string | null;
     barcode: string | null;
     cost_price: number;
-    selling_price: number;
+    price: number;
     stock: number;
     images: VariantImage[];
-    attributeValues: VariantAttributeValue[];
+    attribute_values: VariantAttributeValue[];
 }
 
 interface Product {
@@ -80,7 +81,7 @@ interface Product {
     description: string | null;
     product_type: "simple" | "variant";
     base_price: number | null;
-    base_cost_price: number | null;
+    cost_price: number | null;
     stock: number;
     is_active: boolean;
     category?: Category;
@@ -112,7 +113,9 @@ export default function ShowProduct({ product }: PageProps) {
     };
 
     const getImageUrl = (path: string) => {
+        if (!path) return "/placeholder-image.jpg";
         if (path.startsWith("http")) return path;
+        if (path.startsWith("/storage/")) return path;
         return `/storage/${path}`;
     };
 
@@ -234,21 +237,24 @@ export default function ShowProduct({ product }: PageProps) {
                                     </div>
                                 </div>
                                 <Separator />
-                                <div>
-                                    <p className="text-sm text-gray-500 font-medium mb-2">
-                                        Description
-                                    </p>
+                                <div className="mt-6">
+                                    <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                        <FileText className="h-4 w-4 text-gray-500" />
+                                        Product Description
+                                    </h3>
                                     {product.description ? (
-                                        <div
-                                            className="prose prose-sm text-gray-700 bg-gray-50 p-4 rounded-lg"
-                                            dangerouslySetInnerHTML={{
-                                                __html: product.description,
-                                            }}
-                                        />
+                                        <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+                                            <div className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed">
+                                                {product.description}
+                                            </div>
+                                        </div>
                                     ) : (
-                                        <p className="text-gray-400 italic">
-                                            No description provided.
-                                        </p>
+                                        <div className="bg-gray-50 border border-gray-200 border-dashed rounded-xl p-6 text-center">
+                                            <p className="text-gray-400 italic text-sm">
+                                                No description provided for this
+                                                product.
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
                             </CardContent>
@@ -297,7 +303,7 @@ export default function ShowProduct({ product }: PageProps) {
                                                         >
                                                             <td className="px-4 py-3">
                                                                 <div className="flex flex-wrap gap-1">
-                                                                    {variant.attributeValues.map(
+                                                                    {variant.attribute_values?.map(
                                                                         (
                                                                             av,
                                                                         ) => (
@@ -313,6 +319,7 @@ export default function ShowProduct({ product }: PageProps) {
                                                                                         .attribute
                                                                                         .name
                                                                                 }
+
                                                                                 :{" "}
                                                                                 {
                                                                                     av.value
@@ -335,7 +342,7 @@ export default function ShowProduct({ product }: PageProps) {
                                                             <td className="px-4 py-3 text-green-700 font-bold">
                                                                 ৳
                                                                 {Number(
-                                                                    variant.selling_price,
+                                                                    variant.price,
                                                                 ).toFixed(2)}
                                                             </td>
                                                             <td className="px-4 py-3">
@@ -359,10 +366,11 @@ export default function ShowProduct({ product }: PageProps) {
                                                             </td>
                                                             <td className="px-4 py-3">
                                                                 <div className="flex -space-x-2">
-                                                                    {variant
+                                                                    {variant.images &&
+                                                                    variant
                                                                         .images
                                                                         .length >
-                                                                    0 ? (
+                                                                        0 ? (
                                                                         variant.images.map(
                                                                             (
                                                                                 img,
@@ -430,9 +438,9 @@ export default function ShowProduct({ product }: PageProps) {
                                         </span>
                                         <span className="font-medium text-red-600">
                                             ৳
-                                            {Number(
-                                                product.base_cost_price,
-                                            ).toFixed(2)}
+                                            {Number(product.cost_price).toFixed(
+                                                2,
+                                            )}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b">

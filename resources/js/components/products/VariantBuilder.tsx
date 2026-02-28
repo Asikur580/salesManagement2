@@ -141,6 +141,7 @@ export function VariantBuilder({
                 </div>
 
                 <Button
+                    type="button"
                     variant="default"
                     onClick={generateCombinations}
                     disabled={selectedAttributes.length === 0}
@@ -171,6 +172,7 @@ export function VariantBuilder({
                                 <div className="p-3 flex items-center justify-between gap-4 hover:bg-gray-50">
                                     <div className="flex items-center gap-3 flex-1">
                                         <Button
+                                            type="button"
                                             variant="ghost"
                                             size="sm"
                                             className="h-8 w-8 p-0"
@@ -215,6 +217,7 @@ export function VariantBuilder({
                                             }
                                         />
                                         <Button
+                                            type="button"
                                             variant="ghost"
                                             size="icon"
                                             className="text-red-500 h-8 w-8 hover:bg-red-50 hover:text-red-700"

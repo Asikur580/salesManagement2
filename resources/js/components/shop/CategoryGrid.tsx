@@ -55,7 +55,18 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                                 >
                                     <div className="w-20 h-20 rounded-full overflow-hidden mb-3 shadow-inner hover:scale-105 transition-transform bg-gray-50 flex items-center justify-center">
                                         <img
-                                            src={cat.image || "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=400&h=400"}
+                                            src={
+                                                cat.image
+                                                    ? cat.image.startsWith(
+                                                          "http",
+                                                      ) ||
+                                                      cat.image.startsWith(
+                                                          "/storage/",
+                                                      )
+                                                        ? cat.image
+                                                        : `/storage/${cat.image}`
+                                                    : "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=400&h=400"
+                                            }
                                             alt={cat.name}
                                             className="w-full h-full object-cover"
                                         />

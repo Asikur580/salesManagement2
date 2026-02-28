@@ -48,8 +48,11 @@ const DUMMY_PRODUCTS = [
     },
 ];
 
+import { usePage } from "@inertiajs/react";
+
 const SearchPage = () => {
-    const [searchTerm] = useState("Car Accessories");
+    const { categories, searchTerm: propSearchTerm } = usePage().props as any;
+    const [searchTerm] = useState(propSearchTerm || "Car Accessories");
 
     return (
         <ShopLayout>
@@ -73,10 +76,10 @@ const SearchPage = () => {
                         </div>
                         <div>
                             <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">
-                                Results for "{searchTerm}" (Dummy Page)
+                                Results for "{searchTerm}"
                             </h1>
                             <p className="text-gray-500 font-medium mt-1">
-                                We've prepared some exemplary results for you.
+                                We found some great products for you.
                             </p>
                         </div>
                     </div>
@@ -94,18 +97,17 @@ const SearchPage = () => {
                                     Categories
                                 </h3>
                                 <div className="space-y-2">
-                                    {[
-                                        "Interior",
-                                        "Car Care",
-                                        "Electronics",
-                                        "Lighting",
-                                    ].map((cat) => (
-                                        <button
-                                            key={cat}
-                                            className="w-full text-left px-3 py-2 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all"
+                                    {categories?.map((cat: any) => (
+                                        <Link
+                                            key={cat.id}
+                                            href={route(
+                                                "shop.category",
+                                                cat.slug,
+                                            )}
+                                            className="block w-full text-left px-3 py-2 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all hover:text-[#FF4E00]"
                                         >
-                                            {cat}
-                                        </button>
+                                            {cat.name}
+                                        </Link>
                                     ))}
                                 </div>
                             </div>

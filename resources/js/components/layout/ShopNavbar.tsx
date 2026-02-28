@@ -32,431 +32,30 @@ import { Input } from "@/components/ui/input";
 // ... (CATEGORIES constant remains the same, I will skip it in replace_file_content if possible but I'll include enough context)
 
 // ─── 3-Level Category Data ────────────────────────────────────────────────────
-const CATEGORIES = [
-    {
-        name: "Summer Essential",
-        icon: <Zap className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Seat Cooler",
-                items: [
-                    "USB Seat Fan",
-                    "Cooling Cushion",
-                    "Ventilated Seat Pad",
-                ],
-            },
-            {
-                name: "Windshield Shade",
-                items: [
-                    "Foldable Shade",
-                    "Retractable Shade",
-                    "Custom Fit Shade",
-                ],
-            },
-            {
-                name: "Car Fan",
-                items: ["Clip-on Fan", "Dashboard Fan", "Rear Seat Fan"],
-            },
-            {
-                name: "AC Accessories",
-                items: ["AC Vent Cover", "Vent Freshener", "AC Filter"],
-            },
-        ],
-    },
-    {
-        name: "Winter Essential",
-        icon: <Wind className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Steering Cover",
-                items: ["Faux Leather", "Furry Cover", "Anti-slip Cover"],
-            },
-            {
-                name: "Seat Warmer",
-                items: ["Electric Warmer", "12V Cushion", "Universal Warmer"],
-            },
-            {
-                name: "Body Warmer",
-                items: ["Heated Blanket", "Travel Warmer", "Thermal Pad"],
-            },
-            {
-                name: "Defrost Tools",
-                items: ["Ice Scraper", "Defrost Spray", "Snow Brush"],
-            },
-        ],
-    },
-    {
-        name: "Car Interior",
-        icon: <Layers className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Storage & Organizers",
-                items: [
-                    "Back Seat Organizer",
-                    "Trunk Organizer",
-                    "Center Console Tray",
-                    "Glove Box Insert",
-                ],
-            },
-            {
-                name: "Seat Accessories",
-                items: [
-                    "Back Support",
-                    "Seat Gap Filler",
-                    "Armrest Pad",
-                    "Headrest Hook",
-                ],
-            },
-            {
-                name: "Covers & Mats",
-                items: [
-                    "Floor Mat Set",
-                    "Cargo Mat",
-                    "Dashboard Cover",
-                    "Steering Wrap",
-                ],
-            },
-            {
-                name: "Sunshade",
-                items: [
-                    "Front Windshield",
-                    "Side Window",
-                    "Rear Window",
-                    "Pop-up Shade",
-                ],
-            },
-        ],
-    },
-    {
-        name: "Car Exterior",
-        icon: <Car className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Body Protection",
-                items: [
-                    "Full Car Cover",
-                    "Door Edge Guard",
-                    "Bumper Protector",
-                    "Door Handle Cover",
-                ],
-            },
-            {
-                name: "Mirrors",
-                items: [
-                    "Wide Angle Mirror",
-                    "Blind Spot Mirror",
-                    "Side Mirror Cover",
-                    "Fender Mirror",
-                ],
-            },
-            {
-                name: "Stickers & Decals",
-                items: [
-                    "Racing Stripes",
-                    "Logo Decal",
-                    "Reflective Tape",
-                    "Carbon Fiber Wrap",
-                ],
-            },
-            {
-                name: "Aerodynamics",
-                items: [
-                    "Roof Spoiler",
-                    "Lip Spoiler",
-                    "Side Skirts",
-                    "Diffuser",
-                ],
-            },
-        ],
-    },
-    {
-        name: "Electronics & Gadgets",
-        icon: <Cpu className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Cameras",
-                items: [
-                    "Dash Cam 1CH",
-                    "Dash Cam 2CH",
-                    "Reverse Camera",
-                    "360° Camera",
-                ],
-            },
-            {
-                name: "Tracking & Safety",
-                items: [
-                    "GPS Tracker",
-                    "OBD2 Scanner",
-                    "Radar Detector",
-                    "Blind Spot Sensor",
-                ],
-            },
-            {
-                name: "Chargers",
-                items: [
-                    "USB Car Charger",
-                    "Fast Charger",
-                    "Wireless Charger",
-                    "Solar Charger",
-                ],
-            },
-            {
-                name: "Audio & Media",
-                items: [
-                    "Car Bluetooth",
-                    "FM Transmitter",
-                    "Amplifier",
-                    "Subwoofer",
-                ],
-            },
-        ],
-    },
-    {
-        name: "Car Care",
-        icon: <Droplets className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Ceramic Coating",
-                items: [
-                    "9H Coating",
-                    "10H Coating",
-                    "Graphene Coating",
-                    "Nano Coating",
-                ],
-            },
-            {
-                name: "Cleaning Products",
-                items: [
-                    "Car Shampoo",
-                    "Dashboard Cleaner",
-                    "Glass Cleaner",
-                    "Wheel Cleaner",
-                ],
-            },
-            {
-                name: "Polish & Wax",
-                items: [
-                    "Carnauba Wax",
-                    "Paint Sealant",
-                    "Clay Bar",
-                    "Rubbing Compound",
-                ],
-            },
-            {
-                name: "Tools",
-                items: [
-                    "Microfiber Towel",
-                    "Applicator Pad",
-                    "Wash Mitt",
-                    "Bucket Set",
-                ],
-            },
-        ],
-    },
-    {
-        name: "Perfume & Showpiece",
-        icon: <Sparkles className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Liquid Perfume",
-                items: [
-                    "Oud Collection",
-                    "Floral Series",
-                    "Fresh Scent",
-                    "Premium Brand",
-                ],
-            },
-            {
-                name: "Vent Freshener",
-                items: [
-                    "Clip-on Freshener",
-                    "Gel Freshener",
-                    "Charcoal Purifier",
-                    "Mini Diffuser",
-                ],
-            },
-            {
-                name: "Dashboard Showpiece",
-                items: [
-                    "Bobble Head",
-                    "Angel Figurine",
-                    "Car Mascot",
-                    "Floating Ornament",
-                ],
-            },
-        ],
-    },
-    {
-        name: "Key Accessories",
-        icon: <Key className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Key Covers",
-                items: [
-                    "TPU Key Cover",
-                    "Leather Key Case",
-                    "Carbon Fiber Cover",
-                    "Smart Key Protector",
-                ],
-            },
-            {
-                name: "Key Chains",
-                items: [
-                    "Metal Keychain",
-                    "Leather Keychain",
-                    "Branded Keyring",
-                    "Bottle Opener Keyring",
-                ],
-            },
-            {
-                name: "Key Finder",
-                items: ["Bluetooth Tracker", "NFC Tag", "GPS Key Finder"],
-            },
-        ],
-    },
-    {
-        name: "Performance",
-        icon: <Activity className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Engine Care",
-                items: [
-                    "Engine Oil Additive",
-                    "Fuel Injector Cleaner",
-                    "Coolant",
-                    "Stop Leak",
-                ],
-            },
-            {
-                name: "Air System",
-                items: [
-                    "Air Filter",
-                    "Cold Air Intake",
-                    "Throttle Body Cleaner",
-                    "MAF Sensor Cleaner",
-                ],
-            },
-            {
-                name: "Drive Train",
-                items: [
-                    "Gear Oil",
-                    "Transmission Flush",
-                    "Clutch Cable",
-                    "Shift Knob",
-                ],
-            },
-        ],
-    },
-    {
-        name: "LED & Lighting",
-        icon: <Lightbulb className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Interior Lighting",
-                items: [
-                    "Dome Light",
-                    "Footwell Lights",
-                    "Ambient Strip",
-                    "Reading Light",
-                ],
-            },
-            {
-                name: "Exterior Lighting",
-                items: [
-                    "DRL Strip",
-                    "Underglow Kit",
-                    "Fog Light",
-                    "Puddle Lamp",
-                ],
-            },
-            {
-                name: "Headlights",
-                items: [
-                    "H4 LED Bulb",
-                    "H7 LED Bulb",
-                    "HID Kit",
-                    "Angel Eye Ring",
-                ],
-            },
-        ],
-    },
-    {
-        name: "Modifications",
-        icon: <Wrench className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Body Mods",
-                items: [
-                    "Lip Kit",
-                    "Side Skirts",
-                    "Rear Diffuser",
-                    "Fender Flare",
-                ],
-            },
-            {
-                name: "Interior Mods",
-                items: [
-                    "Sport Steering Wheel",
-                    "Short Shifter",
-                    "Carbon Trim",
-                    "Sport Pedals",
-                ],
-            },
-            {
-                name: "Exhaust",
-                items: [
-                    "Exhaust Tip",
-                    "Resonator",
-                    "Muffler Delete",
-                    "Cat-back System",
-                ],
-            },
-        ],
-    },
-    {
-        name: "Covers",
-        icon: <Shirt className="h-4 w-4" />,
-        sub: [
-            {
-                name: "Full Car Covers",
-                items: [
-                    "Waterproof Cover",
-                    "Sun-proof Cover",
-                    "Indoor Cover",
-                    "Half Cover",
-                ],
-            },
-            {
-                name: "Seat Covers",
-                items: [
-                    "Leather Seat Set",
-                    "Fabric Seat Set",
-                    "Single Seat Cover",
-                    "Child Seat Cover",
-                ],
-            },
-            {
-                name: "Steering Covers",
-                items: [
-                    "Leather Wrap",
-                    "Carbon Fiber",
-                    "Suede Grip",
-                    "Slim Fit Cover",
-                ],
-            },
-        ],
-    },
-];
+// Categories are now fetched from Inertia shared props
 
 // ─── Mega Dropdown ────────────────────────────────────────────────────────────
-function MegaDropdown({ onClose }: { onClose: () => void }) {
-    const [activeCategory, setActiveCategory] = useState(CATEGORIES[0]);
-    const [activeSub, setActiveSub] = useState<{
-        name: string;
-        items: string[];
-    } | null>(null);
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    icon?: string;
+    children?: Category[];
+}
 
-    const handleCategoryEnter = (cat: (typeof CATEGORIES)[0]) => {
+function MegaDropdown({
+    onClose,
+    categories,
+}: {
+    onClose: () => void;
+    categories: Category[];
+}) {
+    const [activeCategory, setActiveCategory] = useState<Category | null>(
+        categories[0] || null,
+    );
+    const [activeSub, setActiveSub] = useState<Category | null>(null);
+
+    const handleCategoryEnter = (cat: Category) => {
         setActiveCategory(cat);
         setActiveSub(null);
     };
@@ -467,32 +66,35 @@ function MegaDropdown({ onClose }: { onClose: () => void }) {
             style={{ width: "900px", maxHeight: "520px" }}
             onMouseLeave={onClose}
         >
+            {!activeCategory && (
+                <div className="p-8 text-center w-full">No Categories</div>
+            )}
             {/* Column 1: Main Categories */}
             <div className="w-[220px] shrink-0 bg-gray-50 border-r overflow-y-auto">
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                     <div
-                        key={cat.name}
+                        key={cat.id}
                         onMouseEnter={() => handleCategoryEnter(cat)}
                         className={`px-4 py-3 flex items-center justify-between cursor-pointer transition-all group ${
-                            activeCategory.name === cat.name
+                            activeCategory?.id === cat.id
                                 ? "bg-white border-l-4 border-[#FF4E00]"
                                 : "hover:bg-white border-l-4 border-transparent"
                         }`}
                     >
                         <div className="flex items-center gap-2.5">
                             <span
-                                className={`transition-colors ${activeCategory.name === cat.name ? "text-[#FF4E00]" : "text-gray-400 group-hover:text-[#FF4E00]"}`}
+                                className={`transition-colors ${activeCategory?.id === cat.id ? "text-[#FF4E00]" : "text-gray-400 group-hover:text-[#FF4E00]"}`}
                             >
-                                {cat.icon}
+                                <Layers className="h-4 w-4" />
                             </span>
                             <span
-                                className={`text-[13px] font-bold transition-colors ${activeCategory.name === cat.name ? "text-[#FF4E00]" : "text-gray-700 group-hover:text-[#FF4E00]"}`}
+                                className={`text-[13px] font-bold transition-colors ${activeCategory?.id === cat.id ? "text-[#FF4E00]" : "text-gray-700 group-hover:text-[#FF4E00]"}`}
                             >
                                 {cat.name}
                             </span>
                         </div>
                         <ChevronRight
-                            className={`h-3.5 w-3.5 shrink-0 transition-colors ${activeCategory.name === cat.name ? "text-[#FF4E00]" : "text-gray-300"}`}
+                            className={`h-3.5 w-3.5 shrink-0 transition-colors ${activeCategory?.id === cat.id ? "text-[#FF4E00]" : "text-gray-300"}`}
                         />
                     </div>
                 ))}
@@ -502,22 +104,22 @@ function MegaDropdown({ onClose }: { onClose: () => void }) {
             <div className="w-[230px] shrink-0 border-r overflow-y-auto bg-white">
                 <div className="px-4 pt-4 pb-2 border-b">
                     <p className="text-[10px] font-black text-[#FF4E00] uppercase tracking-[0.25em]">
-                        {activeCategory.name}
+                        {activeCategory?.name}
                     </p>
                 </div>
-                {activeCategory.sub.map((sub) => (
+                {activeCategory?.children?.map((sub) => (
                     <div
-                        key={sub.name}
+                        key={sub.id}
                         onMouseEnter={() => setActiveSub(sub)}
                         className={`px-4 py-3 flex items-center justify-between cursor-pointer transition-all group ${
-                            activeSub?.name === sub.name
+                            activeSub?.id === sub.id
                                 ? "bg-orange-50 border-l-4 border-[#FF4E00]"
                                 : "hover:bg-gray-50 border-l-4 border-transparent"
                         }`}
                     >
                         <span
                             className={`text-[13px] font-bold transition-colors ${
-                                activeSub?.name === sub.name
+                                activeSub?.id === sub.id
                                     ? "text-[#FF4E00]"
                                     : "text-gray-700 group-hover:text-[#FF4E00]"
                             }`}
@@ -525,7 +127,7 @@ function MegaDropdown({ onClose }: { onClose: () => void }) {
                             {sub.name}
                         </span>
                         <ChevronRight
-                            className={`h-3.5 w-3.5 shrink-0 ${activeSub?.name === sub.name ? "text-[#FF4E00]" : "text-gray-300"}`}
+                            className={`h-3.5 w-3.5 shrink-0 ${activeSub?.id === sub.id ? "text-[#FF4E00]" : "text-gray-300"}`}
                         />
                     </div>
                 ))}
@@ -537,40 +139,28 @@ function MegaDropdown({ onClose }: { onClose: () => void }) {
                     <div className="p-6">
                         <div className="mb-4 border-b pb-3">
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em]">
-                                {activeCategory.name}
+                                {activeCategory?.name}
                             </p>
                             <p className="text-[15px] font-black text-[#FF4E00] mt-0.5">
                                 {activeSub.name}
                             </p>
                         </div>
                         <div className="grid grid-cols-1 gap-2">
-                            {activeSub.items.map((item, i) => (
+                            {activeSub.children?.map((child, i) => (
                                 <Link
-                                    key={i}
-                                    href={route(
-                                        "shop.category",
-                                        item
-                                            .toLowerCase()
-                                            .replace(/ & /g, "-")
-                                            .replace(/\s+/g, "-"),
-                                    )}
+                                    key={child.id}
+                                    href={route("shop.category", child.slug)}
                                     className="group flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-[#FF4E00] transition-all"
                                 >
                                     <span className="w-1.5 h-1.5 rounded-full bg-[#FF4E00] group-hover:bg-white shrink-0 transition-colors" />
                                     <span className="text-[13px] font-bold text-gray-700 group-hover:text-white transition-colors">
-                                        {item}
+                                        {child.name}
                                     </span>
                                 </Link>
                             ))}
                         </div>
                         <Link
-                            href={route(
-                                "shop.category",
-                                activeSub.name
-                                    .toLowerCase()
-                                    .replace(/ & /g, "-")
-                                    .replace(/\s+/g, "-"),
-                            )}
+                            href={route("shop.category", activeSub.slug)}
                             className="mt-5 inline-flex items-center gap-1 text-[#FF4E00] font-black text-xs hover:underline"
                         >
                             View all in {activeSub.name}{" "}
@@ -578,15 +168,14 @@ function MegaDropdown({ onClose }: { onClose: () => void }) {
                         </Link>
                     </div>
                 ) : (
-                    // Default: show all subcategories as tiles when no sub is hovered
                     <div className="p-6">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] mb-4">
                             Hover a subcategory to explore →
                         </p>
                         <div className="grid grid-cols-2 gap-3">
-                            {activeCategory.sub.map((sub, i) => (
+                            {activeCategory?.children?.map((sub, i) => (
                                 <div
-                                    key={i}
+                                    key={sub.id}
                                     onMouseEnter={() => setActiveSub(sub)}
                                     className="group px-4 py-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-[#FF4E00] hover:border-[#FF4E00] transition-all cursor-pointer"
                                 >
@@ -594,7 +183,7 @@ function MegaDropdown({ onClose }: { onClose: () => void }) {
                                         {sub.name}
                                     </p>
                                     <p className="text-[11px] text-gray-400 group-hover:text-white/80 transition-colors mt-0.5">
-                                        {sub.items.length} items
+                                        {sub.children?.length || 0} items
                                     </p>
                                 </div>
                             ))}
@@ -606,8 +195,11 @@ function MegaDropdown({ onClose }: { onClose: () => void }) {
     );
 }
 
+import { usePage } from "@inertiajs/react";
+
 // ─── Main Navbar ──────────────────────────────────────────────────────────────
 export function ShopNavbar() {
+    const { categories } = usePage().props as any;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMegaOpen, setIsMegaOpen] = useState(false);
@@ -753,6 +345,7 @@ export function ShopNavbar() {
                         {isMegaOpen && (
                             <MegaDropdown
                                 onClose={() => setIsMegaOpen(false)}
+                                categories={categories || []}
                             />
                         )}
                     </div>
@@ -804,34 +397,29 @@ export function ShopNavbar() {
                             <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">
                                 All Categories
                             </p>
-                            {CATEGORIES.map((cat) => (
+                            {categories?.map((cat: any) => (
                                 <Link
-                                    key={cat.name}
-                                    href={route(
-                                        "shop.category",
-                                        cat.name
-                                            .toLowerCase()
-                                            .replace(/ & /g, "-")
-                                            .replace(/\s+/g, "-"),
-                                    )}
+                                    key={cat.id}
+                                    href={route("shop.category", cat.slug)}
                                     onClick={() => setIsMenuOpen(false)}
                                     className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors"
                                 >
                                     <span className="text-[#FF4E00]">
-                                        {cat.icon}
+                                        <Layers className="h-4 w-4" />
                                     </span>
                                     <span className="font-bold text-gray-800">
                                         {cat.name}
                                     </span>
                                     <span className="ml-auto text-xs text-gray-400">
-                                        {cat.sub.length} sub
+                                        {cat.children?.length || 0} sub
                                     </span>
                                 </Link>
                             ))}
                         </div>
                         <div className="flex flex-col p-4 gap-4">
                             <Link
-                                href="/brands"
+                                href={route("shop.all-brands")}
+                                onClick={() => setIsMenuOpen(false)}
                                 className="font-bold text-gray-800 border-b pb-2"
                             >
                                 Brands

@@ -9,17 +9,44 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+    const getImagePath = (path: string | null) => {
+        if (!path) return null;
+        if (path.startsWith("http")) return path;
+        if (path.startsWith("/storage/")) return path;
+        return `/storage/${path}`;
+    };
+
+    const displayImage =
+        getImagePath(product.primary_image?.image_path) ||
+        getImagePath(product.variants?.[0]?.primary_image?.image_path) ||
+        `https://placehold.co/400x400/f5f5f5/333333?text=${product.name}`;
+
     return (
         <div className="bg-white rounded-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col relative h-full">
-            {/* Badge */}
-            {product.quantity < 5 && (
-                <Badge
-                    className="absolute top-2 left-2 z-10 bg-[#FF4E00]"
-                    variant="destructive"
-                >
-                    Low Stock
-                </Badge>
-            )}
+            {/* Badges */}
+            <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+                {product.old_price > product.price && (
+                    <Badge className="bg-[#FF4E00] text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
+                        -
+                        {Math.round(
+                            ((product.old_price - product.price) /
+                                product.old_price) *
+                                100,
+                        )}
+                        %
+                    </Badge>
+                )}
+                {product.stock < 5 && product.stock > 0 && (
+                    <Badge className="bg-amber-500 text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
+                        Low Stock
+                    </Badge>
+                )}
+                {product.stock <= 0 && (
+                    <Badge className="bg-gray-500 text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
+                        Out of Stock
+                    </Badge>
+                )}
+            </div>
 
             {/* Image Container */}
             <Link
@@ -31,10 +58,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 className="relative aspect-square bg-[#F9F9F9] overflow-hidden block group/img"
             >
                 <img
-                    src={
-                        product.image ||
-                        `https://placehold.co/400x400/f5f5f5/333333?text=${product.name}`
-                    }
+                    src={displayImage}
                     alt={product.name}
                     className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 p-4"
                 />
@@ -94,11 +118,25 @@ export function ProductCard({ product }: ProductCardProps) {
                     </div>
 
                     <div className="flex items-center justify-between gap-2">
-                        <span className="text-lg font-black text-[#FF4E00]">
-                            ৳{parseFloat(product.price).toLocaleString()}
-                        </span>
+                        <div className="flex flex-col">
+                            <span className="text-lg font-black text-[#FF4E00]">
+                                ৳
+                                {product.price
+                                    ? parseFloat(product.price).toLocaleString()
+                                    : "0"}
+                            </span>
+                            {product.old_price > product.price && (
+                                <span className="text-[10px] text-gray-400 line-through font-bold">
+                                    ৳
+                                    {parseFloat(
+                                        product.old_price,
+                                    ).toLocaleString()}
+                                </span>
+                            )}
+                        </div>
                         <Button
                             size="sm"
+                            disabled={product.stock <= 0}
                             className="bg-gray-100 hover:bg-[#FF4E00] text-[#333] hover:text-white rounded-md transition-all shadow-none h-8 w-8 px-0"
                         >
                             <ShoppingCart className="h-4 w-4" />

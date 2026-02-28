@@ -10,31 +10,44 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Truck, ShieldCheck, Clock } from "lucide-react";
 
+import { FlashSale } from "@/components/shop/FlashSale";
+
 interface IndexProps {
-    products: any[];
+    flashSaleProducts: any[];
+    newArrivals: any[];
+    youMayLike: any[];
     categories: any[];
     brands: any[];
 }
 
-const Index = ({ products, categories, brands }: IndexProps) => {
+const Index = ({
+    flashSaleProducts,
+    newArrivals,
+    youMayLike,
+    categories,
+    brands,
+}: IndexProps) => {
     return (
         <ShopLayout>
-            <Head title="OrenMart | Premium Car Accessories & Ceramic Coating" />
+            <Head title="CarMart | Premium Car Accessories & Ceramic Coating" />
 
             {/* Hero Section */}
-            <ShopHero />
+            <ShopHero categories={categories} />
 
             {/* Top Categories */}
             <CategoryGrid categories={categories} />
 
+            {/* Flash Sale Section */}
+            <FlashSale products={flashSaleProducts} />
+
             {/* New Arrivals Section */}
-            <NewArrivals products={products} />
+            <NewArrivals products={newArrivals} />
 
             {/* Popular Brands Section (Matched to Screenshot) */}
-            <PopularBrands />
+            <PopularBrands brands={brands} />
 
             {/* You May Like Section */}
-            <YouMayLike products={products} />
+            <YouMayLike products={youMayLike} />
 
             {/* Services Section - Ceramic Coating */}
             <div className="py-20 bg-white">

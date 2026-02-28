@@ -13,17 +13,39 @@ class ShopController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'brand'])
-            ->where('quantity', '>', 0)
+        $baseQuery = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
+            ->where('is_active', true);
+
+        $flashSaleProducts = (clone $baseQuery)
+            ->inRandomOrder()
+            ->take(4)
+            ->get()
+            ->each->setAppends(['price', 'old_price']);
+
+        $newArrivals = (clone $baseQuery)
             ->latest()
+            ->take(8)
+            ->get()
+            ->each->setAppends(['price', 'old_price']);
+
+        $youMayLike = (clone $baseQuery)
+            ->inRandomOrder()
             ->take(12)
+            ->get()
+            ->each->setAppends(['price', 'old_price']);
+
+        $categories = Category::with('children.children')
+            ->whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('order')
             ->get();
 
-        $categories = Category::all();
         $brands = Brand::take(10)->get();
 
         return Inertia::render('Index', [
-            'products' => $products,
+            'flashSaleProducts' => $flashSaleProducts,
+            'newArrivals' => $newArrivals,
+            'youMayLike' => $youMayLike,
             'categories' => $categories,
             'brands' => $brands,
         ]);
@@ -31,10 +53,12 @@ class ShopController extends Controller
 
     public function newArrivals()
     {
-        $products = Product::with(['category', 'brand'])
-            ->where('quantity', '>', 0)
+        $products = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
+            ->where('is_active', true)
             ->latest()
             ->paginate(24);
+
+        $products->each->setAppends(['price', 'old_price']);
 
         return Inertia::render('NewArrivalsPage', [
             'products' => $products,
@@ -52,7 +76,7 @@ class ShopController extends Controller
 
     public function categoryProducts(Category $category, Request $request)
     {
-        $query = Product::with(['category', 'brand'])
+        $query = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
             ->where('category_id', $category->id);
 
         // Filter by Price
@@ -80,6 +104,7 @@ class ShopController extends Controller
         }
 
         $products = $query->paginate(24)->withQueryString();
+        $products->each->setAppends(['price', 'old_price']);
 
         $brands = Brand::whereHas('products', function ($q) use ($category) {
             $q->where('category_id', $category->id);
@@ -95,14 +120,15 @@ class ShopController extends Controller
 
     public function show(Product $product)
     {
-        $product->load(['category', 'brand', 'variants.attributeValues.attribute']);
+        $product->load(['category', 'brand', 'variants.attributeValues.attribute', 'variants.primaryImage', 'images', 'primaryImage']);
+        $product->setAppends(['price', 'old_price']);
 
-        $relatedProducts = Product::with(['category', 'brand'])
+        $relatedProducts = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->where('quantity', '>', 0)
             ->take(4)
-            ->get();
+            ->get()
+            ->each->setAppends(['price', 'old_price']);
 
         return Inertia::render('ProductDetails', [
             'product' => $product,
@@ -112,8 +138,7 @@ class ShopController extends Controller
 
     public function search(Request $request)
     {
-        $query = Product::with(['category', 'brand'])
-            ->where('quantity', '>', 0);
+        $query = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage']);
 
         // Search by keyword
         if ($request->has('q')) {
@@ -157,6 +182,7 @@ class ShopController extends Controller
         }
 
         $products = $query->paginate(24)->withQueryString();
+        $products->each->setAppends(['price', 'old_price']);
 
         return Inertia::render('SearchPage', [
             'products' => $products,

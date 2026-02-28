@@ -84,7 +84,7 @@ const CategoryPage = (props: CategoryPageProps) => {
 
     return (
         <ShopLayout>
-            <Head title={`${category.name} | OrenMart`} />
+            <Head title={`${category.name} | CarMart`} />
 
             {/* Header Section */}
             <div className="bg-[#F8F9FA] py-8 border-b">

@@ -49,10 +49,10 @@ class DashboardController extends Controller
             ],
             'today_stats' => [
                 'orders' => Order::whereDate('order_date', Carbon::today())->count(),
-                'sales' => (float)Order::whereDate('order_date', Carbon::today())->sum('total_amount'),
+                'sales' => (float) Order::whereDate('order_date', Carbon::today())->sum('total_amount'),
                 'new_customers' => Customer::whereDate('created_at', Carbon::today())->count(),
-                'out_of_stock' => Product::where('quantity', '<=', 0)->count(),
-                'low_stock' => Product::where('quantity', '>', 0)->where('quantity', '<=', 5)->count(),
+                'out_of_stock' => Product::where('stock', '<=', 0)->count(),
+                'low_stock' => Product::where('stock', '>', 0)->where('stock', '<=', 5)->count(),
             ]
         ];
     }
@@ -76,8 +76,8 @@ class DashboardController extends Controller
 
             $revenueTrend[] = [
                 'month' => $monthDate->format('M'),
-                'sales' => (float)$sales,
-                'profit' => (float)$profit
+                'sales' => (float) $sales,
+                'profit' => (float) $profit
             ];
         }
 
@@ -161,7 +161,7 @@ class DashboardController extends Controller
     private function formatStat($current, $last)
     {
         return [
-            'value' => (float)$current,
+            'value' => (float) $current,
             'change_percentage' => $this->calculateChange($current, $last),
             'trend' => $current >= $last ? 'up' : 'down'
         ];

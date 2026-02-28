@@ -29,8 +29,17 @@ export default function ProductDetails({
     product,
     relatedProducts,
 }: ProductDetailsProps) {
+    const getImagePath = (path: string | null) => {
+        if (!path) return null;
+        if (path.startsWith("http")) return path;
+        if (path.startsWith("/storage/")) return path;
+        return `/storage/${path}`;
+    };
+
     const [quantity, setQuantity] = useState(1);
-    const [selectedImage, setSelectedImage] = useState(product.image);
+    const [selectedImage, setSelectedImage] = useState(
+        getImagePath(product.primary_image?.image_path) || product.image,
+    );
     const [selectedAttributes, setSelectedAttributes] = useState<
         Record<number, number>
     >({});
@@ -106,35 +115,51 @@ export default function ProductDetails({
     }, [availableAttributes, product.variants]);
 
     React.useEffect(() => {
-        if (selectedVariant && selectedVariant.image) {
-            setSelectedImage(selectedVariant.image);
+        if (selectedVariant) {
+            const variantImage =
+                selectedVariant.primary_image?.image_path ||
+                selectedVariant.image ||
+                selectedVariant.image_path;
+
+            if (variantImage) {
+                setSelectedImage(getImagePath(variantImage));
+            } else {
+                setSelectedImage(
+                    getImagePath(product.primary_image?.image_path) ||
+                        product.image,
+                );
+            }
         } else {
-            setSelectedImage(product.image);
+            setSelectedImage(
+                getImagePath(product.primary_image?.image_path) ||
+                    product.image,
+            );
         }
-    }, [selectedVariant, product.image]);
+    }, [selectedVariant, product.primary_image, product.image]);
 
     const activeStock = selectedVariant
         ? Number(selectedVariant.stock)
-        : Number(product.quantity || 0);
+        : Number(product.stock || 0);
     const activePrice =
         selectedVariant && selectedVariant.price
             ? parseFloat(selectedVariant.price)
-            : parseFloat(product.sale_price || product.price || 0);
+            : parseFloat(product.price || 0);
 
     const incrementQty = () =>
         setQuantity((prev) => (prev < activeStock ? prev + 1 : prev));
     const decrementQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
-    const originalPrice = product.purchase_price
-        ? parseFloat(product.purchase_price) * 1.2
-        : activePrice * 1.1; // Mock discount
+    const originalPrice = product.old_price
+        ? parseFloat(product.old_price)
+        : activePrice * 1.1; // Default fallback
+
     const discount = Math.round(
         ((originalPrice - activePrice) / originalPrice) * 100,
     );
 
     return (
         <ShopLayout>
-            <Head title={`${product.name} | OrenMart`} />
+            <Head title={`${product.name} | CarMart`} />
 
             <div className="bg-gray-50/50 py-8 md:py-12">
                 <div className="max-w-7xl mx-auto px-4">
@@ -188,31 +213,47 @@ export default function ProductDetails({
                                 </Button>
                             </div>
 
-                            {/* Thumbnails (Mock for now, using the same image) */}
+                            {/* Thumbnails Gallery */}
                             <div className="grid grid-cols-4 gap-4">
-                                {[product.image, null, null, null].map(
-                                    (img, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() =>
-                                                img && setSelectedImage(img)
-                                            }
-                                            className={`aspect-square rounded-2xl border-2 transition-all p-2 bg-gray-50 ${
-                                                selectedImage === img
-                                                    ? "border-[#FF4E00] ring-2 ring-orange-100"
-                                                    : "border-transparent hover:border-gray-200"
-                                            }`}
-                                        >
-                                            <img
-                                                src={
-                                                    img ||
-                                                    `https://placehold.co/200x200/f5f5f5/333333?text=Slide+${i + 1}`
+                                {product.images && product.images.length > 0 ? (
+                                    product.images.map(
+                                        (img: any, i: number) => (
+                                            <button
+                                                key={img.id || i}
+                                                onClick={() =>
+                                                    setSelectedImage(
+                                                        getImagePath(
+                                                            img.image_path,
+                                                        ),
+                                                    )
                                                 }
-                                                alt={`${product.name} view ${i + 1}`}
-                                                className="w-full h-full object-contain"
-                                            />
-                                        </button>
-                                    ),
+                                                className={`aspect-square rounded-2xl border-2 transition-all p-2 bg-gray-50 ${
+                                                    selectedImage ===
+                                                    getImagePath(img.image_path)
+                                                        ? "border-[#FF4E00] ring-2 ring-orange-100"
+                                                        : "border-transparent hover:border-gray-200"
+                                                }`}
+                                            >
+                                                <img
+                                                    src={
+                                                        getImagePath(
+                                                            img.image_path,
+                                                        ) || ""
+                                                    }
+                                                    alt={`${product.name} view ${i + 1}`}
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            </button>
+                                        ),
+                                    )
+                                ) : (
+                                    <button className="aspect-square rounded-2xl border-2 border-[#FF4E00] transition-all p-2 bg-gray-50 ring-2 ring-orange-100">
+                                        <img
+                                            src={selectedImage || ""}
+                                            alt={product.name}
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -225,7 +266,7 @@ export default function ProductDetails({
                                         variant="outline"
                                         className="border-gray-200 text-gray-500 font-bold uppercase tracking-wider px-3 py-1"
                                     >
-                                        {product.brand?.name || "OrenMart"}
+                                        {product.brand?.name || "CarMart"}
                                     </Badge>
                                     <div className="flex items-center gap-1">
                                         {[...Array(5)].map((_, i) => (
@@ -499,21 +540,34 @@ export default function ProductDetails({
                                                             ?.name || "N/A"}
                                                     </td>
                                                 </tr>
+                                                {availableAttributes.map(
+                                                    (attr) => (
+                                                        <tr
+                                                            key={attr.id}
+                                                            className="border-b border-gray-100"
+                                                        >
+                                                            <th className="px-8 py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
+                                                                {attr.name}
+                                                            </th>
+                                                            <td className="px-8 py-4 text-gray-600 font-medium">
+                                                                {attr.values
+                                                                    .map(
+                                                                        (v) =>
+                                                                            v.value,
+                                                                    )
+                                                                    .join(", ")}
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )}
                                                 <tr className="border-b border-gray-100">
                                                     <th className="px-8 py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
-                                                        Pack Size
+                                                        Stock Status
                                                     </th>
                                                     <td className="px-8 py-4 text-gray-600 font-medium">
-                                                        {product.pack_size ||
-                                                            "Standard"}
-                                                    </td>
-                                                </tr>
-                                                <tr className="border-b border-gray-100">
-                                                    <th className="px-8 py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
-                                                        Model Number
-                                                    </th>
-                                                    <td className="px-8 py-4 text-gray-600 font-medium">
-                                                        OM-{product.id}-PRD
+                                                        {activeStock > 0
+                                                            ? `${activeStock} Units Available`
+                                                            : "Out of Stock"}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -522,6 +576,7 @@ export default function ProductDetails({
                                                     </th>
                                                     <td className="px-8 py-4 text-gray-600 font-medium">
                                                         1 Year Replacement
+                                                        Warranty
                                                     </td>
                                                 </tr>
                                             </tbody>

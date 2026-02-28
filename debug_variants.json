@@ -1,0 +1,215 @@
+{
+    "id": 3,
+    "category_id": 4,
+    "brand_id": null,
+    "unit_id": 1,
+    "name": "Car Seat Neck Cooling Fan \u2013 Stay Comfortable and Cool While Driving",
+    "slug": "car-seat-neck-cooling-fan-stay-comfortable-and-cool-while-driving",
+    "description": "Car Seat Neck Cooling Fan \u2013 Stay Comfortable and Cool While Driving\r\n\r\n\r\nStay cool and comfortable during your drives with the Car Seat Cooling Fan. Designed for Bangladeshi weather, it provides direct airflow to your back and seat area. With USB and rechargeable versions, it\u2019s easy to install, whisper-quiet, and suitable for any car, home, or office use.\r\n\r\n\r\n\r\nProduct Specifications:\r\nProduct Type: Car Seat Cooling Fan\r\nMaterial: Premium ABS + breathable mesh\r\nPower Source: USB \/ Rechargeable battery\r\nCompatibility: Fits most car seats (Sedan, SUV, MPV)\r\nFan Modes: Multiple speed levels\r\nNoise Level: Ultra-quiet motor\r\nPortability: Lightweight and easy to carry\r\n\r\n\r\nHow to Use:\r\nPlace the fan on your car seat or chair.\r\nConnect it to a USB port or use the rechargeable battery.\r\nAdjust the speed according to your comfort.\r\nSit back and enjoy a cool, refreshing ride.\r\n\r\n\r\nCommon Questions & Answers:\r\nQ1: Can I use it in any car?\r\n\r\nYes! It fits all standard car seats and installs in seconds.\r\n\r\nQ2: Is it noisy?\r\n\r\nNot at all. The fan uses a silent motor for peaceful cooling.\r\n\r\nQ3: Can I use it outside the car?\r\n\r\nYes. It works perfectly on home or office chairs, too.\r\n\r\nQ4: How long does the rechargeable version last?\r\n\r\nIt lasts 3\u20135 hours, depending on speed mode and usage.\r\n\r\nQ5: How do I clean it?\r\n\r\nWipe gently with a dry or slightly damp cloth. Avoid washing directly with water.\r\n\r\n\r\n\r\nSo, why choose OrenMart?\r\nOrenMart was founded five years ago to solve the problem of finding genuine, high-quality car accessories from a small collection to 2,500+ premium products, from delivering to a few customers to serving 1 Lakh+ happy car owners, both online and through our flagship outlets.\r\n\r\nOur journey has been driven by one thing\u2014your satisfaction.\r\n\r\n\r\n\r\nOur promise has never changed:\r\n\r\n \ud83d\udcaf 100% Quality Assurance\r\n\r\n \ud83d\udd01 Free Returns\r\n\r\n \ud83d\udcb8 7-Day Money-Back Guarantee \r\n\r\n \ud83d\udcb5 Cash on Delivery\r\n\r\n \ud83d\ude9a Nationwide Fast Delivery \r\n\r\n \ud83d\udcaf 100% Quality Assurance \u2013 Only genuine and tested products\r\n\r\n \ud83d\udd01 Free Returns \u2013 If you don\u2019t love it, send it back\r\n\r\n \ud83d\udcb8 7-Day Money-Back Guarantee \u2013 Shop with confidence\r\n\r\n \ud83d\udcb5 Cash on Delivery \u2013 Pay when it arrives at your door\r\n\r\n \ud83d\ude9a Nationwide Fast Delivery \u2013 24\u201372 hours inside Dhaka, 2\u20135 days outside Dhaka\r\n\r\n\r\n\r\nOrenMart is not just about selling car accessories; it's about helping you take care of your car, becoming your car's Best Friend.",
+    "product_type": "variant",
+    "base_price": null,
+    "cost_price": null,
+    "sku": null,
+    "barcode": null,
+    "is_active": true,
+    "created_at": "2026-02-28T17:36:21.000000Z",
+    "updated_at": "2026-02-28T17:36:21.000000Z",
+    "variants": [
+        {
+            "id": 5,
+            "product_id": 3,
+            "sku": "CAR-BEIUSB-279",
+            "barcode": "2894",
+            "price": "1550.00",
+            "cost_price": "1050.00",
+            "stock": 5,
+            "low_stock_alert": 2,
+            "is_active": true,
+            "created_at": "2026-02-28T17:36:21.000000Z",
+            "updated_at": "2026-02-28T17:46:45.000000Z",
+            "attribute_values": [
+                {
+                    "id": 7,
+                    "attribute_id": 3,
+                    "value": "USB Cable",
+                    "created_at": "2026-02-28T17:30:23.000000Z",
+                    "updated_at": "2026-02-28T17:30:23.000000Z",
+                    "pivot": {
+                        "product_variant_id": 5,
+                        "attribute_value_id": 7
+                    },
+                    "attribute": {
+                        "id": 3,
+                        "name": "Style",
+                        "created_at": "2026-02-28T17:30:23.000000Z",
+                        "updated_at": "2026-02-28T17:30:23.000000Z"
+                    }
+                },
+                {
+                    "id": 9,
+                    "attribute_id": 2,
+                    "value": "Beige",
+                    "created_at": "2026-02-28T17:30:49.000000Z",
+                    "updated_at": "2026-02-28T17:30:49.000000Z",
+                    "pivot": {
+                        "product_variant_id": 5,
+                        "attribute_value_id": 9
+                    },
+                    "attribute": {
+                        "id": 2,
+                        "name": "Color",
+                        "created_at": "2026-02-27T17:08:39.000000Z",
+                        "updated_at": "2026-02-27T17:08:39.000000Z"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "product_id": 3,
+            "sku": "CAR-BEIREC-57",
+            "barcode": "2895",
+            "price": "1890.00",
+            "cost_price": "1350.00",
+            "stock": 5,
+            "low_stock_alert": 2,
+            "is_active": true,
+            "created_at": "2026-02-28T17:36:21.000000Z",
+            "updated_at": "2026-02-28T17:49:03.000000Z",
+            "attribute_values": [
+                {
+                    "id": 8,
+                    "attribute_id": 3,
+                    "value": "Rechargeable",
+                    "created_at": "2026-02-28T17:30:23.000000Z",
+                    "updated_at": "2026-02-28T17:30:23.000000Z",
+                    "pivot": {
+                        "product_variant_id": 6,
+                        "attribute_value_id": 8
+                    },
+                    "attribute": {
+                        "id": 3,
+                        "name": "Style",
+                        "created_at": "2026-02-28T17:30:23.000000Z",
+                        "updated_at": "2026-02-28T17:30:23.000000Z"
+                    }
+                },
+                {
+                    "id": 9,
+                    "attribute_id": 2,
+                    "value": "Beige",
+                    "created_at": "2026-02-28T17:30:49.000000Z",
+                    "updated_at": "2026-02-28T17:30:49.000000Z",
+                    "pivot": {
+                        "product_variant_id": 6,
+                        "attribute_value_id": 9
+                    },
+                    "attribute": {
+                        "id": 2,
+                        "name": "Color",
+                        "created_at": "2026-02-27T17:08:39.000000Z",
+                        "updated_at": "2026-02-27T17:08:39.000000Z"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "product_id": 3,
+            "sku": "CAR-BLAUSB-360",
+            "barcode": "2896",
+            "price": "1550.00",
+            "cost_price": "1050.00",
+            "stock": 5,
+            "low_stock_alert": 2,
+            "is_active": true,
+            "created_at": "2026-02-28T17:36:21.000000Z",
+            "updated_at": "2026-02-28T17:49:03.000000Z",
+            "attribute_values": [
+                {
+                    "id": 7,
+                    "attribute_id": 3,
+                    "value": "USB Cable",
+                    "created_at": "2026-02-28T17:30:23.000000Z",
+                    "updated_at": "2026-02-28T17:30:23.000000Z",
+                    "pivot": {
+                        "product_variant_id": 7,
+                        "attribute_value_id": 7
+                    },
+                    "attribute": {
+                        "id": 3,
+                        "name": "Style",
+                        "created_at": "2026-02-28T17:30:23.000000Z",
+                        "updated_at": "2026-02-28T17:30:23.000000Z"
+                    }
+                },
+                {
+                    "id": 10,
+                    "attribute_id": 2,
+                    "value": "Black",
+                    "created_at": "2026-02-28T17:30:49.000000Z",
+                    "updated_at": "2026-02-28T17:30:49.000000Z",
+                    "pivot": {
+                        "product_variant_id": 7,
+                        "attribute_value_id": 10
+                    },
+                    "attribute": {
+                        "id": 2,
+                        "name": "Color",
+                        "created_at": "2026-02-27T17:08:39.000000Z",
+                        "updated_at": "2026-02-27T17:08:39.000000Z"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "product_id": 3,
+            "sku": "CAR-BLAREC-223",
+            "barcode": "2867",
+            "price": "1890.00",
+            "cost_price": "1350.00",
+            "stock": 5,
+            "low_stock_alert": 2,
+            "is_active": true,
+            "created_at": "2026-02-28T17:36:21.000000Z",
+            "updated_at": "2026-02-28T17:49:03.000000Z",
+            "attribute_values": [
+                {
+                    "id": 8,
+                    "attribute_id": 3,
+                    "value": "Rechargeable",
+                    "created_at": "2026-02-28T17:30:23.000000Z",
+                    "updated_at": "2026-02-28T17:30:23.000000Z",
+                    "pivot": {
+                        "product_variant_id": 8,
+                        "attribute_value_id": 8
+                    },
+                    "attribute": {
+                        "id": 3,
+                        "name": "Style",
+                        "created_at": "2026-02-28T17:30:23.000000Z",
+                        "updated_at": "2026-02-28T17:30:23.000000Z"
+                    }
+                },
+                {
+                    "id": 10,
+                    "attribute_id": 2,
+                    "value": "Black",
+                    "created_at": "2026-02-28T17:30:49.000000Z",
+                    "updated_at": "2026-02-28T17:30:49.000000Z",
+                    "pivot": {
+                        "product_variant_id": 8,
+                        "attribute_value_id": 10
+                    },
+                    "attribute": {
+                        "id": 2,
+                        "name": "Color",
+                        "created_at": "2026-02-27T17:08:39.000000Z",
+                        "updated_at": "2026-02-27T17:08:39.000000Z"
+                    }
+                }
+            ]
+        }
+    ]
+}

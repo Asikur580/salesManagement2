@@ -66,7 +66,7 @@ export default function EditProduct({
                 "Variant",
         })) || [];
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, transform } = useForm({
         _method: "put",
         category_id: product.category_id?.toString() || "",
         brand_id: product.brand_id?.toString() || "",
@@ -144,24 +144,23 @@ export default function EditProduct({
             return;
         }
 
-        const payload = {
-            ...data,
+        transform((currentData) => ({
+            ...currentData,
             // Only send actual files to be uploaded
-            images: data.images
+            images: currentData.images
                 .filter((img: any) => img.file)
                 .map((img: any) => img.file),
-            variants: data.variants.map((v: any) => ({
+            variants: currentData.variants.map((v: any) => ({
                 ...v,
                 images:
                     v.images
                         ?.filter((img: any) => img.file)
                         .map((img: any) => img.file) || [],
             })),
-        };
+        }));
 
         // Standard post with _method=put for multipart/form-data support
         post(`/products/${product.id}`, {
-            data: payload,
             forceFormData: true,
             preserveScroll: true,
             onError: (errs) => {

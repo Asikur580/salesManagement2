@@ -6,7 +6,8 @@ import { ChevronRight } from "lucide-react";
 interface Brand {
     id: number;
     name: string;
-    image?: string;
+    logo?: string;
+    slug: string;
 }
 
 interface BrandsPageProps {
@@ -45,14 +46,24 @@ const BrandsPage = ({ brands }: BrandsPageProps) => {
                         {brands.map((brand) => (
                             <Link
                                 key={brand.id}
-                                href="#"
+                                href={route("shop.search", {
+                                    brands: brand.id,
+                                })}
                                 className="flex flex-col items-center group"
                             >
                                 <div className="w-24 h-24 rounded-full border border-gray-100 bg-white p-3 mb-4 shadow-sm group-hover:shadow-md transition-all flex items-center justify-center overflow-hidden">
                                     <img
                                         src={
-                                            brand.image ||
-                                            `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=f9fafb&color=ff4e00&bold=true`
+                                            brand.logo
+                                                ? brand.logo.startsWith(
+                                                      "http",
+                                                  ) ||
+                                                  brand.logo.startsWith(
+                                                      "/storage/",
+                                                  )
+                                                    ? brand.logo
+                                                    : `/storage/${brand.logo}`
+                                                : `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=f9fafb&color=ff4e00&bold=true`
                                         }
                                         alt={brand.name}
                                         className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500"

@@ -19,14 +19,18 @@ class Product extends Model
         'description',
         'product_type',
         'base_price',
+        'cost_price',
         'sku',
         'barcode',
         'is_active',
+        'stock',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'base_price' => 'decimal:2',
+        'cost_price' => 'decimal:2',
+        'stock' => 'integer',
     ];
 
     protected static function boot()
@@ -63,6 +67,16 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+    }
+
+    public function getPriceAttribute()
+    {
+        return $this->base_price;
+    }
+
+    public function getOldPriceAttribute()
+    {
+        return $this->base_price ? $this->base_price * 1.15 : null;
     }
 
     public function primaryImage()

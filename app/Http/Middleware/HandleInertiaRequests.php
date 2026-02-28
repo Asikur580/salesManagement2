@@ -53,6 +53,11 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
                 'message' => $request->session()->get('message'),
             ],
+            'categories' => \App\Models\Category::with('children.children')
+                ->whereNull('parent_id')
+                ->where('is_active', true)
+                ->orderBy('order')
+                ->get(),
         ];
     }
 }

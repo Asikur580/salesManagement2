@@ -19,10 +19,10 @@ class StockController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'quantity'    => 'required|integer|min:1',
-            'reason'      => 'required|string|max:255',
-            'date'        => 'required|date',
-            'remarks'     => 'nullable|string',
+            'quantity' => 'required|integer|min:1',
+            'reason' => 'required|string|max:255',
+            'date' => 'required|date',
+            'remarks' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -31,16 +31,16 @@ class StockController extends Controller
             $product = Product::findOrFail($request->product_id);
 
             Stock::create([
-                'product_id'  => $request->product_id,
+                'product_id' => $request->product_id,
                 'supplier_id' => $request->supplier_id,
-                'type'        => 'in',
-                'quantity'    => $request->quantity,
-                'reason'      => $request->reason,
-                'date'        => $request->date,
-                'remarks'     => $request->remarks,
+                'type' => 'in',
+                'quantity' => $request->quantity,
+                'reason' => $request->reason,
+                'date' => $request->date,
+                'remarks' => $request->remarks,
             ]);
 
-            $product->quantity += $request->quantity;
+            $product->stock += $request->quantity;
             $product->save();
 
             DB::commit();
@@ -59,10 +59,10 @@ class StockController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1',
-            'reason'     => 'required|string|max:255',
-            'date'       => 'required|date',
-            'remarks'    => 'nullable|string',
+            'quantity' => 'required|integer|min:1',
+            'reason' => 'required|string|max:255',
+            'date' => 'required|date',
+            'remarks' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -70,20 +70,20 @@ class StockController extends Controller
         try {
             $product = Product::findOrFail($request->product_id);
 
-            if ($product->quantity < $request->quantity) {
-                return redirect()->back()->with('error', 'Insufficient stock. Current stock: ' . $product->quantity);
+            if ($product->stock < $request->quantity) {
+                return redirect()->back()->with('error', 'Insufficient stock. Current stock: ' . $product->stock);
             }
 
             Stock::create([
                 'product_id' => $request->product_id,
-                'type'       => 'out',
-                'quantity'   => $request->quantity,
-                'reason'     => $request->reason,
-                'date'       => $request->date,
-                'remarks'    => $request->remarks,
+                'type' => 'out',
+                'quantity' => $request->quantity,
+                'reason' => $request->reason,
+                'date' => $request->date,
+                'remarks' => $request->remarks,
             ]);
 
-            $product->quantity -= $request->quantity;
+            $product->stock -= $request->quantity;
             $product->save();
 
             DB::commit();
@@ -107,7 +107,7 @@ class StockController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => $history,
+            'data' => $history,
         ]);
     }
 }

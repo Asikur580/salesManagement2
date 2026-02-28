@@ -33,7 +33,7 @@ export default function CreateProduct({
 }: Props) {
     const { toast } = useToast();
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, transform } = useForm({
         category_id: "",
         brand_id: "",
         unit_id: "",
@@ -82,28 +82,20 @@ export default function CreateProduct({
             return;
         }
 
-        // Convert images to actual file objects for FormData
-        const formData = new FormData();
-
-        // This is tricky with Inertia useForm arrays of objects that contain files,
-        // so we manually map it or let Inertia handle it. Inertia handles object->FormData
-        // conversion perfectly IF structured correctly.
-        // We will just transform images arrays slightly before submitting if needed,
-        // but our component puts raw files in `file` property. Let's map it.
-
-        const payload = {
-            ...data,
-            images: data.images.map((img) => img.file).filter(Boolean),
-            variants: data.variants.map((v: any) => ({
+        transform((currentData) => ({
+            ...currentData,
+            images: currentData.images
+                .map((img: any) => img.file)
+                .filter(Boolean),
+            variants: currentData.variants.map((v: any) => ({
                 ...v,
                 images:
                     v.images?.map((img: any) => img.file).filter(Boolean) || [],
             })),
-        };
+        }));
 
         // Standard post will deep convert to FormData
         post("/products", {
-            data: payload,
             forceFormData: true,
             preserveScroll: true,
             onError: (errs) => {
