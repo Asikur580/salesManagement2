@@ -8,9 +8,11 @@ use App\Models\Category;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller
 {
+
     public function index()
     {
         $baseQuery = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
@@ -41,6 +43,7 @@ class ShopController extends Controller
             ->get();
 
         $brands = Brand::take(10)->get();
+
 
         return Inertia::render('Index', [
             'flashSaleProducts' => $flashSaleProducts,
@@ -129,6 +132,7 @@ class ShopController extends Controller
             ->take(4)
             ->get()
             ->each->setAppends(['price', 'old_price']);
+
 
         return Inertia::render('ProductDetails', [
             'product' => $product,

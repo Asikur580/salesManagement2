@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import { ShopLayout } from "@/components/layout/ShopLayout";
+import { ShopLayout } from "@/Layouts/ShopLayout";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ChevronRight, Filter, ChevronDown, Check } from "lucide-react";
 

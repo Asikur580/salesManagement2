@@ -1,14 +1,62 @@
 import React from "react";
-import { Link } from "@inertiajs/react";
-import { ShoppingCart, Eye, Heart } from "lucide-react";
+import { Link, router } from "@inertiajs/react";
+import { ShoppingCart, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProductCardProps {
     product: any;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+    const { toast } = useToast();
+
+    const [isAdding, setIsAdding] = React.useState(false);
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (product.stock <= 0) {
+            toast({
+                title: "Out of Stock",
+                description: "This product is currently unavailable.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        setIsAdding(true);
+        router.post(
+            route("cart.store"),
+            {
+                product_id: product.id,
+                quantity: 1,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: "Added to Cart",
+                        description: `${product.name} has been added to your cart.`,
+                    });
+                },
+                onError: (errors) => {
+                    toast({
+                        title: "Error",
+                        description:
+                            Object.values(errors)[0] ||
+                            "Failed to add to cart.",
+                        variant: "destructive",
+                    });
+                },
+                onFinish: () => setIsAdding(false),
+            },
+        );
+    };
+
     const getImagePath = (path: string | null) => {
         if (!path) return null;
         if (path.startsWith("http")) return path;
@@ -72,13 +120,6 @@ export function ProductCard({ product }: ProductCardProps) {
                     >
                         <Eye className="h-4 w-4" />
                     </Button>
-                    <Button
-                        size="icon"
-                        variant="secondary"
-                        className="rounded-full shadow-md scale-90 group-hover:scale-100 transition-transform duration-300 delay-75"
-                    >
-                        <Heart className="h-4 w-4" />
-                    </Button>
                 </div>
             </Link>
 
@@ -136,10 +177,13 @@ export function ProductCard({ product }: ProductCardProps) {
                         </div>
                         <Button
                             size="sm"
-                            disabled={product.stock <= 0}
-                            className="bg-gray-100 hover:bg-[#FF4E00] text-[#333] hover:text-white rounded-md transition-all shadow-none h-8 w-8 px-0"
+                            disabled={product.stock <= 0 || isAdding}
+                            onClick={handleAddToCart}
+                            className={`bg-gray-100 hover:bg-[#FF4E00] text-[#333] hover:text-white rounded-md transition-all shadow-none h-8 w-8 px-0 ${isAdding ? "opacity-50" : ""}`}
                         >
-                            <ShoppingCart className="h-4 w-4" />
+                            <ShoppingCart
+                                className={`h-4 w-4 ${isAdding ? "animate-pulse" : ""}`}
+                            />
                         </Button>
                     </div>
                 </div>

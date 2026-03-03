@@ -1,7 +1,13 @@
 import { useAuth } from "@/hooks/useAuth";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +34,9 @@ export default function Profile() {
         <DashboardLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">
+                        My Profile
+                    </h1>
                     <p className="text-muted-foreground">
                         Manage your account settings and preferences.
                     </p>
@@ -61,10 +69,16 @@ export default function Profile() {
                                     </Button>
                                 </div>
                                 <div className="space-y-1 text-center sm:text-left">
-                                    <h3 className="text-2xl font-bold">{user.name}</h3>
-                                    <p className="text-muted-foreground">{user.email}</p>
+                                    <h3 className="text-2xl font-bold">
+                                        {user.name}
+                                    </h3>
+                                    <p className="text-muted-foreground">
+                                        {user.email}
+                                    </p>
                                     <Badge variant="secondary" className="mt-2">
-                                        {user.roles?.map(r => r.name).join(", ") || user.role}
+                                        {user.roles
+                                            ?.map((r) => r.name)
+                                            .join(", ") || user.role}
                                     </Badge>
                                 </div>
                             </div>
@@ -74,14 +88,23 @@ export default function Profile() {
                                     <Label htmlFor="name">Full Name</Label>
                                     <div className="relative">
                                         <UserIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                        <Input id="name" defaultValue={user.name} className="pl-9" />
+                                        <Input
+                                            id="name"
+                                            defaultValue={user.name}
+                                            className="pl-9"
+                                        />
                                     </div>
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="email">Email</Label>
                                     <div className="relative">
                                         <Mail className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                        <Input id="email" defaultValue={user.email} className="pl-9" readOnly />
+                                        <Input
+                                            id="email"
+                                            defaultValue={user.email}
+                                            className="pl-9"
+                                            readOnly
+                                        />
                                     </div>
                                 </div>
                                 <div className="grid gap-2">
@@ -90,7 +113,11 @@ export default function Profile() {
                                         <Shield className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input
                                             id="role"
-                                            defaultValue={user.roles?.map(r => r.name).join(", ") || user.role}
+                                            defaultValue={
+                                                user.roles
+                                                    ?.map((r) => r.name)
+                                                    .join(", ") || user.role
+                                            }
                                             className="pl-9 bg-muted"
                                             readOnly
                                         />
@@ -114,19 +141,27 @@ export default function Profile() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="current-password">Current Password</Label>
+                                <Label htmlFor="current-password">
+                                    Current Password
+                                </Label>
                                 <Input id="current-password" type="password" />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="new-password">New Password</Label>
+                                <Label htmlFor="new-password">
+                                    New Password
+                                </Label>
                                 <Input id="new-password" type="password" />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="confirm-password">Confirm New Password</Label>
+                                <Label htmlFor="confirm-password">
+                                    Confirm New Password
+                                </Label>
                                 <Input id="confirm-password" type="password" />
                             </div>
                             <div className="flex justify-end">
-                                <Button variant="outline">Update Password</Button>
+                                <Button variant="outline">
+                                    Update Password
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>

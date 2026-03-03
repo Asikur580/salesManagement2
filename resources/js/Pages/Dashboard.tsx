@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { TodayOrderCard } from "@/components/dashboard/TodayOrderCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

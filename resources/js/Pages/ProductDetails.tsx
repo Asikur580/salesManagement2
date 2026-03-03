@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Head, Link } from "@inertiajs/react";
-import { ShopLayout } from "@/components/layout/ShopLayout";
+import { ShopLayout } from "@/Layouts/ShopLayout";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
     ShoppingCart,
-    Heart,
     Share2,
     Truck,
     ShieldCheck,
@@ -25,10 +24,16 @@ interface ProductDetailsProps {
     relatedProducts: any[];
 }
 
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { router } from "@inertiajs/react";
+
 export default function ProductDetails({
     product,
     relatedProducts,
 }: ProductDetailsProps) {
+    const { user } = useAuth();
+    const { toast } = useToast();
     const getImagePath = (path: string | null) => {
         if (!path) return null;
         if (path.startsWith("http")) return path;
@@ -157,6 +162,61 @@ export default function ProductDetails({
         ((originalPrice - activePrice) / originalPrice) * 100,
     );
 
+    const [isAdding, setIsAdding] = useState(false);
+
+    const handleAddToCart = (redirect: boolean = false) => {
+        if (activeStock <= 0) {
+            toast({
+                title: "Out of Stock",
+                description: "This item is currently unavailable.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (availableAttributes.length > 0 && !selectedVariant) {
+            toast({
+                title: "Select Options",
+                description:
+                    "Please select all required options before adding to cart.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        setIsAdding(true);
+        router.post(
+            route("cart.store"),
+            {
+                product_id: product.id,
+                variant_id: selectedVariant?.id,
+                quantity: quantity,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: "Added to Cart",
+                        description: `${product.name} has been added to your cart.`,
+                    });
+                    if (redirect) {
+                        router.get(route("cart.index"));
+                    }
+                },
+                onError: (errors) => {
+                    toast({
+                        title: "Error",
+                        description:
+                            Object.values(errors)[0] ||
+                            "Failed to add to cart.",
+                        variant: "destructive",
+                    });
+                },
+                onFinish: () => setIsAdding(false),
+            },
+        );
+    };
+
     return (
         <ShopLayout>
             <Head title={`${product.name} | CarMart`} />
@@ -204,13 +264,6 @@ export default function ProductDetails({
                                         SAVE {discount}%
                                     </Badge>
                                 )}
-                                <Button
-                                    size="icon"
-                                    variant="secondary"
-                                    className="absolute top-6 right-6 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all shadow-md"
-                                >
-                                    <Heart className="h-5 w-5 text-gray-600" />
-                                </Button>
                             </div>
 
                             {/* Thumbnails Gallery */}
@@ -376,13 +429,23 @@ export default function ProductDetails({
                                             <Plus className="h-4 w-4" />
                                         </Button>
                                     </div>
-                                    <Button className="w-full sm:flex-1 bg-black hover:bg-[#FF4E00] text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-gray-200 group">
-                                        <ShoppingCart className="mr-3 h-5 w-5 transition-transform group-hover:-translate-y-1" />
-                                        ADD TO CART
+                                    <Button
+                                        onClick={() => handleAddToCart(false)}
+                                        disabled={isAdding || activeStock <= 0}
+                                        className="w-full sm:flex-1 bg-black hover:bg-[#FF4E00] text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-gray-200 group"
+                                    >
+                                        <ShoppingCart
+                                            className={`mr-3 h-5 w-5 transition-transform ${isAdding ? "animate-pulse" : "group-hover:-translate-y-1"}`}
+                                        />
+                                        {isAdding ? "ADDING..." : "ADD TO CART"}
                                     </Button>
                                 </div>
 
-                                <Button className="w-full bg-[#FF4E00] hover:bg-black text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-orange-100">
+                                <Button
+                                    onClick={() => handleAddToCart(true)}
+                                    disabled={isAdding || activeStock <= 0}
+                                    className="w-full bg-[#FF4E00] hover:bg-black text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-orange-100"
+                                >
                                     BUY IT NOW
                                 </Button>
                             </div>

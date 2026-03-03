@@ -1,58 +1,26 @@
 import React, { useState } from "react";
 import { Head, Link } from "@inertiajs/react";
-import { ShopLayout } from "@/components/layout/ShopLayout";
+import { ShopLayout } from "@/Layouts/ShopLayout";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ChevronRight, Search, Filter, Check } from "lucide-react";
 
 // ─── Dummy Data for Search Results ────────────────────────────────────────────
-const DUMMY_PRODUCTS = [
-    {
-        id: 1,
-        name: "Premium Ceramic Coating Kit",
-        slug: "ceramic-coating-kit",
-        sale_price: 1500,
-        image: "https://images.unsplash.com/photo-1610647752706-3bb12232b3ab?q=80&w=500&auto=format&fit=crop",
-        category: { name: "Car Care" },
-        brand: { name: "NanoPro" },
-        quantity: 10,
-    },
-    {
-        id: 2,
-        name: "Ultra-Bright LED Headlights",
-        slug: "led-headlights",
-        sale_price: 2200,
-        image: "https://images.unsplash.com/photo-1549399500-c44d07040996?q=80&w=500&auto=format&fit=crop",
-        category: { name: "Lighting" },
-        brand: { name: "Lumix" },
-        quantity: 5,
-    },
-    {
-        id: 3,
-        name: "Luxury Leather Steering Cover",
-        slug: "steering-cover",
-        sale_price: 850,
-        image: "https://images.unsplash.com/photo-1594002429007-8e6f1f4400e2?q=80&w=500&auto=format&fit=crop",
-        category: { name: "Interior" },
-        brand: { name: "AutoElite" },
-        quantity: 15,
-    },
-    {
-        id: 4,
-        name: "Car Dash Cam 4K Ultra",
-        slug: "dash-cam-4k",
-        sale_price: 4500,
-        image: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?q=80&w=500&auto=format&fit=crop",
-        category: { name: "Electronics" },
-        brand: { name: "VisionX" },
-        quantity: 3,
-    },
-];
+interface SearchPageProps {
+    products: {
+        data: any[];
+        links: any[];
+        total: number;
+    };
+    categories: any[];
+    searchTerm: string;
+}
 
-import { usePage } from "@inertiajs/react";
-
-const SearchPage = () => {
-    const { categories, searchTerm: propSearchTerm } = usePage().props as any;
-    const [searchTerm] = useState(propSearchTerm || "Car Accessories");
+const SearchPage = ({
+    products,
+    categories,
+    searchTerm: propSearchTerm,
+}: SearchPageProps) => {
+    const [searchTerm] = useState(propSearchTerm || "");
 
     return (
         <ShopLayout>
@@ -158,8 +126,17 @@ const SearchPage = () => {
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 bg-gray-50 p-4 rounded-2xl border border-gray-100 gap-4">
                                 <div className="text-sm font-bold text-gray-700">
                                     Showing{" "}
-                                    <span className="text-[#FF4E00]">4</span>{" "}
-                                    products
+                                    <span className="text-[#FF4E00]">
+                                        {products.data.length}
+                                    </span>{" "}
+                                    of{" "}
+                                    <span className="text-[#FF4E00]">
+                                        {products.total}
+                                    </span>{" "}
+                                    results for{" "}
+                                    <span className="italic">
+                                        "{searchTerm}"
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <span className="text-xs font-black text-gray-400 uppercase tracking-wider">
@@ -176,13 +153,42 @@ const SearchPage = () => {
 
                             {/* Product Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {DUMMY_PRODUCTS.map((product) => (
-                                    <ProductCard
-                                        key={product.id}
-                                        product={product}
-                                    />
-                                ))}
+                                {products.data.length > 0 ? (
+                                    products.data.map((product) => (
+                                        <ProductCard
+                                            key={product.id}
+                                            product={product}
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="col-span-full py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-300">
+                                        <h4 className="text-xl font-bold text-gray-400">
+                                            No products found for this search
+                                        </h4>
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Pagination */}
+                            {products.data.length > 0 &&
+                                products.links.length > 3 && (
+                                    <div className="mt-16 flex justify-center gap-2">
+                                        {products.links.map((link, i) => (
+                                            <Link
+                                                key={i}
+                                                href={link.url || "#"}
+                                                dangerouslySetInnerHTML={{
+                                                    __html: link.label,
+                                                }}
+                                                className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
+                                                    link.active
+                                                        ? "bg-[#FF4E00] text-white shadow-lg shadow-orange-200"
+                                                        : "bg-white text-gray-600 border border-gray-200 hover:border-[#FF4E00] hover:text-[#FF4E00]"
+                                                } ${!link.url && "opacity-50 cursor-not-allowed"}`}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
                         </div>
                     </div>
                 </div>

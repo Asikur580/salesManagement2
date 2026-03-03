@@ -1,6 +1,6 @@
 import React from "react";
 import { Head, Link } from "@inertiajs/react";
-import { ShopLayout } from "@/components/layout/ShopLayout";
+import { ShopLayout } from "@/Layouts/ShopLayout";
 import { ShopHero } from "@/components/shop/ShopHero";
 import { CategoryGrid } from "@/components/shop/CategoryGrid";
 import { NewArrivals } from "@/components/shop/NewArrivals";

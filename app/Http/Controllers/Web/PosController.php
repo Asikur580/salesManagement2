@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -15,8 +14,6 @@ class PosController extends Controller
 {
     public function index()
     {
-        // Load customers for selection
-        $customers = Customer::select('id', 'name', 'phone')->get();
 
         // Load categories for filtering
         $categories = Category::select('id', 'name')->get();
@@ -36,7 +33,6 @@ class PosController extends Controller
             ->get();
 
         return Inertia::render('Pos/Index', [
-            'customers' => $customers,
             'categories' => $categories,
             'products' => $products,
         ]);
@@ -45,7 +41,6 @@ class PosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
             'payment_method' => 'required|in:cash,credit,bank_transfer,card,mobile_banking',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'in:percentage,fixed',
@@ -92,7 +87,6 @@ class PosController extends Controller
             $order = Order::create([
                 'order_number' => $orderNumber,
                 'type' => 'sales',
-                'customer_id' => $request->customer_id,
                 'order_date' => now(),
                 'payment_method' => $request->payment_method,
                 'subtotal' => $subtotal,

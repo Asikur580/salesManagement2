@@ -4,7 +4,6 @@ import {
     Search,
     ShoppingCart,
     User,
-    Heart,
     ChevronDown,
     ChevronRight,
     Menu,
@@ -25,8 +24,32 @@ import {
     Lightbulb,
     Wrench,
     Shirt,
+    Smartphone,
+    ArrowRight,
+    Loader2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogOut, Settings } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 // ─── 3-Level Category Data ────────────────────────────────────────────────────
 // ... (CATEGORIES constant remains the same, I will skip it in replace_file_content if possible but I'll include enough context)
@@ -41,6 +64,146 @@ interface Category {
     slug: string;
     icon?: string;
     children?: Category[];
+}
+
+function OTPLoginModal({ children }: { children: React.ReactNode }) {
+    const [open, setOpen] = useState(false);
+    const [step, setStep] = useState<"phone" | "otp">("phone");
+    const [phone, setPhone] = useState("");
+    const [otp, setOtp] = useState("");
+    const [loading, setLoading] = useState(false);
+    const { sendOTP, verifyOTP } = useAuth();
+    const { toast } = useToast();
+
+    const handleSendOTP = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await sendOTP(phone);
+            toast({
+                title: "OTP Sent",
+                description: res.message,
+            });
+            setStep("otp");
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: error.message || "Something went wrong",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOTP = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await verifyOTP(phone, otp);
+            toast({
+                title: "Success",
+                description: "You are now logged in.",
+            });
+            setOpen(false);
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description: error.message || "Invalid OTP",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+            <DialogContent className="sm:max-w-[400px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                <div className="bg-gradient-to-br from-[#FF4E00] to-orange-600 p-8 text-white relative">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <Smartphone className="w-24 h-24" />
+                    </div>
+                    <DialogHeader className="relative z-10">
+                        <DialogTitle className="text-2xl font-black italic">
+                            CarMart Login
+                        </DialogTitle>
+                        <DialogDescription className="text-white/80 font-medium">
+                            {step === "phone"
+                                ? "Enter your phone number to receive an OTP."
+                                : "Check your phone for the 6-digit code."}
+                        </DialogDescription>
+                    </DialogHeader>
+                </div>
+
+                <div className="p-8 bg-white">
+                    {step === "phone" ? (
+                        <form onSubmit={handleSendOTP} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    Phone Number
+                                </label>
+                                <div className="relative">
+                                    <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                    <Input
+                                        placeholder="01XXXXXXXXX"
+                                        value={phone}
+                                        onChange={(e) =>
+                                            setPhone(e.target.value)
+                                        }
+                                        className="pl-12 h-14 bg-gray-50 border-gray-100 rounded-xl font-bold text-lg focus:ring-[#FF4E00]/20 focus:border-[#FF4E00]"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <Button
+                                disabled={loading}
+                                className="w-full h-14 bg-black hover:bg-gray-800 text-white rounded-xl font-black gap-2 transition-all active:scale-95 shadow-xl shadow-black/10"
+                            >
+                                {loading && (
+                                    <Loader2 className="animate-spin h-5 w-5" />
+                                )}
+                                Send OTP <ArrowRight className="h-4 w-4" />
+                            </Button>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleVerifyOTP} className="space-y-6">
+                            <div className="space-y-2 text-center">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    Enter 6-Digit Code
+                                </label>
+                                <Input
+                                    placeholder="000000"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    className="h-16 text-center text-3xl font-black tracking-[0.5em] bg-gray-50 border-gray-100 rounded-xl focus:ring-[#FF4E00]/20 focus:border-[#FF4E00]"
+                                    maxLength={6}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setStep("phone")}
+                                    className="text-xs font-bold text-[#FF4E00] hover:underline"
+                                >
+                                    Change phone number
+                                </button>
+                            </div>
+                            <Button
+                                disabled={loading}
+                                className="w-full h-14 bg-[#FF4E00] hover:bg-orange-600 text-white rounded-xl font-black gap-2 transition-all active:scale-95 shadow-xl shadow-orange-500/20"
+                            >
+                                {loading && (
+                                    <Loader2 className="animate-spin h-5 w-5" />
+                                )}
+                                Verify & Login
+                            </Button>
+                        </form>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
 }
 
 function MegaDropdown({
@@ -200,6 +363,7 @@ import { usePage } from "@inertiajs/react";
 // ─── Main Navbar ──────────────────────────────────────────────────────────────
 export function ShopNavbar() {
     const { categories } = usePage().props as any;
+    const { user, logout } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMegaOpen, setIsMegaOpen] = useState(false);
@@ -212,6 +376,21 @@ export function ShopNavbar() {
             setIsSearchOpen(false);
         }
     };
+
+    const getInitials = (name: string) => {
+        return name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
+    };
+
+    const isAdmin = user?.roles?.some((r: any) =>
+        ["super-admin", "admin", "sales", "accountant"].includes(
+            typeof r === "string" ? r : r.name,
+        ),
+    );
 
     return (
         <header className="w-full sticky top-0 z-50 shadow-md transition-all duration-300">
@@ -277,23 +456,33 @@ export function ShopNavbar() {
                 {/* Actions */}
                 <div className="flex items-center gap-4 md:gap-6 shrink-0">
                     <Link
-                        href="/login"
-                        className="hover:scale-110 transition-transform hidden sm:block"
-                    >
-                        <Heart className="h-6 w-6 stroke-[2.5px]" />
-                    </Link>
-                    <Link
-                        href="/login"
+                        href={route("cart.index")}
                         className="hover:scale-110 transition-transform relative"
                     >
                         <ShoppingCart className="h-6 w-6 stroke-[2.5px]" />
-                        <span className="absolute -top-1.5 -right-1.5 bg-white text-[#FF4E00] text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-sm">
-                            0
-                        </span>
+                        {(usePage().props as any).cart?.count > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-white text-[#FF4E00] text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-sm">
+                                {(usePage().props as any).cart.count}
+                            </span>
+                        )}
                     </Link>
-                    <button className="lg:hidden p-1 hover:bg-white/10 rounded-md">
-                        <User className="h-6 w-6 stroke-[2.5px]" />
-                    </button>
+
+                    {user && (
+                        <div className="flex items-center group">
+                            <Avatar className="h-9 w-9 border-2 border-white/20 group-hover:border-white/40 transition-colors">
+                                <AvatarFallback className="bg-white text-[#FF4E00] font-black text-xs">
+                                    {getInitials(user.name)}
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
+                    )}
+                    {!user && (
+                        <OTPLoginModal>
+                            <button className="hover:scale-110 transition-transform">
+                                <User className="h-6 w-6 stroke-[2.5px]" />
+                            </button>
+                        </OTPLoginModal>
+                    )}
                 </div>
             </div>
 

@@ -12,38 +12,18 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'type',
-        'customer_id',
-        'employee_id',
-        'technician_id',
         'order_date',
         'payment_method',
         'subtotal',
         'discount',
         'discount_type',
         'discount_amount',
-        'service_charge',
         'total_amount',
         'status',
         'note',
-        'service_notes',
         'created_by',
         'approved_by',
     ];
-
-    public function technician()
-    {
-        return $this->belongsTo(Technician::class);
-    }
-
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function employee()
-    {
-        return $this->belongsTo(EmployeeDetail::class, 'employee_id');
-    }
 
     public function items()
     {

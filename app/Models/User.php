@@ -24,7 +24,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'otp',
+        'otp_expires_at',
     ];
 
     protected $guarded = ['id'];
@@ -53,14 +56,6 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function employeeDetail()
-    {
-        return $this->hasOne(EmployeeDetail::class);
-    }
-
-    /**
-     * Check if user is Super Admin
-     */
     public function isSuperAdmin(): bool
     {
         return $this->hasRole('super-admin');
@@ -85,4 +80,5 @@ class User extends Authenticatable
     {
         return $this->traitHasPermissionTo($permission, $guardName);
     }
+
 }

@@ -342,7 +342,7 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                             <img
                                 src={s.image}
                                 alt={s.title}
-                                className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-[8000ms]"
+                                className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-&lsqb;8000ms&rsqb;"
                             />
                             <div
                                 className={`absolute inset-0 bg-gradient-to-r ${s.bg} to-transparent`}

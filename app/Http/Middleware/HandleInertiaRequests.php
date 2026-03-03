@@ -58,6 +58,15 @@ class HandleInertiaRequests extends Middleware
                 ->where('is_active', true)
                 ->orderBy('order')
                 ->get(),
+            'cart' => [
+                'items' => array_values(session()->get('cart', [])),
+                'count' => array_reduce(session()->get('cart', []), function ($carry, $item) {
+                    return $carry + $item['quantity'];
+                }, 0),
+                'total' => array_reduce(session()->get('cart', []), function ($carry, $item) {
+                    return $carry + ($item['price'] * $item['quantity']);
+                }, 0),
+            ],
         ];
     }
 }

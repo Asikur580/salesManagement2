@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { router, usePage } from "@inertiajs/react";
 import { useAuth } from "@/hooks/useAuth";
 
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

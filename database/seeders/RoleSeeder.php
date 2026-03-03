@@ -126,6 +126,7 @@ class RoleSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'admin']);
         $sales = Role::firstOrCreate(['name' => 'sales']);
         $accountant = Role::firstOrCreate(['name' => 'accountant']);
+        $customer = Role::firstOrCreate(['name' => 'customer']);
 
         // Assign permissions to Admin (all except role/permission management)
         $admin->syncPermissions([

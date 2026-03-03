@@ -39,24 +39,18 @@ interface SidebarProps {
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "POS", href: "/pos", icon: ShoppingCart },
-    { name: "Customers", href: "/customers", icon: Users },
-    { name: "Employees", href: "/employees", icon: UserCog },
-    { name: "Designations", href: "/designations", icon: Briefcase },
+    { name: "POS", href: "/pos", icon: ShoppingCart },
 
-    { name: "Suppliers", href: "/suppliers", icon: Building2 },
     { name: "Brands", href: "/brands", icon: Tag },
     { name: "Categories", href: "/categories", icon: FolderTree },
     { name: "Products", href: "/products", icon: Package },
     { name: "Attributes", href: "/attributes", icon: Layers },
     { name: "Units", href: "/units", icon: Layers },
-    { name: "Technicians", href: "/technicians", icon: Users },
-    { name: "Services", href: "/services", icon: Briefcase },
     { name: "Orders", href: "/orders", icon: ShoppingCart },
     { name: "Sales", href: "/sales", icon: TrendingUp },
 ];
 
 const salesReportsItems = [
-    { name: "Customer Report", href: "/sales-reports?view=customer" },
     { name: "Category Report", href: "/sales-reports?view=category" },
     { name: "Product Report", href: "/sales-reports?view=product" },
     {
@@ -72,11 +66,6 @@ const rolePermissionItems = [
     { name: "Manage Permissions", href: "/permissions" },
 ];
 
-const othersItems = [
-    { name: "Expense Categories", href: "/expense-categories", icon: Layers },
-    { name: "Expenses", href: "/expenses", icon: DollarSign },
-];
-
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const isMobile = useIsMobile();
     const { url: pathname } = usePage();
@@ -87,10 +76,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     );
     const [salesReportsOpen, setSalesReportsOpen] = useState(
         pathname.startsWith("/sales-reports"),
-    );
-    const [othersOpen, setOthersOpen] = useState(
-        pathname.startsWith("/expense-categories") ||
-            pathname.startsWith("/expenses"),
     );
     const { user, logout } = useAuth();
 
@@ -138,14 +123,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                             .filter((item) => {
                                 if (item.name === "POS")
                                     return hasPermission("order.view"); // Simplified permission logic for now
-                                if (item.name === "Customers")
-                                    return hasPermission("customer.view");
-                                if (item.name === "Employees")
-                                    return hasPermission("employee.view");
-                                if (item.name === "Designations")
-                                    return hasPermission("designation.view");
-                                if (item.name === "Suppliers")
-                                    return hasPermission("supplier.view");
                                 if (item.name === "Brands")
                                     return hasPermission("brand.view");
                                 if (item.name === "Categories")
@@ -156,10 +133,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     return hasPermission("product.view"); // Share permission for now
                                 if (item.name === "Units")
                                     return hasPermission("unit.view");
-                                if (item.name === "Technicians")
-                                    return hasPermission("technician.view");
-                                if (item.name === "Services")
-                                    return hasPermission("service.view");
                                 if (item.name === "Orders")
                                     return hasPermission("order.view");
                                 if (item.name === "Sales")
@@ -275,58 +248,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                                     "permission.view",
                                                 );
                                             // Show other items by default (fallback)
-                                            return true;
-                                        })
-                                        .map((item) => (
-                                            <Link
-                                                key={item.name}
-                                                href={item.href}
-                                                onClick={onClose}
-                                                className={cn(
-                                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                                                    pathname === item.href
-                                                        ? "bg-primary text-primary-foreground"
-                                                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                                                )}
-                                            >
-                                                {item.name}
-                                            </Link>
-                                        ))}
-                                </CollapsibleContent>
-                            </Collapsible>
-                        )}
-
-                        {(hasPermission("expense_category.view") ||
-                            hasPermission("expense.view")) && (
-                            <Collapsible
-                                open={othersOpen}
-                                onOpenChange={setOthersOpen}
-                            >
-                                <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-                                    <ClipboardList className="h-5 w-5" />
-                                    <span className="flex-1 text-left">
-                                        Others
-                                    </span>
-                                    {othersOpen ? (
-                                        <ChevronDown className="h-4 w-4" />
-                                    ) : (
-                                        <ChevronRight className="h-4 w-4" />
-                                    )}
-                                </CollapsibleTrigger>
-                                <CollapsibleContent className="space-y-1 pl-8 pt-1">
-                                    {othersItems
-                                        .filter((item) => {
-                                            if (
-                                                item.href ===
-                                                "/expense-categories"
-                                            )
-                                                return hasPermission(
-                                                    "expense_category.view",
-                                                );
-                                            if (item.href === "/expenses")
-                                                return hasPermission(
-                                                    "expense.view",
-                                                );
                                             return true;
                                         })
                                         .map((item) => (

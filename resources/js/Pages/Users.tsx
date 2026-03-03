@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Head, router, usePage } from "@inertiajs/react";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
