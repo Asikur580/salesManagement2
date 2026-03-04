@@ -78,26 +78,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('units', UnitController::class)->except(['create', 'show', 'edit']);
         Route::resource('attributes', AttributeController::class)->except(['create', 'show', 'edit']);
 
-        // Stock Management
-        Route::post('/stocks/in', [StockController::class, 'stockIn']);
-        Route::post('/stocks/out', [StockController::class, 'stockOut']);
-        Route::get('/products/{id}/stock-history', [StockController::class, 'productHistory']);
-
         Route::resource('brands', BrandController::class);
 
         Route::resource('categories', CategoryController::class);
 
-        Route::resource('orders', OrderController::class)->except(['show', 'create', 'edit']);
-        Route::post('/orders/{id}/approve', [OrderController::class, 'approve']);
-
         // Point of Sale (POS)
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
-        Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
-
-        Route::get('/sales', [SaleController::class, 'index']);
-
-        // Sales Reports
-        Route::get('/sales-reports', [ReportController::class, 'index'])->name('sales-reports.index');
+        Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');               
 
         Route::resource('roles', RoleController::class);
         Route::post('/roles/{id}/sync-permissions', [RoleController::class, 'syncPermissions']);

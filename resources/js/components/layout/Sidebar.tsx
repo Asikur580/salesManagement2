@@ -39,25 +39,11 @@ interface SidebarProps {
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "POS", href: "/pos", icon: ShoppingCart },
-    { name: "POS", href: "/pos", icon: ShoppingCart },
-
     { name: "Brands", href: "/brands", icon: Tag },
     { name: "Categories", href: "/categories", icon: FolderTree },
     { name: "Products", href: "/products", icon: Package },
     { name: "Attributes", href: "/attributes", icon: Layers },
-    { name: "Units", href: "/units", icon: Layers },
-    { name: "Orders", href: "/orders", icon: ShoppingCart },
-    { name: "Sales", href: "/sales", icon: TrendingUp },
-];
-
-const salesReportsItems = [
-    { name: "Category Report", href: "/sales-reports?view=category" },
-    { name: "Product Report", href: "/sales-reports?view=product" },
-    {
-        name: "Payment Method Report",
-        href: "/sales-reports?view=payment-method",
-    },
-    { name: "Sales Reports", href: "/sales-reports?view=reports" },
+    { name: "Units", href: "/units", icon: Layers }   
 ];
 
 const rolePermissionItems = [
@@ -73,9 +59,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         pathname.startsWith("/users") ||
             pathname.startsWith("/roles") ||
             pathname.startsWith("/permissions"),
-    );
-    const [salesReportsOpen, setSalesReportsOpen] = useState(
-        pathname.startsWith("/sales-reports"),
     );
     const { user, logout } = useAuth();
 
@@ -133,10 +116,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     return hasPermission("product.view"); // Share permission for now
                                 if (item.name === "Units")
                                     return hasPermission("unit.view");
-                                if (item.name === "Orders")
-                                    return hasPermission("order.view");
-                                if (item.name === "Sales")
-                                    return hasPermission("sale.view");
                                 return true;
                             })
                             .map((item) => (
@@ -154,62 +133,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     <item.icon className="h-5 w-5" />
                                     {item.name}
                                 </Link>
-                            ))}
-
-                        {hasPermission("report.sales") && (
-                            <Collapsible
-                                open={salesReportsOpen}
-                                onOpenChange={setSalesReportsOpen}
-                            >
-                                <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-                                    <BarChart3 className="h-5 w-5" />
-                                    <span className="flex-1 text-left">
-                                        Sales Reports
-                                    </span>
-                                    {salesReportsOpen ? (
-                                        <ChevronDown className="h-4 w-4" />
-                                    ) : (
-                                        <ChevronRight className="h-4 w-4" />
-                                    )}
-                                </CollapsibleTrigger>
-                                <CollapsibleContent className="space-y-1 pl-8 pt-1">
-                                    {salesReportsItems.map((item) => {
-                                        const isLinkActive =
-                                            location.pathname ===
-                                                "/sales-reports" &&
-                                            location.search ===
-                                                item.href.split("?")[1]
-                                                ? "?" + item.href.split("?")[1]
-                                                : "";
-
-                                        // Better check: Exact match of full path + search
-                                        const isActive =
-                                            location.pathname +
-                                                location.search ===
-                                            item.href;
-
-                                        return (
-                                            <Link
-                                                key={item.name}
-                                                href={item.href}
-                                                onClick={onClose}
-                                                className={cn(
-                                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                                                    pathname +
-                                                        window.location
-                                                            .search ===
-                                                        item.href
-                                                        ? "bg-primary text-primary-foreground"
-                                                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                                                )}
-                                            >
-                                                {item.name}
-                                            </Link>
-                                        );
-                                    })}
-                                </CollapsibleContent>
-                            </Collapsible>
-                        )}
+                            ))}                       
 
                         {(hasPermission("user.view") ||
                             hasPermission("role.view") ||
