@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, router } from "@inertiajs/react";
-import { ShoppingCart, Eye } from "lucide-react";
+import { ShoppingCart, Eye, Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { OTPLoginModal } from "@/components/shop/OTPLoginModal";
 
 interface ProductCardProps {
     product: any;
@@ -12,12 +13,18 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
     const { toast } = useToast();
-
+    const { user } = useAuth();
     const [isAdding, setIsAdding] = React.useState(false);
+    const [loginOpen, setLoginOpen] = useState(false);
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (!user) {
+            setLoginOpen(true);
+            return;
+        }
 
         if (product.stock <= 0) {
             toast({
@@ -57,6 +64,34 @@ export function ProductCard({ product }: ProductCardProps) {
         );
     };
 
+    const handleWishlistToggle = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            setLoginOpen(true);
+            return;
+        }
+
+        router.post(
+            route("wishlist.toggle"),
+            {
+                product_id: product.id,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: product.is_wishlisted
+                            ? "Removed from Wishlist"
+                            : "Added to Wishlist",
+                        description: `${product.name} has been ${product.is_wishlisted ? "removed from" : "added to"} your wishlist.`,
+                    });
+                },
+            },
+        );
+    };
+
     const getImagePath = (path: string | null) => {
         if (!path) return null;
         if (path.startsWith("http")) return path;
@@ -71,6 +106,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
     return (
         <div className="bg-white rounded-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col relative h-full">
+            <OTPLoginModal
+                open={loginOpen}
+                onOpenChange={setLoginOpen}
+                onSuccess={() => router.reload()}
+            />
             {/* Badges */}
             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                 {product.old_price > product.price && (
@@ -113,6 +153,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
                 {/* Overlay Actions */}
                 <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <Button
+                        size="icon"
+                        variant="secondary"
+                        onClick={handleWishlistToggle}
+                        className={`rounded-full shadow-md scale-90 group-hover:scale-100 transition-transform duration-300 ${
+                            product.is_wishlisted
+                                ? "bg-[#FF4E00] text-white hover:bg-[#FF4E00]/90 border-[#FF4E00]"
+                                : "bg-white text-gray-600 hover:text-[#FF4E00]"
+                        }`}
+                    >
+                        <Heart
+                            className={`h-4 w-4 ${product.is_wishlisted ? "fill-white text-white" : ""}`}
+                        />
+                    </Button>
                     <Button
                         size="icon"
                         variant="secondary"

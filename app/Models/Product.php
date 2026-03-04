@@ -83,4 +83,9 @@ class Product extends Model
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true)->latestOfMany();
     }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

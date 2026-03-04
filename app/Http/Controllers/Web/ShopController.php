@@ -21,20 +21,38 @@ class ShopController extends Controller
         $flashSaleProducts = (clone $baseQuery)
             ->inRandomOrder()
             ->take(4)
-            ->get()
-            ->each->setAppends(['price', 'old_price']);
+            ->get();
+
+        $flashSaleProducts->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
 
         $newArrivals = (clone $baseQuery)
             ->latest()
             ->take(8)
-            ->get()
-            ->each->setAppends(['price', 'old_price']);
+            ->get();
+
+        $newArrivals->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
 
         $youMayLike = (clone $baseQuery)
             ->inRandomOrder()
             ->take(12)
-            ->get()
-            ->each->setAppends(['price', 'old_price']);
+            ->get();
+
+        $youMayLike->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
 
         $categories = Category::with('children.children')
             ->whereNull('parent_id')
@@ -61,7 +79,12 @@ class ShopController extends Controller
             ->latest()
             ->paginate(24);
 
-        $products->each->setAppends(['price', 'old_price']);
+        $products->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
 
         return Inertia::render('NewArrivalsPage', [
             'products' => $products,
@@ -107,7 +130,13 @@ class ShopController extends Controller
         }
 
         $products = $query->paginate(24)->withQueryString();
-        $products->each->setAppends(['price', 'old_price']);
+
+        $products->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
 
         $brands = Brand::whereHas('products', function ($q) use ($category) {
             $q->where('category_id', $category->id);
@@ -126,12 +155,22 @@ class ShopController extends Controller
         $product->load(['category', 'brand', 'variants.attributeValues.attribute', 'variants.primaryImage', 'images', 'primaryImage']);
         $product->setAppends(['price', 'old_price']);
 
+        if (Auth::check()) {
+            $product->is_wishlisted = $product->wishlists()->where('user_id', Auth::id())->exists();
+        }
+
         $relatedProducts = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->take(4)
-            ->get()
-            ->each->setAppends(['price', 'old_price']);
+            ->get();
+
+        $relatedProducts->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
 
 
         return Inertia::render('ProductDetails', [
@@ -186,7 +225,13 @@ class ShopController extends Controller
         }
 
         $products = $query->paginate(24)->withQueryString();
-        $products->each->setAppends(['price', 'old_price']);
+
+        $products->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
 
         return Inertia::render('SearchPage', [
             'products' => $products,

@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
+                    'phone' => $request->user()->phone,
                     'roles' => $request->user()->getRoleNames(),
                     'permissions' => $request->user()->getAllPermissions()->pluck('name'),
                     'unread_count' => $request->user()->unreadNotifications()->count(),
@@ -67,6 +68,7 @@ class HandleInertiaRequests extends Middleware
                     return $carry + ($item['price'] * $item['quantity']);
                 }, 0),
             ],
+            'wishlist_count' => app(\App\Repositories\Interfaces\WishlistRepositoryInterface::class)->getWishlistCount(),
         ];
     }
 }

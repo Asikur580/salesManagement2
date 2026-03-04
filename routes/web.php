@@ -19,6 +19,8 @@ use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\ShopController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\Web\AccountController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,13 +31,6 @@ Route::get('/category/{category:slug}', [ShopController::class, 'categoryProduct
 Route::get('/product/{product:slug}', [ShopController::class, 'show'])->name('shop.product.show');
 Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
 
-// Cart Routes
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
-Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout.index');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -64,6 +59,24 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Settings');
     });
 
+    // My Account Routes
+    Route::get('/my-account', [AccountController::class, 'index'])->name('account.index');
+    Route::patch('/my-account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::put('/my-account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+
+    // Cart Routes
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout.index');
+
+    // Wishlist Routes
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+
     // Admin/Staff only routes
     Route::middleware('role:super-admin|admin|sales|accountant')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -84,7 +97,7 @@ Route::middleware('auth')->group(function () {
 
         // Point of Sale (POS)
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
-        Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');               
+        Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
 
         Route::resource('roles', RoleController::class);
         Route::post('/roles/{id}/sync-permissions', [RoleController::class, 'syncPermissions']);

@@ -2,25 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Wishlist;
-use App\Models\Product;
+use App\Repositories\Interfaces\WishlistRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
+    protected $wishlistRepository;
+
+    public function __construct(WishlistRepositoryInterface $wishlistRepository)
+    {
+        $this->wishlistRepository = $wishlistRepository;
+    }
+
     public function index()
     {
-        $wishlistItems = Wishlist::with(['product.category', 'product.primaryImage', 'product.variants.primaryImage'])
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get()
-            ->each(function ($item) {
-                if ($item->product) {
-                    $item->product->is_wishlisted = true;
-                }
-            });
+        $wishlistItems = $this->wishlistRepository->getUserWishlist();
 
         return Inertia::render('Account/Wishlist', [
             'wishlistItems' => $wishlistItems
@@ -33,33 +30,15 @@ class WishlistController extends Controller
             'product_id' => 'required|exists:products,id',
         ]);
 
-        $userId = Auth::id();
-        $productId = $request->product_id;
+        $result = $this->wishlistRepository->toggleWishlist($request->product_id);
 
-        $wishlistItem = Wishlist::where('user_id', $userId)
-            ->where('product_id', $productId)
-            ->first();
-
-        if ($wishlistItem) {
-            $wishlistItem->delete();
-            return back()->with('success', 'Removed from wishlist');
-        } else {
-            Wishlist::create([
-                'user_id' => $userId,
-                'product_id' => $productId,
-            ]);
-            return back()->with('success', 'Added to wishlist');
-        }
+        return back()->with('success', $result['message']);
     }
 
     public function destroy($id)
     {
-        $wishlistItem = Wishlist::where('user_id', Auth::id())
-            ->where('id', $id)
-            ->firstOrFail();
+        $result = $this->wishlistRepository->removeFromWishlist($id);
 
-        $wishlistItem->delete();
-
-        return back()->with('success', 'Product removed from wishlist');
+        return back()->with('success', $result['message']);
     }
 }

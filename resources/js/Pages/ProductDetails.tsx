@@ -16,6 +16,7 @@ import {
     CheckCircle2,
     Info,
     ArrowRight,
+    Heart,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -217,6 +218,26 @@ export default function ProductDetails({
         );
     };
 
+    const handleWishlistToggle = () => {
+        router.post(
+            route("wishlist.toggle"),
+            {
+                product_id: product.id,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: product.is_wishlisted
+                            ? "Removed from Wishlist"
+                            : "Added to Wishlist",
+                        description: `${product.name} has been ${product.is_wishlisted ? "removed from" : "added to"} your wishlist.`,
+                    });
+                },
+            },
+        );
+    };
+
     return (
         <ShopLayout>
             <Head title={`${product.name} | CarMart`} />
@@ -264,6 +285,27 @@ export default function ProductDetails({
                                         SAVE {discount}%
                                     </Badge>
                                 )}
+
+                                {/* Floating Wishlist Button */}
+                                <div className="absolute top-6 right-6">
+                                    <Button
+                                        size="icon"
+                                        variant="secondary"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleWishlistToggle();
+                                        }}
+                                        className={`rounded-full shadow-xl shadow-black/5 w-12 h-12 transition-all hover:scale-110 active:scale-95 duration-300 ${
+                                            product.is_wishlisted
+                                                ? "bg-[#FF4E00] text-white hover:bg-[#FF4E00]/90 border-none"
+                                                : "bg-white text-gray-400 hover:text-[#FF4E00]"
+                                        }`}
+                                    >
+                                        <Heart
+                                            className={`h-5 w-5 ${product.is_wishlisted ? "fill-white" : ""}`}
+                                        />
+                                    </Button>
+                                </div>
                             </div>
 
                             {/* Thumbnails Gallery */}
@@ -441,13 +483,15 @@ export default function ProductDetails({
                                     </Button>
                                 </div>
 
-                                <Button
-                                    onClick={() => handleAddToCart(true)}
-                                    disabled={isAdding || activeStock <= 0}
-                                    className="w-full bg-[#FF4E00] hover:bg-black text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-orange-100"
-                                >
-                                    BUY IT NOW
-                                </Button>
+                                <div className="flex gap-4">
+                                    <Button
+                                        onClick={() => handleAddToCart(true)}
+                                        disabled={isAdding || activeStock <= 0}
+                                        className="flex-1 bg-[#FF4E00] hover:bg-black text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-orange-100"
+                                    >
+                                        BUY IT NOW
+                                    </Button>
+                                </div>
                             </div>
 
                             {/* Features Mini Grid */}
@@ -520,17 +564,26 @@ export default function ProductDetails({
                                         <h3 className="text-2xl font-black text-gray-900 uppercase italic">
                                             Product Overview
                                         </h3>
-                                        <p className="text-gray-600 text-lg leading-relaxed">
-                                            {product.description ||
-                                                `Experience the ultimate quality with ${product.name}. This premium ${product.category?.name || "product"} from ${product.brand?.name || "our collection"} is designed to deliver unmatched performance and durability.`}
-                                        </p>
-                                        <p className="text-gray-600 text-lg leading-relaxed pt-4">
-                                            Our products are carefully selected
-                                            to meet the highest standards of the
-                                            automotive industry. Whether you're
-                                            looking for performance, style, or
-                                            protection, this product has it all.
-                                        </p>
+                                        <div className="text-gray-600 text-lg leading-relaxed space-y-4">
+                                            {(
+                                                product.description ||
+                                                `Experience the ultimate quality with ${product.name}. This premium ${product.category?.name || "product"} from ${product.brand?.name || "our collection"} is designed to deliver unmatched performance and durability.`
+                                            )
+                                                .split("\n")
+                                                .map((paragraph, idx) => (
+                                                    <p key={idx}>{paragraph}</p>
+                                                ))}
+
+                                            <p className="pt-2">
+                                                Our products are carefully
+                                                selected to meet the highest
+                                                standards of the automotive
+                                                industry. Whether you're looking
+                                                for performance, style, or
+                                                protection, this product has it
+                                                all.
+                                            </p>
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
                                         <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100">

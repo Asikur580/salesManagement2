@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import { ShopLayout } from "@/Layouts/ShopLayout";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { OTPLoginModal } from "@/components/shop/OTPLoginModal";
 
 interface CartProps {
     cart: any;
@@ -11,7 +13,39 @@ interface CartProps {
 
 export default function Cart({ cart }: CartProps) {
     const { toast } = useToast();
+    const { user } = useAuth();
+    const [loginOpen, setLoginOpen] = useState(true);
     const items = cart?.items || [];
+
+    // If not logged in, show login modal instead of cart
+    if (!user) {
+        return (
+            <ShopLayout>
+                <Head title="Shopping Cart | CarMart" />
+                <OTPLoginModal
+                    open={loginOpen}
+                    onOpenChange={setLoginOpen}
+                    onSuccess={() => router.reload()}
+                />
+                <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center px-4">
+                    <ShoppingBag className="h-16 w-16 text-gray-200" />
+                    <h2 className="text-2xl font-black text-gray-900">
+                        Sign in to view your cart
+                    </h2>
+                    <p className="text-gray-500 max-w-sm">
+                        Please log in with your phone number to access your
+                        shopping cart.
+                    </p>
+                    <Button
+                        onClick={() => setLoginOpen(true)}
+                        className="mt-2 bg-[#FF4E00] hover:bg-black text-white px-8 py-5 rounded-2xl font-black"
+                    >
+                        Sign In
+                    </Button>
+                </div>
+            </ShopLayout>
+        );
+    }
 
     const updateQuantity = (id: string, newQty: number) => {
         if (newQty < 1) return;
@@ -100,7 +134,7 @@ export default function Cart({ cart }: CartProps) {
                                                               "http",
                                                           )
                                                             ? item.image
-                                                            : `/storage/${item.image}`
+                                                            : `${item.image}`
                                                         : `https://placehold.co/200x200?text=${item.name}`
                                                 }
                                                 alt={item.name}

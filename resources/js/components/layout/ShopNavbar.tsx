@@ -27,6 +27,7 @@ import {
     Smartphone,
     ArrowRight,
     Loader2,
+    Heart,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
@@ -40,16 +41,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Settings } from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { OTPLoginModal } from "@/components/shop/OTPLoginModal";
 
 // ─── 3-Level Category Data ────────────────────────────────────────────────────
 // ... (CATEGORIES constant remains the same, I will skip it in replace_file_content if possible but I'll include enough context)
@@ -64,146 +58,6 @@ interface Category {
     slug: string;
     icon?: string;
     children?: Category[];
-}
-
-function OTPLoginModal({ children }: { children: React.ReactNode }) {
-    const [open, setOpen] = useState(false);
-    const [step, setStep] = useState<"phone" | "otp">("phone");
-    const [phone, setPhone] = useState("");
-    const [otp, setOtp] = useState("");
-    const [loading, setLoading] = useState(false);
-    const { sendOTP, verifyOTP } = useAuth();
-    const { toast } = useToast();
-
-    const handleSendOTP = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const res = await sendOTP(phone);
-            toast({
-                title: "OTP Sent",
-                description: res.message,
-            });
-            setStep("otp");
-        } catch (error: any) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error.message || "Something went wrong",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyOTP = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            await verifyOTP(phone, otp);
-            toast({
-                title: "Success",
-                description: "You are now logged in.",
-            });
-            setOpen(false);
-        } catch (error: any) {
-            toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: error.message || "Invalid OTP",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="sm:max-w-[400px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                <div className="bg-gradient-to-br from-[#FF4E00] to-orange-600 p-8 text-white relative">
-                    <div className="absolute top-0 right-0 p-4 opacity-10">
-                        <Smartphone className="w-24 h-24" />
-                    </div>
-                    <DialogHeader className="relative z-10">
-                        <DialogTitle className="text-2xl font-black italic">
-                            CarMart Login
-                        </DialogTitle>
-                        <DialogDescription className="text-white/80 font-medium">
-                            {step === "phone"
-                                ? "Enter your phone number to receive an OTP."
-                                : "Check your phone for the 6-digit code."}
-                        </DialogDescription>
-                    </DialogHeader>
-                </div>
-
-                <div className="p-8 bg-white">
-                    {step === "phone" ? (
-                        <form onSubmit={handleSendOTP} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                    Phone Number
-                                </label>
-                                <div className="relative">
-                                    <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                    <Input
-                                        placeholder="01XXXXXXXXX"
-                                        value={phone}
-                                        onChange={(e) =>
-                                            setPhone(e.target.value)
-                                        }
-                                        className="pl-12 h-14 bg-gray-50 border-gray-100 rounded-xl font-bold text-lg focus:ring-[#FF4E00]/20 focus:border-[#FF4E00]"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <Button
-                                disabled={loading}
-                                className="w-full h-14 bg-black hover:bg-gray-800 text-white rounded-xl font-black gap-2 transition-all active:scale-95 shadow-xl shadow-black/10"
-                            >
-                                {loading && (
-                                    <Loader2 className="animate-spin h-5 w-5" />
-                                )}
-                                Send OTP <ArrowRight className="h-4 w-4" />
-                            </Button>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleVerifyOTP} className="space-y-6">
-                            <div className="space-y-2 text-center">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                    Enter 6-Digit Code
-                                </label>
-                                <Input
-                                    placeholder="000000"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    className="h-16 text-center text-3xl font-black tracking-[0.5em] bg-gray-50 border-gray-100 rounded-xl focus:ring-[#FF4E00]/20 focus:border-[#FF4E00]"
-                                    maxLength={6}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setStep("phone")}
-                                    className="text-xs font-bold text-[#FF4E00] hover:underline"
-                                >
-                                    Change phone number
-                                </button>
-                            </div>
-                            <Button
-                                disabled={loading}
-                                className="w-full h-14 bg-[#FF4E00] hover:bg-orange-600 text-white rounded-xl font-black gap-2 transition-all active:scale-95 shadow-xl shadow-orange-500/20"
-                            >
-                                {loading && (
-                                    <Loader2 className="animate-spin h-5 w-5" />
-                                )}
-                                Verify & Login
-                            </Button>
-                        </form>
-                    )}
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
 }
 
 function MegaDropdown({
@@ -368,6 +222,18 @@ export function ShopNavbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMegaOpen, setIsMegaOpen] = useState(false);
     const [query, setQuery] = useState("");
+    const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const [loginRedirect, setLoginRedirect] = useState("/");
+
+    /** Navigate if logged in, otherwise open OTP login modal */
+    const handleAuthNav = (href: string) => {
+        if (user) {
+            router.visit(href);
+        } else {
+            setLoginRedirect(href);
+            setLoginModalOpen(true);
+        }
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -455,8 +321,22 @@ export function ShopNavbar() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-4 md:gap-6 shrink-0">
-                    <Link
-                        href={route("cart.index")}
+                    {/* Wishlist – guarded */}
+                    <button
+                        onClick={() => handleAuthNav(route("wishlist.index"))}
+                        className="hover:scale-110 transition-transform relative"
+                    >
+                        <Heart className="h-6 w-6 stroke-[2.5px]" />
+                        {(usePage().props as any).wishlist_count > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-white text-[#FF4E00] text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-sm">
+                                {(usePage().props as any).wishlist_count}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Cart – guarded */}
+                    <button
+                        onClick={() => handleAuthNav(route("cart.index"))}
                         className="hover:scale-110 transition-transform relative"
                     >
                         <ShoppingCart className="h-6 w-6 stroke-[2.5px]" />
@@ -465,26 +345,83 @@ export function ShopNavbar() {
                                 {(usePage().props as any).cart.count}
                             </span>
                         )}
-                    </Link>
+                    </button>
 
                     {user && (
-                        <div className="flex items-center group">
-                            <Avatar className="h-9 w-9 border-2 border-white/20 group-hover:border-white/40 transition-colors">
-                                <AvatarFallback className="bg-white text-[#FF4E00] font-black text-xs">
-                                    {getInitials(user.name)}
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="flex items-center group focus:outline-none">
+                                    <Avatar className="h-9 w-9 border-2 border-white/20 group-hover:border-white/60 transition-colors cursor-pointer">
+                                        <AvatarFallback className="bg-white text-[#FF4E00] font-black text-xs">
+                                            {getInitials(user.name)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="end"
+                                className="w-56 rounded-2xl p-2 shadow-2xl border-gray-100 mt-2"
+                            >
+                                <DropdownMenuLabel className="font-black text-gray-900 px-3 py-2">
+                                    {user.name}
+                                    <p className="text-xs font-medium text-gray-400 truncate">
+                                        {user.email || user.phone}
+                                    </p>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={() => router.visit("/my-account")}
+                                    className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-[#FF4E00]"
+                                >
+                                    <User className="h-4 w-4" /> My Account
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => router.visit("/wishlist")}
+                                    className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-[#FF4E00]"
+                                >
+                                    <Heart className="h-4 w-4" /> Wishlist
+                                </DropdownMenuItem>
+                                {isAdmin && (
+                                    <DropdownMenuItem
+                                        onClick={() =>
+                                            router.visit("/dashboard")
+                                        }
+                                        className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-[#FF4E00]"
+                                    >
+                                        <Settings className="h-4 w-4" /> Admin
+                                        Panel
+                                    </DropdownMenuItem>
+                                )}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={logout}
+                                    className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 hover:bg-red-50 hover:text-red-500 text-red-400"
+                                >
+                                    <LogOut className="h-4 w-4" /> Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     )}
                     {!user && (
-                        <OTPLoginModal>
-                            <button className="hover:scale-110 transition-transform">
-                                <User className="h-6 w-6 stroke-[2.5px]" />
-                            </button>
-                        </OTPLoginModal>
+                        <button
+                            onClick={() => {
+                                setLoginRedirect("/");
+                                setLoginModalOpen(true);
+                            }}
+                            className="hover:scale-110 transition-transform"
+                        >
+                            <User className="h-6 w-6 stroke-[2.5px]" />
+                        </button>
                     )}
                 </div>
             </div>
+
+            {/* Global OTP Login Modal */}
+            <OTPLoginModal
+                open={loginModalOpen}
+                onOpenChange={setLoginModalOpen}
+                onSuccess={() => router.visit(loginRedirect)}
+            />
 
             {/* Mobile Search (Collapsible) */}
             {isSearchOpen && (

@@ -338,7 +338,7 @@ export default function Checkout({ cart: initialCart }: CheckoutProps) {
                                                                   "http",
                                                               )
                                                                 ? item.image
-                                                                : `/storage/${item.image}`
+                                                                : `${item.image}`
                                                             : `https://placehold.co/200x200?text=${item.name}`
                                                     }
                                                     alt={item.name}
