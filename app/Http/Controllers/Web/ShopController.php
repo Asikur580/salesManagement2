@@ -100,6 +100,65 @@ class ShopController extends Controller
         ]);
     }
 
+    public function brandProducts(Brand $brand, Request $request)
+    {
+        $query = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
+            ->where('brand_id', $brand->id)
+            ->where('is_active', true);
+
+        // Filter by Price
+        if ($request->has('min_price')) {
+            $query->where('base_price', '>=', $request->min_price);
+        }
+        if ($request->has('max_price')) {
+            $query->where('base_price', '<=', $request->max_price);
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'default');
+        if ($sort === 'price_low') {
+            $query->orderBy('base_price', 'asc');
+        } elseif ($sort === 'price_high') {
+            $query->orderBy('base_price', 'desc');
+        } elseif ($sort === 'newest') {
+            $query->latest();
+        }
+
+        $products = $query->paginate(24)->withQueryString();
+
+        $products->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
+
+        return Inertia::render('Shop/BrandProductsPage', [
+            'brand' => $brand,
+            'products' => $products,
+            'filters' => $request->only(['min_price', 'max_price', 'sort']),
+        ]);
+    }
+
+    public function flashSales()
+    {
+        $products = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
+            ->where('is_active', true)
+            ->inRandomOrder()
+            ->paginate(24);
+
+        $products->each(function ($p) {
+            $p->setAppends(['price', 'old_price']);
+            if (Auth::check()) {
+                $p->is_wishlisted = $p->wishlists()->where('user_id', Auth::id())->exists();
+            }
+        });
+
+        return Inertia::render('Shop/FlashSalePage', [
+            'products' => $products,
+        ]);
+    }
+
     public function categoryProducts(Category $category, Request $request)
     {
         $query = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
@@ -107,10 +166,10 @@ class ShopController extends Controller
 
         // Filter by Price
         if ($request->has('min_price')) {
-            $query->where('sale_price', '>=', $request->min_price);
+            $query->where('base_price', '>=', $request->min_price);
         }
         if ($request->has('max_price')) {
-            $query->where('sale_price', '<=', $request->max_price);
+            $query->where('base_price', '<=', $request->max_price);
         }
 
         // Filter by Brand
@@ -122,9 +181,9 @@ class ShopController extends Controller
         // Sorting
         $sort = $request->get('sort', 'default');
         if ($sort === 'price_low') {
-            $query->orderBy('sale_price', 'asc');
+            $query->orderBy('base_price', 'asc');
         } elseif ($sort === 'price_high') {
-            $query->orderBy('sale_price', 'desc');
+            $query->orderBy('base_price', 'desc');
         } elseif ($sort === 'newest') {
             $query->latest();
         }
@@ -202,10 +261,10 @@ class ShopController extends Controller
 
         // Filter by Price
         if ($request->has('min_price')) {
-            $query->where('sale_price', '>=', $request->min_price);
+            $query->where('base_price', '>=', $request->min_price);
         }
         if ($request->has('max_price')) {
-            $query->where('sale_price', '<=', $request->max_price);
+            $query->where('base_price', '<=', $request->max_price);
         }
 
         // Filter by Brand
@@ -217,9 +276,9 @@ class ShopController extends Controller
         // Sorting
         $sort = $request->get('sort', 'default');
         if ($sort === 'price_low') {
-            $query->orderBy('sale_price', 'asc');
+            $query->orderBy('base_price', 'asc');
         } elseif ($sort === 'price_high') {
-            $query->orderBy('sale_price', 'desc');
+            $query->orderBy('base_price', 'desc');
         } elseif ($sort === 'newest') {
             $query->latest();
         }
@@ -236,7 +295,7 @@ class ShopController extends Controller
         return Inertia::render('SearchPage', [
             'products' => $products,
             'searchTerm' => $request->get('q', ''),
-            'categories' => Category::all(),
+            'filterCategories' => Category::all(),
             'brands' => Brand::all(),
             'filters' => $request->only(['min_price', 'max_price', 'brands', 'sort', 'category']),
         ]);

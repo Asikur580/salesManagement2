@@ -24,10 +24,18 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $request->validate([
+            'login' => ['required', 'string'],
             'password' => ['required'],
         ]);
+
+        $login = $request->input('login');
+        $fieldType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        $credentials = [
+            $fieldType => $login,
+            'password' => $request->input('password'),
+        ];
 
         if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
@@ -41,8 +49,8 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+            'login' => 'The provided credentials do not match our records.',
+        ])->onlyInput('login');
     }
 
     public function adminLogin(Request $request)
@@ -144,6 +152,29 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user, true);
+
+        // Migrate session cart to database
+        $sessionCart = $request->session()->get('cart', []);
+        foreach ($sessionCart as $item) {
+            $cartItem = \App\Models\Cart::where('user_id', $user->id)
+                ->where('product_id', $item['product_id'])
+                ->where('variant_id', $item['variant_id'])
+                ->first();
+
+            if ($cartItem) {
+                // If item exists in DB, we could either overwrite or add. Adding quantity seems safer.
+                $cartItem->increment('quantity', $item['quantity']);
+            } else {
+                \App\Models\Cart::create([
+                    'user_id' => $user->id,
+                    'product_id' => $item['product_id'],
+                    'variant_id' => $item['variant_id'],
+                    'quantity' => $item['quantity'],
+                ]);
+            }
+        }
+        $request->session()->forget('cart');
+
         $request->session()->regenerate();
 
         return response()->json([

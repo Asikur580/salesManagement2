@@ -80,5 +80,9 @@ class User extends Authenticatable
     {
         return $this->traitHasPermissionTo($permission, $guardName);
     }
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
 
 }

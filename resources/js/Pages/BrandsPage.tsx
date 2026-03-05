@@ -46,9 +46,7 @@ const BrandsPage = ({ brands }: BrandsPageProps) => {
                         {brands.map((brand) => (
                             <Link
                                 key={brand.id}
-                                href={route("shop.search", {
-                                    brands: brand.id,
-                                })}
+                                href={route("shop.brand", brand.slug)}
                                 className="flex flex-col items-center group"
                             >
                                 <div className="w-24 h-24 rounded-full border border-gray-100 bg-white p-3 mb-4 shadow-sm group-hover:shadow-md transition-all flex items-center justify-center overflow-hidden">

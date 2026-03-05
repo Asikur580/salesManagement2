@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { OTPLoginModal } from "@/components/shop/OTPLoginModal";
 
 interface ProductCardProps {
     product: any;
@@ -15,14 +14,13 @@ export function ProductCard({ product }: ProductCardProps) {
     const { toast } = useToast();
     const { user } = useAuth();
     const [isAdding, setIsAdding] = React.useState(false);
-    const [loginOpen, setLoginOpen] = useState(false);
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
 
         if (!user) {
-            setLoginOpen(true);
+            router.visit(route("login"));
             return;
         }
 
@@ -69,7 +67,7 @@ export function ProductCard({ product }: ProductCardProps) {
         e.stopPropagation();
 
         if (!user) {
-            setLoginOpen(true);
+            router.visit(route("login"));
             return;
         }
 
@@ -106,11 +104,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
     return (
         <div className="bg-white rounded-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col relative h-full">
-            <OTPLoginModal
-                open={loginOpen}
-                onOpenChange={setLoginOpen}
-                onSuccess={() => router.reload()}
-            />
             {/* Badges */}
             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                 {product.old_price > product.price && (

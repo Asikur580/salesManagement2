@@ -59,15 +59,58 @@ class HandleInertiaRequests extends Middleware
                 ->where('is_active', true)
                 ->orderBy('order')
                 ->get(),
-            'cart' => [
-                'items' => array_values(session()->get('cart', [])),
-                'count' => array_reduce(session()->get('cart', []), function ($carry, $item) {
-                    return $carry + $item['quantity'];
-                }, 0),
-                'total' => array_reduce(session()->get('cart', []), function ($carry, $item) {
-                    return $carry + ($item['price'] * $item['quantity']);
-                }, 0),
-            ],
+            'cart' => (function () use ($request) {
+                if ($request->user()) {
+                    $dbItems = \App\Models\Cart::with(['product', 'variant'])
+                        ->where('user_id', $request->user()->id)
+                        ->get();
+
+                    $items = $dbItems->map(function ($item) {
+                        $product = $item->product;
+                        $variant = $item->variant;
+
+                        // Get image path logic similar to CartController
+                        $imagePath = null;
+                        if ($variant && $variant->primaryImage) {
+                            $imagePath = $variant->primaryImage->image_path;
+                        } else {
+                            $primaryImage = $product->primaryImage ?: ($product->images->where('is_primary', true)->first() ?: $product->images->first());
+                            $imagePath = $primaryImage ? $primaryImage->image_path : null;
+                        }
+
+                        // Helper for variant name
+                        $variantName = null;
+                        if ($variant && method_exists($variant, 'attributeValues')) {
+                            $variantName = $variant->attributeValues->pluck('value')->implode(' - ');
+                        }
+
+                        return [
+                            'id' => $item->id,
+                            'product_id' => $item->product_id,
+                            'variant_id' => $item->variant_id,
+                            'name' => $product->name,
+                            'variant_name' => $variantName,
+                            'price' => (float) ($variant ? $variant->price : $product->base_price),
+                            'quantity' => $item->quantity,
+                            'image' => $imagePath,
+                            'slug' => $product->slug,
+                        ];
+                    })->toArray();
+
+                    return [
+                        'items' => $items,
+                        'count' => array_reduce($items, fn($carry, $item) => $carry + $item['quantity'], 0),
+                        'total' => array_reduce($items, fn($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0),
+                    ];
+                }
+
+                $sessionCart = session()->get('cart', []);
+                return [
+                    'items' => array_values($sessionCart),
+                    'count' => array_reduce($sessionCart, fn($carry, $item) => $carry + $item['quantity'], 0),
+                    'total' => array_reduce($sessionCart, fn($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0),
+                ];
+            })(),
             'wishlist_count' => app(\App\Repositories\Interfaces\WishlistRepositoryInterface::class)->getWishlistCount(),
         ];
     }

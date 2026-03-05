@@ -43,7 +43,6 @@ import {
 import { LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { OTPLoginModal } from "@/components/shop/OTPLoginModal";
 
 // ─── 3-Level Category Data ────────────────────────────────────────────────────
 // ... (CATEGORIES constant remains the same, I will skip it in replace_file_content if possible but I'll include enough context)
@@ -107,7 +106,12 @@ function MegaDropdown({
                             <span
                                 className={`text-[13px] font-bold transition-colors ${activeCategory?.id === cat.id ? "text-[#FF4E00]" : "text-gray-700 group-hover:text-[#FF4E00]"}`}
                             >
-                                {cat.name}
+                                <Link
+                                    href={route("shop.category", cat.slug)}
+                                    className="hover:underline"
+                                >
+                                    {cat.name}
+                                </Link>
                             </span>
                         </div>
                         <ChevronRight
@@ -141,7 +145,12 @@ function MegaDropdown({
                                     : "text-gray-700 group-hover:text-[#FF4E00]"
                             }`}
                         >
-                            {sub.name}
+                            <Link
+                                href={route("shop.category", sub.slug)}
+                                className="hover:underline"
+                            >
+                                {sub.name}
+                            </Link>
                         </span>
                         <ChevronRight
                             className={`h-3.5 w-3.5 shrink-0 ${activeSub?.id === sub.id ? "text-[#FF4E00]" : "text-gray-300"}`}
@@ -222,16 +231,13 @@ export function ShopNavbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMegaOpen, setIsMegaOpen] = useState(false);
     const [query, setQuery] = useState("");
-    const [loginModalOpen, setLoginModalOpen] = useState(false);
-    const [loginRedirect, setLoginRedirect] = useState("/");
 
     /** Navigate if logged in, otherwise open OTP login modal */
     const handleAuthNav = (href: string) => {
         if (user) {
             router.visit(href);
         } else {
-            setLoginRedirect(href);
-            setLoginModalOpen(true);
+            router.visit(route("login"));
         }
     };
 
@@ -404,10 +410,7 @@ export function ShopNavbar() {
                     )}
                     {!user && (
                         <button
-                            onClick={() => {
-                                setLoginRedirect("/");
-                                setLoginModalOpen(true);
-                            }}
+                            onClick={() => router.visit(route("login"))}
                             className="hover:scale-110 transition-transform"
                         >
                             <User className="h-6 w-6 stroke-[2.5px]" />
@@ -415,13 +418,6 @@ export function ShopNavbar() {
                     )}
                 </div>
             </div>
-
-            {/* Global OTP Login Modal */}
-            <OTPLoginModal
-                open={loginModalOpen}
-                onOpenChange={setLoginModalOpen}
-                onSuccess={() => router.visit(loginRedirect)}
-            />
 
             {/* Mobile Search (Collapsible) */}
             {isSearchOpen && (
@@ -486,7 +482,7 @@ export function ShopNavbar() {
                             Brands
                         </Link>
                         <Link
-                            href="/offers"
+                            href={route("shop.flash-sales")}
                             className="text-[14px] font-black text-gray-800 hover:text-[#FF4E00] transition-colors"
                         >
                             Offers

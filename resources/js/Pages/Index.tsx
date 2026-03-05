@@ -57,7 +57,7 @@ const Index = ({
                             <div className="absolute -top-6 -left-6 w-32 h-32 bg-orange-100 rounded-full mix-blend-multiply opacity-70 animate-blob" />
                             <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-yellow-100 rounded-full mix-blend-multiply opacity-70 animate-blob animation-delay-2000" />
                             <img
-                                src="https://images.unsplash.com/photo-1619642751034-765dfdf7358e?auto=format&fit=crop&q=80&w=1374"
+                                src="https://cdn.biswasautomobilesbd.com/article_images/655b1cbf475703d5024fb9fd.webp"
                                 className="relative rounded-[2.5rem] shadow-2xl z-10 border-8 border-gray-50"
                                 alt="Ceramic Coating Service"
                             />

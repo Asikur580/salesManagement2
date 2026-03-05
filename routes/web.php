@@ -1,32 +1,35 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\Web\AccountController;
+use App\Http\Controllers\Web\AttributeController;
 use App\Http\Controllers\Web\AuthController;
-use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
-use App\Http\Controllers\Web\ProductController;
-use App\Http\Controllers\Web\UnitController;
-use App\Http\Controllers\Web\AttributeController;
-use App\Http\Controllers\Web\RoleController;
-use App\Http\Controllers\Web\PosController;
-use App\Http\Controllers\Web\PermissionController;
-use App\Http\Controllers\Web\ReportController;
-use App\Http\Controllers\Web\OrderController;
-use App\Http\Controllers\Web\SaleController;
-use App\Http\Controllers\Web\UserPermissionController;
-use App\Http\Controllers\Web\StockController;
-use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\CheckoutController;
+use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\NotificationController;
+use App\Http\Controllers\Web\OrderController;
+use App\Http\Controllers\Web\PermissionController;
+use App\Http\Controllers\Web\PosController;
+use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\ReportController;
+use App\Http\Controllers\Web\RoleController;
+use App\Http\Controllers\Web\SaleController;
 use App\Http\Controllers\Web\ShopController;
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\Web\StockController;
+use App\Http\Controllers\Web\UnitController;
+use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\UserPermissionController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Controllers\Web\AccountController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/new-arrivals', [ShopController::class, 'newArrivals'])->name('shop.new-arrivals');
+Route::get('/flash-sales', [ShopController::class, 'flashSales'])->name('shop.flash-sales');
 Route::get('/all-brands', [ShopController::class, 'allBrands'])->name('shop.all-brands');
+Route::get('/brand/{brand:slug}', [ShopController::class, 'brandProducts'])->name('shop.brand');
 Route::get('/category/{category:slug}', [ShopController::class, 'categoryProducts'])->name('shop.category');
 Route::get('/product/{product:slug}', [ShopController::class, 'show'])->name('shop.product.show');
 Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
@@ -63,6 +66,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-account', [AccountController::class, 'index'])->name('account.index');
     Route::patch('/my-account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
     Route::put('/my-account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+    Route::get('/my-account/orders/{order}', [AccountController::class, 'showOrder'])->name('account.orders.show');
+    Route::post('/my-account/addresses', [AccountController::class, 'storeAddress'])->name('account.addresses.store');
+    Route::patch('/my-account/addresses/{address}', [AccountController::class, 'updateAddress'])->name('account.addresses.update');
+    Route::delete('/my-account/addresses/{address}', [AccountController::class, 'deleteAddress'])->name('account.addresses.delete');
 
     // Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -71,6 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.process');
 
     // Wishlist Routes
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');

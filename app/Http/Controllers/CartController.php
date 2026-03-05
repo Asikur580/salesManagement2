@@ -16,13 +16,20 @@ class CartController extends Controller
 
     public function checkout()
     {
-        $cart = session()->get('cart', []);
+        $hasItems = false;
+        if (auth()->check()) {
+            $hasItems = \App\Models\Cart::where('user_id', auth()->id())->exists();
+        } else {
+            $hasItems = !empty(session()->get('cart', []));
+        }
 
-        if (empty($cart)) {
+        if (!$hasItems) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        return Inertia::render('Shop/Checkout');
+        return Inertia::render('Shop/Checkout', [
+            'addresses' => auth()->check() ? auth()->user()->addresses : []
+        ]);
     }
 
     public function store(Request $request)
@@ -37,40 +44,58 @@ class CartController extends Controller
         $variantId = $request->variant_id;
         $quantity = $request->quantity;
 
-        $product = Product::with(['images', 'category'])->findOrFail($productId);
-        $variant = $variantId ? ProductVariant::with(['images', 'attributeValues'])->findOrFail($variantId) : null;
+        if (auth()->check()) {
+            $cartItem = \App\Models\Cart::where('user_id', auth()->id())
+                ->where('product_id', $productId)
+                ->where('variant_id', $variantId)
+                ->first();
 
-        $cartItemId = $variantId ? "v_{$variantId}" : "p_{$productId}";
-        $price = $variant ? $variant->price : $product->base_price;
-
-        // Handle image
-        $imagePath = null;
-        if ($variant && $variant->images->count() > 0) {
-            $imagePath = $variant->images[0]->image_path;
+            if ($cartItem) {
+                $cartItem->increment('quantity', $quantity);
+            } else {
+                \App\Models\Cart::create([
+                    'user_id' => auth()->id(),
+                    'product_id' => $productId,
+                    'variant_id' => $variantId,
+                    'quantity' => $quantity,
+                ]);
+            }
         } else {
-            $primaryImage = $product->images->where('is_primary', true)->first();
-            $imagePath = $primaryImage ? $primaryImage->image_path : ($product->images->first() ? $product->images->first()->image_path : null);
+            $product = Product::with(['images', 'category'])->findOrFail($productId);
+            $variant = $variantId ? ProductVariant::with(['images', 'attributeValues'])->findOrFail($variantId) : null;
+
+            $cartItemId = $variantId ? "v_{$variantId}" : "p_{$productId}";
+            $price = $variant ? $variant->price : $product->base_price;
+
+            // Handle image
+            $imagePath = null;
+            if ($variant && $variant->images->count() > 0) {
+                $imagePath = $variant->images[0]->image_path;
+            } else {
+                $primaryImage = $product->images->where('is_primary', true)->first();
+                $imagePath = $primaryImage ? $primaryImage->image_path : ($product->images->first() ? $product->images->first()->image_path : null);
+            }
+
+            $cart = session()->get('cart', []);
+
+            if (isset($cart[$cartItemId])) {
+                $cart[$cartItemId]['quantity'] += $quantity;
+            } else {
+                $cart[$cartItemId] = [
+                    'id' => $cartItemId,
+                    'product_id' => $productId,
+                    'variant_id' => $variantId,
+                    'name' => $product->name,
+                    'variant_name' => $variant ? $this->getVariantName($variant) : null,
+                    'price' => (float) $price,
+                    'quantity' => $quantity,
+                    'image' => $imagePath,
+                    'slug' => $product->slug,
+                ];
+            }
+
+            session()->put('cart', $cart);
         }
-
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$cartItemId])) {
-            $cart[$cartItemId]['quantity'] += $quantity;
-        } else {
-            $cart[$cartItemId] = [
-                'id' => $cartItemId,
-                'product_id' => $productId,
-                'variant_id' => $variantId,
-                'name' => $product->name,
-                'variant_name' => $variant ? $this->getVariantName($variant) : null,
-                'price' => (float) $price,
-                'quantity' => $quantity,
-                'image' => $imagePath,
-                'slug' => $product->slug,
-            ];
-        }
-
-        session()->put('cart', $cart);
 
         return back()->with('success', 'Product added to cart successfully!');
     }
@@ -81,12 +106,19 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity'] = $request->quantity;
-            session()->put('cart', $cart);
-            return back()->with('success', 'Cart updated!');
+        if (auth()->check()) {
+            $cartItem = \App\Models\Cart::where('user_id', auth()->id())->where('id', $id)->first();
+            if ($cartItem) {
+                $cartItem->update(['quantity' => $request->quantity]);
+                return back()->with('success', 'Cart updated!');
+            }
+        } else {
+            $cart = session()->get('cart', []);
+            if (isset($cart[$id])) {
+                $cart[$id]['quantity'] = $request->quantity;
+                session()->put('cart', $cart);
+                return back()->with('success', 'Cart updated!');
+            }
         }
 
         return back()->with('error', 'Item not found in cart.');
@@ -94,12 +126,19 @@ class CartController extends Controller
 
     public function destroy($id)
     {
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$id])) {
-            unset($cart[$id]);
-            session()->put('cart', $cart);
-            return back()->with('success', 'Item removed from cart.');
+        if (auth()->check()) {
+            $cartItem = \App\Models\Cart::where('user_id', auth()->id())->where('id', $id)->first();
+            if ($cartItem) {
+                $cartItem->delete();
+                return back()->with('success', 'Item removed from cart.');
+            }
+        } else {
+            $cart = session()->get('cart', []);
+            if (isset($cart[$id])) {
+                unset($cart[$id]);
+                session()->put('cart', $cart);
+                return back()->with('success', 'Item removed from cart.');
+            }
         }
 
         return back()->with('error', 'Item not found in cart.');
@@ -107,7 +146,11 @@ class CartController extends Controller
 
     public function clear()
     {
-        session()->forget('cart');
+        if (auth()->check()) {
+            \App\Models\Cart::where('user_id', auth()->id())->delete();
+        } else {
+            session()->forget('cart');
+        }
         return back()->with('success', 'Cart cleared successfully!');
     }
 

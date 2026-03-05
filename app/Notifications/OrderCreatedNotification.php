@@ -41,7 +41,7 @@ class OrderCreatedNotification extends Notification
         return [
             'order_id' => $this->order->id,
             'order_number' => $this->order->order_number,
-            'customer_name' => $this->order->customer->name ?? 'N/A',
+            'customer_name' => $this->order->customer_name,
             'total_amount' => $this->order->total_amount,
             'message' => 'New order created: ' . $this->order->order_number . ' for BDT ' . $this->order->total_amount,
             'action_url' => '/orders/' . $this->order->id,

@@ -2,104 +2,64 @@ import React, { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import { ShopLayout } from "@/Layouts/ShopLayout";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { ChevronRight, Filter, ChevronDown, Check } from "lucide-react";
-
-interface Category {
-    id: number;
-    name: string;
-    slug: string;
-}
+import { ChevronRight } from "lucide-react";
 
 interface Brand {
     id: number;
     name: string;
+    slug: string;
+    description?: string;
+    logo?: string;
 }
 
-interface CategoryPageProps {
-    category: Category;
+interface BrandProductsPageProps {
+    brand: Brand;
     products: {
         data: any[];
         links: any[];
         total: number;
         current_page: number;
     };
-    brands: Brand[];
     filters: {
         min_price?: string;
         max_price?: string;
-        brands?: string;
         sort?: string;
     };
 }
 
-const CategoryPage = (props: CategoryPageProps) => {
-    // Ultra-safe prop handling with logging
-    console.log("CategoryPage Full Props:", props);
-
-    // Explicit null/undefined checks for everything
-    const category =
-        props && props.category ? props.category : ({} as Category);
-    const products =
-        props && props.products
-            ? props.products
-            : { data: [], links: [], total: 0 };
-    const brands = props && props.brands ? props.brands : [];
-    const filters = props && props.filters ? props.filters : {};
+const BrandProductsPage = (props: BrandProductsPageProps) => {
+    const brand = props?.brand || ({} as Brand);
+    const products = props?.products || { data: [], links: [], total: 0 };
+    const filters = props?.filters || {};
 
     const [minPrice, setMinPrice] = useState(() =>
-        filters && filters.min_price ? String(filters.min_price) : "",
+        filters?.min_price ? String(filters.min_price) : "",
     );
     const [maxPrice, setMaxPrice] = useState(() =>
-        filters && filters.max_price ? String(filters.max_price) : "",
+        filters?.max_price ? String(filters.max_price) : "",
     );
-    const [selectedBrands, setSelectedBrands] = useState<string[]>(() => {
-        try {
-            if (filters && filters.brands) {
-                return String(filters.brands).split(",").filter(Boolean);
-            }
-        } catch (e) {
-            console.error("Error parsing brands filter:", e);
-        }
-        return [];
-    });
     const [currentSort, setCurrentSort] = useState(() =>
-        filters && filters.sort ? String(filters.sort) : "default",
+        filters?.sort ? String(filters.sort) : "default",
     );
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const applyFilters = () => {
         try {
-            const slug = category && category.slug ? category.slug : "";
-            if (!slug) {
-                console.warn("Cannot apply filters: category slug is missing");
-                return;
-            }
+            const slug = brand?.slug || "";
+            if (!slug) return;
 
             const params: any = {};
             if (minPrice) params.min_price = minPrice;
             if (maxPrice) params.max_price = maxPrice;
-            if (selectedBrands && selectedBrands.length > 0)
-                params.brands = selectedBrands.join(",");
             if (currentSort && currentSort !== "default")
                 params.sort = currentSort;
 
-            console.log("Applying filters with params:", params);
-
-            router.get(route("shop.category", slug), params, {
+            router.get(route("shop.brand", slug), params, {
                 preserveState: true,
                 preserveScroll: true,
             });
         } catch (e) {
-            console.error("Error in applyFilters:", e);
+            console.error("Error applying filters:", e);
         }
-    };
-
-    const handleBrandChange = (brandId: string) => {
-        setSelectedBrands((prev) =>
-            prev.includes(brandId)
-                ? prev.filter((id) => id !== brandId)
-                : [...prev, brandId],
-        );
     };
 
     const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -115,7 +75,7 @@ const CategoryPage = (props: CategoryPageProps) => {
 
     return (
         <ShopLayout>
-            <Head title={`${category.name} | CarMart`} />
+            <Head title={`${brand.name} | CarMart`} />
 
             {/* Header Section */}
             <div className="bg-[#F8F9FA] py-8 border-b">
@@ -125,20 +85,43 @@ const CategoryPage = (props: CategoryPageProps) => {
                             Home
                         </Link>
                         <ChevronRight className="h-4 w-4" />
+                        <Link
+                            href={route("shop.all-brands")}
+                            className="hover:text-[#FF4E00]"
+                        >
+                            Brands
+                        </Link>
+                        <ChevronRight className="h-4 w-4" />
                         <span className="text-gray-900 font-medium">
-                            {category.name}
+                            {brand.name}
                         </span>
                     </div>
-                    <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">
-                        Best {category.name} in Bangladesh | Mods with Best
-                        Price
-                    </h1>
-                    <p className="text-gray-500 font-medium mt-1 max-w-4xl">
-                        Upgrade your ride with premium{" "}
-                        {category.name.toLowerCase()} in Bangladesh. Explore
-                        stylish mods, stickers, covers, and care items at the
-                        best price.
-                    </p>
+
+                    <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                        <div className="w-24 h-24 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center p-2 shrink-0 overflow-hidden">
+                            <img
+                                src={
+                                    brand.logo
+                                        ? brand.logo.startsWith("http") ||
+                                          brand.logo.startsWith("/storage/")
+                                            ? brand.logo
+                                            : `/storage/${brand.logo}`
+                                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=f9fafb&color=ff4e00&bold=true`
+                                }
+                                alt={brand.name}
+                                className="max-w-full max-h-full object-contain"
+                            />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">
+                                {brand.name} Products
+                            </h1>
+                            <p className="text-gray-500 font-medium mt-1 max-w-4xl">
+                                {brand.description ||
+                                    `Explore the best quality car accessories from ${brand.name}. Check out our top products at the best prices.`}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -194,47 +177,6 @@ const CategoryPage = (props: CategoryPageProps) => {
                                     </button>
                                 </div>
                             </div>
-
-                            {/* Brand Filter */}
-                            <div>
-                                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight mb-4 border-b pb-2">
-                                    Filter By Brand
-                                </h3>
-                                <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                                    {brands.map((brand) => (
-                                        <label
-                                            key={brand.id}
-                                            className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group"
-                                        >
-                                            <span className="text-sm font-bold text-gray-600 group-hover:text-[#FF4E00] transition-colors">
-                                                {brand.name}
-                                            </span>
-                                            <div className="relative">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedBrands.includes(
-                                                        brand.id.toString(),
-                                                    )}
-                                                    onChange={() =>
-                                                        handleBrandChange(
-                                                            brand.id.toString(),
-                                                        )
-                                                    }
-                                                    className="peer hidden"
-                                                />
-                                                <div className="w-5 h-5 border-2 border-gray-200 rounded-md peer-checked:bg-[#FF4E00] peer-checked:border-[#FF4E00] transition-all" />
-                                                <Check className="h-3.5 w-3.5 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity" />
-                                            </div>
-                                        </label>
-                                    ))}
-                                </div>
-                                <button
-                                    onClick={applyFilters}
-                                    className="w-full mt-4 bg-gray-900 text-white py-2.5 rounded-lg text-sm font-black hover:bg-gray-800 transition-all"
-                                >
-                                    Apply Brands
-                                </button>
-                            </div>
                         </aside>
 
                         {/* Main Content */}
@@ -252,7 +194,7 @@ const CategoryPage = (props: CategoryPageProps) => {
                                     </span>{" "}
                                     results for{" "}
                                     <span className="italic">
-                                        "{category.name}"
+                                        "{brand.name}"
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -292,8 +234,7 @@ const CategoryPage = (props: CategoryPageProps) => {
                                 ) : (
                                     <div className="col-span-full py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-300">
                                         <h4 className="text-xl font-bold text-gray-400">
-                                            No products found for this category
-                                            or filter
+                                            No products found for this brand
                                         </h4>
                                     </div>
                                 )}
@@ -327,4 +268,4 @@ const CategoryPage = (props: CategoryPageProps) => {
     );
 };
 
-export default CategoryPage;
+export default BrandProductsPage;

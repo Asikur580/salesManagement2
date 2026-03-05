@@ -1,26 +1,104 @@
-import React, { useState } from "react";
-import { Head, Link } from "@inertiajs/react";
+import React, { useState, useEffect } from "react";
+import { Head, Link, router } from "@inertiajs/react";
 import { ShopLayout } from "@/Layouts/ShopLayout";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { ChevronRight, Search, Filter, Check } from "lucide-react";
+import { ChevronRight, Search, Check } from "lucide-react";
 
-// ─── Dummy Data for Search Results ────────────────────────────────────────────
+interface Brand {
+    id: number;
+    name: string;
+}
+
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+}
+
 interface SearchPageProps {
     products: {
         data: any[];
         links: any[];
         total: number;
     };
-    categories: any[];
+    filterCategories: Category[];
+    brands: Brand[];
     searchTerm: string;
+    filters: {
+        min_price?: string;
+        max_price?: string;
+        brands?: string;
+        sort?: string;
+        category?: string;
+    };
 }
 
 const SearchPage = ({
     products,
-    categories,
+    filterCategories,
+    brands = [],
     searchTerm: propSearchTerm,
+    filters = {},
 }: SearchPageProps) => {
     const [searchTerm] = useState(propSearchTerm || "");
+    const [minPrice, setMinPrice] = useState(() =>
+        filters?.min_price ? String(filters.min_price) : "",
+    );
+    const [maxPrice, setMaxPrice] = useState(() =>
+        filters?.max_price ? String(filters.max_price) : "",
+    );
+    const [selectedBrands, setSelectedBrands] = useState<string[]>(() => {
+        try {
+            if (filters && filters.brands) {
+                return String(filters.brands).split(",").filter(Boolean);
+            }
+        } catch (e) {
+            console.error("Error parsing brands filter:", e);
+        }
+        return [];
+    });
+    const [currentSort, setCurrentSort] = useState(() =>
+        filters?.sort ? String(filters.sort) : "default",
+    );
+
+    const applyFilters = () => {
+        try {
+            const params: any = {};
+            if (searchTerm) params.q = searchTerm;
+            if (minPrice) params.min_price = minPrice;
+            if (maxPrice) params.max_price = maxPrice;
+            if (selectedBrands && selectedBrands.length > 0)
+                params.brands = selectedBrands.join(",");
+            if (currentSort && currentSort !== "default")
+                params.sort = currentSort;
+            if (filters?.category) params.category = filters.category;
+
+            router.get(route("shop.search"), params, {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        } catch (e) {
+            console.error("Error in applyFilters:", e);
+        }
+    };
+
+    const handleBrandChange = (brandId: string) => {
+        setSelectedBrands((prev) =>
+            prev.includes(brandId)
+                ? prev.filter((id) => id !== brandId)
+                : [...prev, brandId],
+        );
+    };
+
+    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrentSort(e.target.value);
+    };
+
+    useEffect(() => {
+        if (currentSort !== (filters?.sort || "default")) {
+            applyFilters();
+        }
+    }, [currentSort]);
 
     return (
         <ShopLayout>
@@ -44,10 +122,13 @@ const SearchPage = ({
                         </div>
                         <div>
                             <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">
-                                Results for "{searchTerm}"
+                                {searchTerm
+                                    ? `Results for "${searchTerm}"`
+                                    : "All Products"}
                             </h1>
                             <p className="text-gray-500 font-medium mt-1">
-                                We found some great products for you.
+                                We found {products?.total || 0} great products
+                                for you.
                             </p>
                         </div>
                     </div>
@@ -64,19 +145,36 @@ const SearchPage = ({
                                 <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight mb-4 border-b pb-2">
                                     Categories
                                 </h3>
-                                <div className="space-y-2">
-                                    {categories?.map((cat: any) => (
+                                <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                    {filterCategories?.map((cat: any) => (
                                         <Link
                                             key={cat.id}
-                                            href={route(
-                                                "shop.category",
-                                                cat.slug,
-                                            )}
-                                            className="block w-full text-left px-3 py-2 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all hover:text-[#FF4E00]"
+                                            href={route("shop.search", {
+                                                ...filters,
+                                                category: cat.slug,
+                                                q: searchTerm,
+                                            })}
+                                            className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-bold transition-all ${
+                                                filters?.category === cat.slug
+                                                    ? "bg-[#FF4E00]/10 text-[#FF4E00]"
+                                                    : "text-gray-600 hover:bg-gray-100 hover:text-[#FF4E00]"
+                                            }`}
                                         >
                                             {cat.name}
                                         </Link>
                                     ))}
+                                    {filters?.category && (
+                                        <Link
+                                            href={route("shop.search", {
+                                                ...filters,
+                                                category: undefined,
+                                                q: searchTerm,
+                                            })}
+                                            className="block w-full text-left mt-2 px-3 py-2 rounded-lg text-sm font-bold text-red-500 hover:bg-red-50 transition-all"
+                                        >
+                                            Clear Category Filter
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
 
@@ -94,8 +192,11 @@ const SearchPage = ({
                                             <input
                                                 type="number"
                                                 placeholder="Min"
-                                                disabled
-                                                className="w-full pl-7 pr-3 py-2 border-gray-100 bg-gray-50 rounded-lg text-sm opacity-60"
+                                                value={minPrice}
+                                                onChange={(e) =>
+                                                    setMinPrice(e.target.value)
+                                                }
+                                                className="w-full pl-7 pr-3 py-2 border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
                                             />
                                         </div>
                                         <span className="text-gray-400 font-bold">
@@ -108,15 +209,62 @@ const SearchPage = ({
                                             <input
                                                 type="number"
                                                 placeholder="Max"
-                                                disabled
-                                                className="w-full pl-7 pr-3 py-2 border-gray-100 bg-gray-50 rounded-lg text-sm opacity-60"
+                                                value={maxPrice}
+                                                onChange={(e) =>
+                                                    setMaxPrice(e.target.value)
+                                                }
+                                                className="w-full pl-7 pr-3 py-2 border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
                                             />
                                         </div>
                                     </div>
-                                    <button className="w-full bg-[#FF4E00] text-white py-2.5 rounded-lg text-sm font-black hover:bg-orange-600 transition-all shadow-lg shadow-orange-100">
+                                    <button
+                                        onClick={applyFilters}
+                                        className="w-full bg-[#FF4E00] text-white py-2.5 rounded-lg text-sm font-black hover:bg-orange-600 transition-all shadow-lg shadow-orange-100"
+                                    >
                                         Filter Results
                                     </button>
                                 </div>
+                            </div>
+
+                            {/* Brand Filter */}
+                            <div>
+                                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight mb-4 border-b pb-2">
+                                    Brands
+                                </h3>
+                                <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                    {brands.map((brand) => (
+                                        <label
+                                            key={brand.id}
+                                            className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group"
+                                        >
+                                            <span className="text-sm font-bold text-gray-600 group-hover:text-[#FF4E00] transition-colors">
+                                                {brand.name}
+                                            </span>
+                                            <div className="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedBrands.includes(
+                                                        brand.id.toString(),
+                                                    )}
+                                                    onChange={() =>
+                                                        handleBrandChange(
+                                                            brand.id.toString(),
+                                                        )
+                                                    }
+                                                    className="peer hidden"
+                                                />
+                                                <div className="w-5 h-5 border-2 border-gray-200 rounded-md peer-checked:bg-[#FF4E00] peer-checked:border-[#FF4E00] transition-all" />
+                                                <Check className="h-3.5 w-3.5 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity" />
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={applyFilters}
+                                    className="w-full mt-4 bg-gray-900 text-white py-2.5 rounded-lg text-sm font-black hover:bg-gray-800 transition-all"
+                                >
+                                    Apply Brands
+                                </button>
                             </div>
                         </aside>
 
@@ -127,33 +275,51 @@ const SearchPage = ({
                                 <div className="text-sm font-bold text-gray-700">
                                     Showing{" "}
                                     <span className="text-[#FF4E00]">
-                                        {products.data.length}
+                                        {products?.data?.length || 0}
                                     </span>{" "}
                                     of{" "}
                                     <span className="text-[#FF4E00]">
-                                        {products.total}
+                                        {products?.total || 0}
                                     </span>{" "}
-                                    results for{" "}
-                                    <span className="italic">
-                                        "{searchTerm}"
-                                    </span>
+                                    results
+                                    {searchTerm && (
+                                        <>
+                                            {" "}
+                                            for{" "}
+                                            <span className="italic">
+                                                "{searchTerm}"
+                                            </span>
+                                        </>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <span className="text-xs font-black text-gray-400 uppercase tracking-wider">
                                         Sort By:
                                     </span>
-                                    <select className="border-gray-200 bg-white rounded-lg text-sm font-bold text-gray-900 focus:ring-[#FF4E00] focus:border-[#FF4E00] cursor-pointer">
-                                        <option>Relevance</option>
-                                        <option>Newest First</option>
-                                        <option>Price: Low to High</option>
-                                        <option>Price: High to Low</option>
+                                    <select
+                                        value={currentSort}
+                                        onChange={handleSortChange}
+                                        className="border-gray-200 bg-white rounded-lg text-sm font-bold text-gray-900 focus:ring-[#FF4E00] focus:border-[#FF4E00] cursor-pointer"
+                                    >
+                                        <option value="default">
+                                            Relevance
+                                        </option>
+                                        <option value="newest">
+                                            Newest First
+                                        </option>
+                                        <option value="price_low">
+                                            Price: Low to High
+                                        </option>
+                                        <option value="price_high">
+                                            Price: High to Low
+                                        </option>
                                     </select>
                                 </div>
                             </div>
 
                             {/* Product Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {products.data.length > 0 ? (
+                                {products?.data?.length > 0 ? (
                                     products.data.map((product) => (
                                         <ProductCard
                                             key={product.id}
@@ -170,7 +336,7 @@ const SearchPage = ({
                             </div>
 
                             {/* Pagination */}
-                            {products.data.length > 0 &&
+                            {products?.data?.length > 0 &&
                                 products.links.length > 3 && (
                                     <div className="mt-16 flex justify-center gap-2">
                                         {products.links.map((link, i) => (

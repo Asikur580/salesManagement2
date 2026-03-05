@@ -101,7 +101,7 @@ export function FlashSale({ products = [] }: FlashSaleProps) {
                     </div>
 
                     <Link
-                        href="/offers"
+                        href={route("shop.flash-sales")}
                         className="bg-[#FF4E00] hover:bg-orange-600 text-white px-4 py-1.5 rounded-md text-xs font-bold transition-colors uppercase w-fit"
                     >
                         View all deals

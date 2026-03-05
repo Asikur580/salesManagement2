@@ -17,11 +17,29 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-interface CheckoutProps {
-    cart: any;
+interface Address {
+    id: number;
+    type: string;
+    full_name: string;
+    phone: string;
+    email: string | null;
+    address_line_1: string;
+    address_line_2: string | null;
+    city: string;
+    area: string | null;
+    postal_code: string | null;
+    is_default: boolean;
 }
 
-export default function Checkout({ cart: initialCart }: CheckoutProps) {
+interface CheckoutProps {
+    cart: any;
+    addresses: Address[];
+}
+
+export default function Checkout({
+    cart: initialCart,
+    addresses = [],
+}: CheckoutProps) {
     const { toast } = useToast();
     const { cart } = usePage().props as any; // Use global cart for latest data
     const items = cart?.items || [];
@@ -37,7 +55,54 @@ export default function Checkout({ cart: initialCart }: CheckoutProps) {
         payment_method: "cod",
     });
 
+    const [selectedAddressId, setSelectedAddressId] = useState<number | "new">(
+        "new",
+    );
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Initial default address setup
+    React.useEffect(() => {
+        const defaultAddress = addresses.find((a) => a.is_default);
+        if (defaultAddress) {
+            handleSelectAddress(defaultAddress);
+        }
+    }, []);
+
+    const handleSelectAddress = (address: Address | "new") => {
+        if (address === "new") {
+            setSelectedAddressId("new");
+            setFormData((prev) => ({
+                ...prev,
+                first_name: "",
+                last_name: "",
+                email: "",
+                phone: "",
+                address: "",
+                city: "",
+                postal_code: "",
+            }));
+        } else {
+            setSelectedAddressId(address.id);
+            const names = address.full_name.split(" ");
+            const firstName = names[0] || "";
+            const lastName = names.slice(1).join(" ") || "";
+
+            setFormData((prev) => ({
+                ...prev,
+                first_name: firstName,
+                last_name: lastName,
+                email: address.email || "",
+                phone: address.phone,
+                address:
+                    address.address_line_1 +
+                    (address.address_line_2
+                        ? `, ${address.address_line_2}`
+                        : ""),
+                city: address.city,
+                postal_code: address.postal_code || "",
+            }));
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -48,18 +113,23 @@ export default function Checkout({ cart: initialCart }: CheckoutProps) {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // This would post to a route that handles order creation
-        // router.post(route('checkout.process'), formData, { ... });
-
-        setTimeout(() => {
-            setIsSubmitting(false);
-            toast({
-                title: "Order Placed Successfully",
-                description:
-                    "Thank you for your purchase! You will receive an email confirmation shortly.",
-            });
-            router.get("/");
-        }, 1500);
+        router.post(route("checkout.process"), formData, {
+            onSuccess: () => {
+                setIsSubmitting(false);
+                toast({
+                    title: "Order Placed Successfully",
+                    description: "Thank you for your purchase!",
+                });
+            },
+            onError: (errors) => {
+                setIsSubmitting(false);
+                toast({
+                    title: "Order Failed",
+                    description: "Please check your information and try again.",
+                    variant: "destructive",
+                });
+            },
+        });
     };
 
     if (items.length === 0) {
@@ -113,6 +183,78 @@ export default function Checkout({ cart: initialCart }: CheckoutProps) {
                                         Shipping Information
                                     </h2>
                                 </div>
+
+                                {addresses.length > 0 && (
+                                    <div className="mb-10">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 block">
+                                            Select Saved Address
+                                        </label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {addresses.map((address) => (
+                                                <button
+                                                    key={address.id}
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleSelectAddress(
+                                                            address,
+                                                        )
+                                                    }
+                                                    className={`p-5 rounded-3xl border-2 text-left transition-all relative overflow-hidden group ${
+                                                        selectedAddressId ===
+                                                        address.id
+                                                            ? "border-[#FF4E00] bg-orange-50/30"
+                                                            : "border-gray-100 hover:border-gray-200"
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span
+                                                            className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                                                                selectedAddressId ===
+                                                                address.id
+                                                                    ? "bg-[#FF4E00] text-white"
+                                                                    : "bg-gray-100 text-gray-400"
+                                                            }`}
+                                                        >
+                                                            {address.type}
+                                                        </span>
+                                                        {selectedAddressId ===
+                                                            address.id && (
+                                                            <CheckCircle2 className="h-4 w-4 text-[#FF4E00]" />
+                                                        )}
+                                                    </div>
+                                                    <p className="font-black text-sm text-gray-900 group-hover:text-[#FF4E00] transition-colors">
+                                                        {address.full_name}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-500 font-medium mt-1 truncate">
+                                                        {address.address_line_1}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tighter">
+                                                        {address.phone}
+                                                    </p>
+                                                </button>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleSelectAddress("new")
+                                                }
+                                                className={`p-5 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all group ${
+                                                    selectedAddressId === "new"
+                                                        ? "border-[#FF4E00] bg-orange-50/30 text-[#FF4E00]"
+                                                        : "border-gray-200 text-gray-400 hover:border-[#FF4E00] hover:text-[#FF4E00]"
+                                                }`}
+                                            >
+                                                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#FF4E00] group-hover:text-white transition-all">
+                                                    <MapPin className="h-4 w-4" />
+                                                </div>
+                                                <span className="text-[10px] font-black uppercase tracking-widest">
+                                                    New Address
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <div className="h-[1px] bg-gray-100 my-8 w-full" />
+                                    </div>
+                                )}
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">

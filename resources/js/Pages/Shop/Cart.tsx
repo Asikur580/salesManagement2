@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { OTPLoginModal } from "@/components/shop/OTPLoginModal";
 
 interface CartProps {
     cart: any;
@@ -17,30 +16,25 @@ export default function Cart({ cart }: CartProps) {
     const [loginOpen, setLoginOpen] = useState(true);
     const items = cart?.items || [];
 
-    // If not logged in, show login modal instead of cart
+    // If not logged in, show sign in message with link to login page
     if (!user) {
         return (
             <ShopLayout>
                 <Head title="Shopping Cart | CarMart" />
-                <OTPLoginModal
-                    open={loginOpen}
-                    onOpenChange={setLoginOpen}
-                    onSuccess={() => router.reload()}
-                />
                 <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center px-4">
                     <ShoppingBag className="h-16 w-16 text-gray-200" />
-                    <h2 className="text-2xl font-black text-gray-900">
+                    <h2 className="text-2xl font-black text-gray-900 uppercase">
                         Sign in to view your cart
                     </h2>
-                    <p className="text-gray-500 max-w-sm">
-                        Please log in with your phone number to access your
-                        shopping cart.
+                    <p className="text-gray-400 font-bold max-w-sm uppercase text-xs tracking-widest">
+                        Please log in with your phone number or password to
+                        access your shopping cart.
                     </p>
                     <Button
-                        onClick={() => setLoginOpen(true)}
-                        className="mt-2 bg-[#FF4E00] hover:bg-black text-white px-8 py-5 rounded-2xl font-black"
+                        onClick={() => router.visit(route("login"))}
+                        className="mt-4 bg-[#FF4E00] hover:bg-black text-white px-10 py-7 rounded-2xl font-black uppercase italic tracking-tighter shadow-xl shadow-orange-100"
                     >
-                        Sign In
+                        Sign In Now
                     </Button>
                 </div>
             </ShopLayout>

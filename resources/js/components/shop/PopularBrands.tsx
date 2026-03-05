@@ -70,9 +70,7 @@ export function PopularBrands({ brands = [] }: PopularBrandsProps) {
                             {brands.map((brand, i) => (
                                 <Link
                                     key={brand.id || i}
-                                    href={route("shop.search", {
-                                        brands: brand.id,
-                                    })}
+                                    href={route("shop.brand", brand.slug)}
                                     className="flex flex-col items-center flex-shrink-0 group w-[100px]"
                                 >
                                     <div className="w-20 h-20 rounded-full border border-gray-100 bg-white p-2 mb-3 shadow-sm group-hover:shadow-md transition-all flex items-center justify-center overflow-hidden">
