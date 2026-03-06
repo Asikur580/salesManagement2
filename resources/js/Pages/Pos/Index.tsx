@@ -10,6 +10,10 @@ import {
     CreditCard,
     UserPlus,
     Box,
+    X,
+    LayoutDashboard,
+    Clock,
+    Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +21,12 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
     Select,
     SelectContent,
@@ -202,6 +212,15 @@ export default function PosIndex({
         const price = variant ? variant.selling_price : product.base_price || 0;
         const maxStock = variant ? variant.stock : product.stock;
 
+        if (maxStock <= 0) {
+            toast({
+                title: "Out of Stock",
+                description: `${product.name} ${variant ? "variant" : ""} is currently unavailable.`,
+                variant: "destructive",
+            });
+            return;
+        }
+
         let variantName = "";
         if (variant) {
             variantName = variant.attributeValues
@@ -228,15 +247,6 @@ export default function PosIndex({
                         ? { ...item, quantity: item.quantity + 1 }
                         : item,
                 );
-            }
-
-            if (maxStock <= 0) {
-                toast({
-                    title: "Out of Stock",
-                    description: "Cannot add out of stock items.",
-                    variant: "destructive",
-                });
-                return prev;
             }
 
             return [
@@ -317,12 +327,10 @@ export default function PosIndex({
             unit_price: c.price,
         }));
 
-        setData("items", payloadItems);
-
-        // the actual submit must happen after state connects. We can use a trick or just use standard fetch/inertia post.
-        // We'll post directly because Inertia's hook needs data to be set.
+        // CRITICAL FIX: Direct payload injection to bypass asynchronous useForm state updates
         post("/pos/checkout", {
-            data: { ...data, items: payloadItems }, // Immediate override
+            ...data,
+            items: payloadItems,
             onSuccess: () => {
                 setCart([]);
                 reset();
@@ -330,441 +338,458 @@ export default function PosIndex({
                     title: "Success",
                     description: "Transaction completed successfully.",
                 });
-                // Return focus to scanner
                 searchInputRef.current?.focus();
             },
-        });
+            onError: (err) => {
+                const message = Object.values(err).flat().join(", ");
+                toast({
+                    title: "Checkout Failed",
+                    description: message || "Something went wrong during checkout.",
+                    variant: "destructive",
+                });
+            }
+        } as any);
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100 overflow-hidden">
-            {/* Top Navigation Bar */}
-            <header className="bg-slate-900 text-white h-14 flex items-center justify-between px-4 shrink-0 shadow-md z-10">
-                <div className="flex items-center gap-4">
-                    <Link
-                        href="/dashboard"
-                        className="flex items-center gap-2 hover:text-blue-400 transition-colors"
-                    >
-                        <Home className="h-5 w-5" />
-                        <span className="font-semibold tracking-wide">
-                            Dashboard
-                        </span>
-                    </Link>
-                    <Separator
-                        orientation="vertical"
-                        className="h-6 bg-slate-700"
-                    />
-                    <h1 className="text-xl font-bold tracking-tight">
-                        Point of Sale
-                    </h1>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="text-sm font-light text-slate-300">
-                        {new Date().toLocaleDateString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}
-                    </div>
-                </div>
-            </header>
-
-            {/* Main Content Split */}
-            <div className="flex flex-1 overflow-hidden">
-                {/* Left Panel: Products Section */}
-                <div className="flex-1 flex flex-col bg-gray-50 border-r border-gray-200 shadow-inner">
-                    {/* Filter Header */}
-                    <div className="p-4 bg-white border-b border-gray-200 space-y-3 shrink-0">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                            <Input
-                                ref={searchInputRef}
-                                className="pl-10 h-12 text-lg bg-gray-50 border-gray-300 focus:ring-blue-500 rounded-xl"
-                                placeholder="Scan Barcode or Search Products..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
+        <TooltipProvider>
+            <div className="flex flex-col h-screen bg-[#f8fafc] overflow-hidden font-sans selection:bg-indigo-100 selection:text-indigo-700">
+                <Head title="Point of Sale | Premium POS" />
+                
+                {/* Top Navigation Bar - Premium Glassmorphism */}
+                <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10 text-white h-16 flex items-center justify-between px-6 shrink-0 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.3)]">
+                    <div className="flex items-center gap-6">
+                        <Link
+                            href="/dashboard"
+                            className="group flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-sm"
+                        >
+                            <LayoutDashboard className="h-4 w-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+                            <span className="text-sm font-medium tracking-wide">
+                                Dashboard
+                            </span>
+                        </Link>
+                        <div className="h-6 w-px bg-white/10 hidden sm:block" />
+                        <div className="flex flex-col">
+                            <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
+                                Smart POS System
+                            </h1>
+                            <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-indigo-400 font-bold">
+                                <Zap className="h-2.5 w-2.5 fill-indigo-400" />
+                                Live Transaction
+                            </div>
                         </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-6">
+                        <div className="hidden md:flex flex-col items-end">
+                            <div className="text-sm font-semibold flex items-center gap-2">
+                                <Clock className="h-3.5 w-3.5 text-indigo-400" />
+                                {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div className="text-[11px] font-medium text-slate-400 tabular-nums">
+                                {new Date().toLocaleDateString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                })}
+                            </div>
+                        </div>
+                        <div className="h-8 w-px bg-white/10" />
+                        <div className="flex items-center gap-3">
+                            <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5 animate-pulse">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+                                Online
+                            </Badge>
+                        </div>
+                    </div>
+                </header>
 
-                        <ScrollArea className="w-full whitespace-nowrap pb-2">
-                            <div className="flex gap-2">
-                                <Button
-                                    variant={
-                                        selectedCategoryId === "all"
-                                            ? "default"
-                                            : "outline"
-                                    }
-                                    onClick={() => setSelectedCategoryId("all")}
-                                    className="rounded-full px-5"
-                                >
-                                    All Items
-                                </Button>
-                                {categories.map((cat) => (
+                {/* Main Content Split */}
+                <div className="flex flex-1 overflow-hidden">
+                    {/* Left Panel: Products Section */}
+                    <div className="flex-1 flex flex-col bg-gray-50 border-r border-gray-100 shadow-inner">
+                        {/* Filter Header - Modern & Clean */}
+                        <div className="p-6 bg-white border-b border-gray-100 space-y-5 shrink-0 shadow-sm">
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+                                <Input
+                                    ref={searchInputRef}
+                                    className="pl-12 h-14 text-lg bg-gray-50 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl transition-all duration-300 placeholder:text-gray-400 shadow-sm"
+                                    placeholder="Scan Barcode or Search Products..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+
+                            <ScrollArea className="w-full whitespace-nowrap">
+                                <div className="flex gap-2 pb-2">
                                     <Button
-                                        key={cat.id}
                                         variant={
-                                            selectedCategoryId === cat.id
+                                            selectedCategoryId === "all"
                                                 ? "default"
                                                 : "outline"
                                         }
-                                        onClick={() =>
-                                            setSelectedCategoryId(cat.id)
-                                        }
-                                        className="rounded-full px-5 whitespace-nowrap bg-white hover:bg-gray-100"
+                                        onClick={() => setSelectedCategoryId("all")}
+                                        className={`rounded-xl px-6 h-10 font-medium transition-all duration-300 ${
+                                            selectedCategoryId === "all"
+                                                ? "bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20"
+                                                : "bg-white hover:bg-indigo-50 hover:text-indigo-600 border-gray-200"
+                                        }`}
                                     >
-                                        {cat.name}
+                                        All Items
                                     </Button>
-                                ))}
+                                    {categories.map((cat) => (
+                                        <Button
+                                            key={cat.id}
+                                            variant={
+                                                selectedCategoryId === cat.id
+                                                    ? "default"
+                                                    : "outline"
+                                            }
+                                            onClick={() =>
+                                                setSelectedCategoryId(cat.id)
+                                            }
+                                            className={`rounded-xl px-6 h-10 font-medium transition-all duration-300 ${
+                                                selectedCategoryId === cat.id
+                                                    ? "bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20"
+                                                    : "bg-white hover:bg-indigo-50 hover:text-indigo-600 border-gray-200"
+                                            }`}
+                                        >
+                                            {cat.name}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </div>
+
+                        {/* Products Grid - High Density Modern Cards */}
+                        <ScrollArea className="flex-1 px-4 pt-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 pb-24">
+                                {filteredProducts.map((product) => {
+                                    const price =
+                                        product.product_type === "simple"
+                                            ? product.base_price
+                                            : (product.variants?.[0]?.selling_price || product.base_price);
+                                    const imgPath = getImageUrl(
+                                        getPrimaryImage(product),
+                                    );
+                                    const outOfStock = product.stock <= 0;
+
+                                    return (
+                                        <div
+                                            key={product.id}
+                                            className={`group relative bg-white rounded-xl border border-gray-100 p-1.5 transition-all duration-200 hover:shadow-md hover:border-indigo-200 cursor-pointer active:scale-95 flex flex-col h-[180px] ${outOfStock ? "opacity-60 grayscale" : ""}`}
+                                            onClick={() =>
+                                                !outOfStock && addToCart(product)
+                                            }
+                                        >
+                                            <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden relative mb-2 shrink-0">
+                                                {imgPath ? (
+                                                    <img
+                                                        src={imgPath}
+                                                        alt={product.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-200">
+                                                        <Box className="w-8 h-8" />
+                                                    </div>
+                                                )}
+                                                
+                                                {/* Compact Price Overlay */}
+                                                <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/60 backdrop-blur-sm rounded-md px-1.5 py-0.5 text-white">
+                                                    <span className="text-[10px] font-black">
+                                                        ৳{Number(price || 0).toLocaleString()}
+                                                    </span>
+                                                </div>
+
+                                                {product.product_type === "variant" && (
+                                                    <div className="absolute top-1.5 right-1.5">
+                                                        <div className="bg-indigo-600 h-2 w-2 rounded-full border border-white shadow-sm" />
+                                                    </div>
+                                                )}
+
+                                                {outOfStock && (
+                                                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center p-2 text-center">
+                                                        <span className="bg-red-500 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm">
+                                                            Sold Out
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="flex-1 flex flex-col justify-between min-w-0">
+                                                <h3 className="text-[11px] font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-indigo-600">
+                                                    {product.name}
+                                                </h3>
+                                                <div className="flex items-center justify-between gap-1 mt-1">
+                                                    <span className="text-[9px] text-gray-500 truncate font-medium">
+                                                        {product.category?.name || "Other"}
+                                                    </span>
+                                                    <span className={`text-[9px] font-black shrink-0 ${product.stock < 5 ? 'text-orange-500' : 'text-emerald-500'}`}>
+                                                        {product.stock}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
+                                {filteredProducts.length === 0 && (
+                                    <div className="col-span-full h-80 flex flex-col items-center justify-center text-gray-300">
+                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                            <Search className="h-8 w-8 opacity-20" />
+                                        </div>
+                                        <p className="text-gray-500 font-medium text-sm">No items found</p>
+                                    </div>
+                                )}
                             </div>
                         </ScrollArea>
                     </div>
 
-                    {/* Products Grid */}
-                    <ScrollArea className="flex-1 p-4">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-20">
-                            {filteredProducts.map((product) => {
-                                const price =
-                                    product.product_type === "simple"
-                                        ? product.base_price
-                                        : product.variants[0]?.selling_price;
-                                const imgPath = getImageUrl(
-                                    getPrimaryImage(product),
-                                );
-                                const outOfStock = product.stock <= 0;
-
-                                return (
-                                    <Card
-                                        key={product.id}
-                                        className={`overflow-hidden cursor-pointer transition-all hover:shadow-lg border-transparent hover:border-blue-200 ${outOfStock ? "opacity-50 grayscale" : ""}`}
-                                        onClick={() =>
-                                            !outOfStock && addToCart(product)
-                                        }
-                                    >
-                                        <div className="aspect-square bg-gray-100 relative">
-                                            {imgPath ? (
-                                                <img
-                                                    src={imgPath}
-                                                    alt={product.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                    <Box className="w-12 h-12" />
-                                                </div>
-                                            )}
-                                            {product.product_type ===
-                                                "variant" && (
-                                                <Badge className="absolute top-2 right-2 bg-purple-500 hover:bg-purple-600 shadow-sm border-0">
-                                                    Variations
-                                                </Badge>
-                                            )}
-                                            {outOfStock && (
-                                                <div className="absolute inset-0 bg-red-900/10 flex items-center justify-center">
-                                                    <Badge
-                                                        variant="destructive"
-                                                        className="z-10 shadow-lg text-sm px-3 py-1"
-                                                    >
-                                                        Out of Stock
-                                                    </Badge>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <CardContent className="p-3 bg-white">
-                                            <div
-                                                className="font-semibold text-gray-900 line-clamp-1"
-                                                title={product.name}
-                                            >
-                                                {product.name}
-                                            </div>
-                                            <div className="text-xs text-gray-500 mb-1">
-                                                {product.category?.name ||
-                                                    "Uncategorized"}
-                                            </div>
-                                            <div className="flex justify-between items-center mt-2">
-                                                <div className="font-bold text-blue-700">
-                                                    ৳
-                                                    {Number(price || 0).toFixed(
-                                                        2,
-                                                    )}
-                                                </div>
-                                                <div className="text-xs text-gray-500 font-medium">
-                                                    Qty: {product.stock}
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
-
-                            {filteredProducts.length === 0 && (
-                                <div className="col-span-full h-64 flex flex-col items-center justify-center text-gray-400">
-                                    <Box className="h-16 w-16 mb-4 opacity-50" />
-                                    <p className="text-lg">No products found</p>
-                                </div>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </div>
-
-                {/* Right Panel: Cart & Checkout */}
-                <div className="w-96 flex flex-col bg-white shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-10 shrink-0">
-                    {/* Customer Selection */}
-                    <div className="p-4 bg-gray-50 border-b">
-                        <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-gray-700">
-                            <UserPlus className="h-4 w-4" /> Customer Details
-                            {errors.customer_id && (
-                                <span className="text-red-500 text-xs ml-auto">
-                                    Required
-                                </span>
-                            )}
-                        </div>
-                        <Select
-                            value={data.customer_id}
-                            onValueChange={(v) => setData("customer_id", v)}
-                        >
-                            <SelectTrigger className="w-full bg-white border-gray-300">
-                                <SelectValue placeholder="Select Customer..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {customers.map((c) => (
-                                    <SelectItem
-                                        key={c.id}
-                                        value={c.id.toString()}
-                                    >
-                                        {c.name} {c.phone ? `(${c.phone})` : ""}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Cart Items */}
-                    <ScrollArea className="flex-1 p-2">
-                        {cart.length === 0 ? (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-400 p-10 mt-20">
-                                <ShoppingCart className="h-16 w-16 mb-4 opacity-30" />
-                                <p>Your cart is empty</p>
-                                <p className="text-xs mt-2 text-center">
-                                    Scan a barcode or click a product to begin.
-                                </p>
+                    {/* Right Panel: Cart & Checkout - Premium Receipt Style */}
+                    <div className="w-[400px] flex flex-col bg-white border-l border-gray-100 shadow-[0_0_40px_-10px_rgba(0,0,0,0.05)] z-10 shrink-0">
+                        {/* Customer Selection - Refined */}
+                        <div className="p-6 bg-gray-50/50 border-b border-gray-100">
+                            <div className="flex items-center justify-between mb-3">
+                                <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400">
+                                    <UserPlus className="h-3.5 w-3.5" /> Customer Details
+                                </label>
+                                {errors.customer_id && (
+                                    <Badge variant="destructive" className="h-5 px-1.5 text-[9px] font-black uppercase">
+                                        Required
+                                    </Badge>
+                                )}
                             </div>
-                        ) : (
-                            <div className="space-y-2 pb-4">
-                                {cart.map((item) => (
-                                    <div
-                                        key={item.id}
-                                        className="flex flex-col bg-white border border-gray-100 p-3 rounded-lg shadow-sm hover:border-blue-100 transition-colors group"
+                            <Select
+                                value={data.customer_id}
+                                onValueChange={(v) => setData("customer_id", v)}
+                            >
+                                <SelectTrigger className="w-full h-11 bg-white border-gray-200 rounded-xl focus:ring-4 focus:ring-indigo-500/5 transition-all">
+                                    <SelectValue placeholder="Walk-in Customer" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-gray-100 shadow-xl">
+                                    {customers.map((c) => (
+                                        <SelectItem
+                                            key={c.id}
+                                            value={c.id.toString()}
+                                            className="rounded-lg py-2.5"
+                                        >
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-gray-900">{c.name}</span>
+                                                {c.phone && <span className="text-[10px] text-gray-500 font-medium">{c.phone}</span>}
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Cart Items - Clean & Scannable */}
+                        <div className="flex-1 overflow-hidden flex flex-col">
+                            <div className="px-6 py-4 flex items-center justify-between">
+                                <h2 className="text-sm font-black uppercase tracking-tighter text-gray-900 flex items-center gap-2">
+                                    <ShoppingCart className="h-4 w-4 text-indigo-500" />
+                                    Your Cart
+                                    <Badge className="bg-indigo-50 text-indigo-600 border-indigo-100 hover:bg-indigo-100 transition-colors">
+                                        {cart.length}
+                                    </Badge>
+                                </h2>
+                                {cart.length > 0 && (
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        onClick={() => setCart([])}
+                                        className="h-8 text-[11px] font-bold text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                     >
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex gap-3">
-                                                {item.image ? (
-                                                    <img
-                                                        src={
-                                                            getImageUrl(
-                                                                item.image,
-                                                            ) as string
-                                                        }
-                                                        className="w-12 h-12 rounded object-cover border"
-                                                        alt={item.name}
-                                                    />
-                                                ) : (
-                                                    <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center border text-gray-300">
-                                                        <Box className="w-6 h-6" />
-                                                    </div>
-                                                )}
-                                                <div>
-                                                    <div className="font-semibold text-sm line-clamp-1">
-                                                        {item.name}
-                                                    </div>
-                                                    {item.variant_name && (
-                                                        <div className="text-xs text-purple-600 font-medium">
-                                                            {item.variant_name}
-                                                        </div>
-                                                    )}
-                                                    <div className="text-blue-600 font-bold text-sm mt-0.5">
-                                                        ৳{item.price.toFixed(2)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() =>
-                                                    removeFromCart(item.id)
-                                                }
-                                                className="text-red-400 hover:text-red-600 transition-colors p-1 opacity-0 group-hover:opacity-100"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
+                                        Clear All
+                                    </Button>
+                                )}
+                            </div>
+                            
+                            <ScrollArea className="flex-1 px-4">
+                                {cart.length === 0 ? (
+                                    <div className="h-full flex flex-col items-center justify-center text-gray-300 p-12 text-center mt-12">
+                                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 animate-bounce duration-1000">
+                                            <ShoppingCart className="h-10 w-10 opacity-20" />
                                         </div>
-                                        <div className="flex items-center justify-between mt-3 pl-14">
-                                            <div className="flex items-center bg-gray-100 rounded-md border text-sm overflow-hidden shadow-inner">
-                                                <button
-                                                    onClick={() =>
-                                                        updateQuantity(
-                                                            item.id,
-                                                            -1,
-                                                        )
-                                                    }
-                                                    className="px-3 py-1.5 hover:bg-gray-200 transition-colors text-gray-600 disabled:opacity-50"
-                                                    disabled={
-                                                        item.quantity <= 1
-                                                    }
-                                                >
-                                                    <Minus className="h-3 w-3" />
-                                                </button>
-                                                <div className="px-3 font-semibold w-10 text-center bg-white py-1">
-                                                    {item.quantity}
-                                                </div>
-                                                <button
-                                                    onClick={() =>
-                                                        updateQuantity(
-                                                            item.id,
-                                                            1,
-                                                        )
-                                                    }
-                                                    className="px-3 py-1.5 hover:bg-gray-200 transition-colors text-gray-600 disabled:opacity-50"
-                                                    disabled={
-                                                        item.quantity >=
-                                                        item.max_stock
-                                                    }
-                                                >
-                                                    <Plus className="h-3 w-3" />
-                                                </button>
-                                            </div>
-                                            <div className="font-bold text-gray-900">
-                                                ৳
-                                                {(
-                                                    item.price * item.quantity
-                                                ).toFixed(2)}
-                                            </div>
-                                        </div>
+                                        <p className="font-bold text-gray-500 text-sm">Cart is feeling light</p>
+                                        <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                                            Start scanning items or browse the catalog to add products
+                                        </p>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </ScrollArea>
-
-                    {/* Calculation & Checkout Footer */}
-                    <div className="bg-slate-50 border-t border-gray-200 shrink-0">
-                        <div className="p-4 space-y-3">
-                            {/* Discount Inputs */}
-                            <div className="flex items-end gap-2 px-1">
-                                <div className="flex-1">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">
-                                        Add Discount
-                                    </label>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        placeholder="0.00"
-                                        className="h-9 bg-white"
-                                        value={data.discount || ""}
-                                        onChange={(e) =>
-                                            setData(
-                                                "discount",
-                                                Number(e.target.value),
-                                            )
-                                        }
-                                    />
-                                </div>
-                                <div className="w-24">
-                                    <Select
-                                        value={data.discount_type}
-                                        onValueChange={(v) =>
-                                            setData("discount_type", v as any)
-                                        }
-                                    >
-                                        <SelectTrigger className="h-9 bg-white">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="fixed">
-                                                Flat (৳)
-                                            </SelectItem>
-                                            <SelectItem value="percentage">
-                                                Percent (%)
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            {/* Waiter/Payment */}
-                            <div className="flex items-end gap-2 px-1">
-                                <div className="flex-1">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">
-                                        Payment Method
-                                    </label>
-                                    <Select
-                                        value={data.payment_method}
-                                        onValueChange={(v) =>
-                                            setData("payment_method", v)
-                                        }
-                                    >
-                                        <SelectTrigger className="h-9 bg-white">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="cash">
-                                                Cash
-                                            </SelectItem>
-                                            <SelectItem value="credit">
-                                                Credit / Due
-                                            </SelectItem>
-                                            <SelectItem value="card">
-                                                Credit Card
-                                            </SelectItem>
-                                            <SelectItem value="mobile_banking">
-                                                Mobile Banking
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <Separator className="my-3 border-gray-200" />
-
-                            {/* Totals */}
-                            <div className="space-y-1.5 px-1">
-                                <div className="flex justify-between text-sm text-gray-500">
-                                    <span>Subtotal</span>
-                                    <span>৳{subtotal.toFixed(2)}</span>
-                                </div>
-                                {discountAmount > 0 && (
-                                    <div className="flex justify-between text-sm text-red-500">
-                                        <span>Discount</span>
-                                        <span>
-                                            - ৳{discountAmount.toFixed(2)}
-                                        </span>
+                                ) : (
+                                    <div className="space-y-3 pb-6">
+                                        {cart.map((item) => (
+                                            <div
+                                                key={item.id}
+                                                className="group flex flex-col bg-white border border-gray-100 p-4 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300"
+                                            >
+                                                <div className="flex justify-between items-start gap-3">
+                                                    <div className="flex gap-4">
+                                                        <div className="w-14 h-14 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 shrink-0">
+                                                            {item.image ? (
+                                                                <img
+                                                                    src={getImageUrl(item.image) as string}
+                                                                    className="w-full h-full object-cover"
+                                                                    alt={item.name}
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-gray-200">
+                                                                    <Box className="w-6 h-6" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h4 className="font-bold text-sm text-gray-900 truncate pr-4">
+                                                                {item.name}
+                                                            </h4>
+                                                            {item.variant_name && (
+                                                                <p className="text-[10px] text-indigo-500 font-black uppercase tracking-tighter mt-0.5">
+                                                                    {item.variant_name}
+                                                                </p>
+                                                            )}
+                                                            <p className="text-xs font-bold text-gray-400 mt-1">
+                                                                ৳{item.price.toLocaleString()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => removeFromCart(item.id)}
+                                                        className="h-7 w-7 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                                
+                                                <div className="flex items-center justify-between mt-4">
+                                                    <div className="flex items-center bg-gray-50 rounded-xl border border-gray-100 overflow-hidden p-0.5">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => updateQuantity(item.id, -1)}
+                                                            disabled={item.quantity <= 1}
+                                                            className="h-8 w-8 rounded-lg hover:bg-white hover:shadow-sm"
+                                                        >
+                                                            <Minus className="h-3 w-3" />
+                                                        </Button>
+                                                        <span className="w-10 text-center text-sm font-black text-gray-900 italic">
+                                                            {item.quantity.toString().padStart(2, '0')}
+                                                        </span>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => updateQuantity(item.id, 1)}
+                                                            disabled={item.quantity >= item.max_stock}
+                                                            className="h-8 w-8 rounded-lg hover:bg-white hover:shadow-sm"
+                                                        >
+                                                            <Plus className="h-3 w-3" />
+                                                        </Button>
+                                                    </div>
+                                                    <p className="font-black text-gray-900">
+                                                        ৳{(item.price * item.quantity).toLocaleString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
-                                <div className="flex justify-between items-end pt-2 mt-2 border-t border-gray-200">
-                                    <span className="text-gray-900 font-bold text-lg">
-                                        Total Payable
-                                    </span>
-                                    <span className="text-green-600 font-black text-3xl tracking-tight">
-                                        ৳{total.toFixed(2)}
-                                    </span>
-                                </div>
-                            </div>
+                            </ScrollArea>
                         </div>
 
-                        {/* Pay Button */}
-                        <div className="p-4 bg-white border-t">
-                            <Button
-                                className="w-full h-14 text-lg font-bold shadow-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                                onClick={handleCheckout}
-                                disabled={processing || cart.length === 0}
-                            >
-                                <CreditCard className="mr-2 h-6 w-6" />
-                                {processing
-                                    ? "Processing..."
-                                    : "Pay & Checkout"}
-                            </Button>
+                        {/* Calculation & Checkout Footer - Receipt Style */}
+                        <div className="bg-white border-t border-gray-100 pt-6 px-6 pb-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] rounded-t-[32px]">
+                            <div className="space-y-4">
+                                {/* Inputs Row */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                                            Discount
+                                        </label>
+                                        <div className="flex gap-1.5">
+                                            <Input
+                                                type="number"
+                                                className="h-10 bg-gray-50/50 border-gray-100 rounded-xl text-center font-bold"
+                                                value={data.discount || ""}
+                                                onChange={(e) => setData("discount", Number(e.target.value))}
+                                            />
+                                            <Select
+                                                value={data.discount_type}
+                                                onValueChange={(v) => setData("discount_type", v as any)}
+                                            >
+                                                <SelectTrigger className="w-16 h-10 bg-gray-50 border-gray-100 rounded-xl">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl min-w-[5rem]">
+                                                    <SelectItem value="fixed">৳</SelectItem>
+                                                    <SelectItem value="percentage">%</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                                            Payment
+                                        </label>
+                                        <Select
+                                            value={data.payment_method}
+                                            onValueChange={(v) => setData("payment_method", v)}
+                                        >
+                                            <SelectTrigger className="h-10 bg-gray-50 border-gray-100 rounded-xl font-bold">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                <SelectItem value="cash">Cash</SelectItem>
+                                                <SelectItem value="credit">Due</SelectItem>
+                                                <SelectItem value="card">Card</SelectItem>
+                                                <SelectItem value="mobile_banking">Mobile</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <Separator className="bg-gray-50" />
+
+                                {/* Totals Section */}
+                                <div className="space-y-2 py-1">
+                                    <div className="flex justify-between items-center text-xs text-gray-400 font-bold uppercase tracking-wider">
+                                        <span>Subtotal</span>
+                                        <span className="text-gray-900">৳{subtotal.toLocaleString()}</span>
+                                    </div>
+                                    {discountAmount > 0 && (
+                                        <div className="flex justify-between items-center text-xs font-bold text-red-500 uppercase tracking-wider">
+                                            <span>Discount</span>
+                                            <span>- ৳{discountAmount.toLocaleString()}</span>
+                                        </div>
+                                    )}
+                                    <div className="flex justify-between items-baseline pt-4 border-t border-dashed border-gray-200 mt-2">
+                                        <span className="text-sm font-black text-gray-900 uppercase">Total Payable</span>
+                                        <span className="text-4xl font-black text-indigo-600 tracking-tighter tabular-nums drop-shadow-sm">
+                                            ৳{total.toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    className="w-full h-16 text-lg font-black uppercase tracking-widest shadow-2xl shadow-indigo-600/30 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 rounded-2xl transition-all duration-300 active:scale-[0.98] disabled:opacity-50 group"
+                                    onClick={handleCheckout}
+                                    disabled={processing || cart.length === 0}
+                                >
+                                    {processing ? (
+                                        <Clock className="animate-spin h-6 w-6 mr-3" />
+                                    ) : (
+                                        <CreditCard className="h-6 w-6 mr-3 transition-transform group-hover:scale-110" />
+                                    )}
+                                    {processing ? "Processing..." : "Finish Sale"}
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </TooltipProvider>
     );
 }

@@ -38,12 +38,13 @@ interface SidebarProps {
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Orders", href: "/orders", icon: ClipboardList },
     { name: "POS", href: "/pos", icon: ShoppingCart },
     { name: "Brands", href: "/brands", icon: Tag },
     { name: "Categories", href: "/categories", icon: FolderTree },
     { name: "Products", href: "/products", icon: Package },
     { name: "Attributes", href: "/attributes", icon: Layers },
-    { name: "Units", href: "/units", icon: Layers }   
+    { name: "Units", href: "/units", icon: Layers },
 ];
 
 const rolePermissionItems = [
@@ -104,6 +105,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
                         {navigation
                             .filter((item) => {
+                                if (item.name === "Orders")
+                                    return hasPermission("order.view");
                                 if (item.name === "POS")
                                     return hasPermission("order.view"); // Simplified permission logic for now
                                 if (item.name === "Brands")
@@ -133,7 +136,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     <item.icon className="h-5 w-5" />
                                     {item.name}
                                 </Link>
-                            ))}                       
+                            ))}
 
                         {(hasPermission("user.view") ||
                             hasPermission("role.view") ||

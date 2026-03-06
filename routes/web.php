@@ -13,11 +13,8 @@ use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\PermissionController;
 use App\Http\Controllers\Web\PosController;
 use App\Http\Controllers\Web\ProductController;
-use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\RoleController;
-use App\Http\Controllers\Web\SaleController;
 use App\Http\Controllers\Web\ShopController;
-use App\Http\Controllers\Web\StockController;
 use App\Http\Controllers\Web\UnitController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\UserPermissionController;
@@ -35,11 +32,13 @@ Route::get('/product/{product:slug}', [ShopController::class, 'show'])->name('sh
 Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
 
 
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+    Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
+    Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+});
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // OTP Authentication Routes
@@ -67,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/my-account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
     Route::put('/my-account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
     Route::get('/my-account/orders/{order}', [AccountController::class, 'showOrder'])->name('account.orders.show');
+    Route::post('/my-account/orders/{order}/cancel', [AccountController::class, 'cancelOrder'])->name('account.orders.cancel');
     Route::post('/my-account/addresses', [AccountController::class, 'storeAddress'])->name('account.addresses.store');
     Route::patch('/my-account/addresses/{address}', [AccountController::class, 'updateAddress'])->name('account.addresses.update');
     Route::delete('/my-account/addresses/{address}', [AccountController::class, 'deleteAddress'])->name('account.addresses.delete');
@@ -106,6 +106,11 @@ Route::middleware('auth')->group(function () {
         // Point of Sale (POS)
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
+
+        // Order Management
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 
         Route::resource('roles', RoleController::class);
         Route::post('/roles/{id}/sync-permissions', [RoleController::class, 'syncPermissions']);

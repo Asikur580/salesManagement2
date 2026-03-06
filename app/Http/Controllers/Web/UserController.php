@@ -12,9 +12,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        // For Laravel 11+, routing middleware is usually deferred to routes, or we can use \Illuminate\Routing\Controllers\HasMiddleware interface.
-        // If the base Controller doesn't have middleware(), we just let route handle it, or use the interface.
-        // But since we didn't add the interface, let's remove it and add middleware to routes/web.php instead.
+      
     }
 
     /**
@@ -22,7 +20,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['roles', 'permissions', 'employeeDetail.designation', 'employeeDetail.role']);
+        $query = User::with(['roles', 'permissions']);
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
@@ -48,9 +46,9 @@ class UserController extends Controller
                     'email' => $item->email,
                     'roles' => $item->roles->pluck('name'),
                     'permissions' => $item->permissions->pluck('name'),
-                    'employeeStatus' => $item->employeeDetail ? $item->employeeDetail->status : 'Unassigned',
-                    'designation' => $item->employeeDetail->designation->name ?? 'N/A',
-                    'phone' => $item->employeeDetail->phone ?? 'N/A',
+                    'employeeStatus' => 'Active',
+                    'designation' => $item->roles->first()->name ?? 'N/A',
+                    'phone' => $item->phone ?? 'N/A',
                 ];
             }),
             'links' => $paginated->linkCollection()->toArray(),

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Head, Link } from "@inertiajs/react";
 import {
     ChevronLeft,
@@ -17,6 +18,18 @@ import { ShopLayout } from "@/Layouts/ShopLayout";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+
+import { router } from "@inertiajs/react";
+import { useToast } from "@/hooks/use-toast";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface OrderItem {
     id: number;
@@ -44,6 +57,9 @@ interface Order {
     status: string;
     order_date: string;
     created_at: string;
+    cancel_reason: string | null;
+    cancelled_by: number | null;
+    canceller: any | null;
     items: OrderItem[];
 }
 
@@ -53,9 +69,12 @@ interface Props {
 
 export default function OrderDetails({ order }: Props) {
     const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
+        switch (status?.toLowerCase()) {
+            case "delivered":
             case "completed":
                 return "bg-green-100 text-green-700 border-green-200";
+            case "shipped":
+                return "bg-purple-100 text-purple-700 border-purple-200";
             case "processing":
                 return "bg-blue-100 text-blue-700 border-blue-200";
             case "pending":
@@ -68,11 +87,14 @@ export default function OrderDetails({ order }: Props) {
     };
 
     const getStatusIcon = (status: string) => {
-        switch (status.toLowerCase()) {
+        switch (status?.toLowerCase()) {
+            case "delivered":
             case "completed":
                 return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+            case "shipped":
+                return <Truck className="h-5 w-5 text-purple-600" />;
             case "processing":
-                return <Truck className="h-5 w-5 text-blue-600" />;
+                return <Package className="h-5 w-5 text-blue-600" />;
             case "pending":
                 return <Clock className="h-5 w-5 text-orange-600" />;
             case "cancelled":
@@ -80,6 +102,50 @@ export default function OrderDetails({ order }: Props) {
             default:
                 return <Package className="h-5 w-5 text-gray-600" />;
         }
+    };
+
+    const { toast } = useToast();
+
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [cancelReason, setCancelReason] = useState("");
+
+    const handleCancelOrder = () => {
+        setCancelModalOpen(true);
+    };
+
+    const submitCancellation = () => {
+        if (!cancelReason.trim()) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Please provide a reason for cancellation.",
+            });
+            return;
+        }
+
+        router.post(
+            route("account.orders.cancel", order.id),
+            {
+                reason: cancelReason,
+            },
+            {
+                onSuccess: () => {
+                    setCancelModalOpen(false);
+                    setCancelReason("");
+                    toast({
+                        title: "Success",
+                        description: "Order cancelled successfully.",
+                    });
+                },
+                onError: (errors) => {
+                    toast({
+                        variant: "destructive",
+                        title: "Error",
+                        description: errors.reason || "Could not cancel order.",
+                    });
+                },
+            },
+        );
     };
 
     const formatDate = (dateString: string) => {
@@ -97,7 +163,7 @@ export default function OrderDetails({ order }: Props) {
             <Head title={`Order ${order.order_number} | CarMart`} />
 
             <div className="bg-gray-50/50 py-12 px-4 md:px-8 min-h-screen">
-                <div className="max-w-4xl mx-auto">
+                <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
@@ -117,6 +183,15 @@ export default function OrderDetails({ order }: Props) {
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
+                            {order.status.toLowerCase() === "pending" && (
+                                <Button
+                                    onClick={handleCancelOrder}
+                                    variant="outline"
+                                    className="rounded-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-black text-[10px] uppercase tracking-widest h-9 px-6 transition-all shadow-sm"
+                                >
+                                    Cancel Order
+                                </Button>
+                            )}
                             <span
                                 className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest border flex items-center gap-2 ${getStatusColor(order.status)}`}
                             >
@@ -125,6 +200,29 @@ export default function OrderDetails({ order }: Props) {
                             </span>
                         </div>
                     </div>
+
+                    {order.status.toLowerCase() === "cancelled" &&
+                        order.cancel_reason && (
+                            <div className="mb-8 bg-red-50 border border-red-100 rounded-[2rem] p-6 flex items-start gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                                    <AlertCircle className="h-5 w-5 text-red-600" />
+                                </div>
+                                <div>
+                                    <h3 className="font-black text-red-900 text-sm uppercase italic mb-1">
+                                        Cancellation Reason
+                                        {order.canceller && (
+                                            <span className="text-[10px] font-bold text-red-500 normal-case ml-2 italic">
+                                                (Cancelled by:{" "}
+                                                {order.canceller.name})
+                                            </span>
+                                        )}
+                                    </h3>
+                                    <p className="text-red-700 text-sm font-medium leading-relaxed">
+                                        "{order.cancel_reason}"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         {/* Order Info */}
@@ -292,6 +390,44 @@ export default function OrderDetails({ order }: Props) {
                                             className={`absolute left-0 top-1 w-6 h-6 rounded-full border-4 border-white shadow-sm ${
                                                 [
                                                     "processing",
+                                                    "shipped",
+                                                    "delivered",
+                                                    "completed",
+                                                ].includes(
+                                                    order.status.toLowerCase(),
+                                                )
+                                                    ? "bg-green-500"
+                                                    : order.status.toLowerCase() ===
+                                                        "cancelled"
+                                                      ? "bg-gray-200"
+                                                      : "bg-gray-200"
+                                            }`}
+                                        />
+                                        <p className="text-xs font-black uppercase tracking-tight text-gray-900 italic">
+                                            Processing
+                                        </p>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                            {[
+                                                "processing",
+                                                "shipped",
+                                                "delivered",
+                                                "completed",
+                                            ].includes(
+                                                order.status.toLowerCase(),
+                                            )
+                                                ? "On Progress"
+                                                : order.status.toLowerCase() ===
+                                                    "cancelled"
+                                                  ? "Cancelled"
+                                                  : "Waiting"}
+                                        </p>
+                                    </div>
+                                    <div className="relative pl-10">
+                                        <div
+                                            className={`absolute left-0 top-1 w-6 h-6 rounded-full border-4 border-white shadow-sm ${
+                                                [
+                                                    "shipped",
+                                                    "delivered",
                                                     "completed",
                                                 ].includes(
                                                     order.status.toLowerCase(),
@@ -301,26 +437,54 @@ export default function OrderDetails({ order }: Props) {
                                             }`}
                                         />
                                         <p className="text-xs font-black uppercase tracking-tight text-gray-900 italic">
-                                            Processing
+                                            Shipped
                                         </p>
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                                            {order.status.toLowerCase() ===
-                                            "pending"
-                                                ? "Waiting"
-                                                : "On Progress"}
+                                            {[
+                                                "shipped",
+                                                "delivered",
+                                                "completed",
+                                            ].includes(
+                                                order.status.toLowerCase(),
+                                            )
+                                                ? "Out for Delivery"
+                                                : "Waiting"}
                                         </p>
                                     </div>
                                     <div className="relative pl-10">
                                         <div
                                             className={`absolute left-0 top-1 w-6 h-6 rounded-full border-4 border-white shadow-sm ${
-                                                order.status.toLowerCase() ===
-                                                "completed"
+                                                [
+                                                    "delivered",
+                                                    "completed",
+                                                ].includes(
+                                                    order.status.toLowerCase(),
+                                                )
                                                     ? "bg-green-500"
-                                                    : "bg-gray-200"
+                                                    : order.status.toLowerCase() ===
+                                                        "cancelled"
+                                                      ? "bg-red-500"
+                                                      : "bg-gray-200"
                                             }`}
                                         />
                                         <p className="text-xs font-black uppercase tracking-tight text-gray-900 italic">
-                                            Out for Delivery
+                                            {order.status.toLowerCase() ===
+                                            "cancelled"
+                                                ? "Cancelled"
+                                                : "Delivered"}
+                                        </p>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                            {order.status.toLowerCase() ===
+                                            "cancelled"
+                                                ? "Order Cancelled"
+                                                : [
+                                                        "delivered",
+                                                        "completed",
+                                                    ].includes(
+                                                        order.status.toLowerCase(),
+                                                    )
+                                                  ? "Handed to Customer"
+                                                  : "Waiting"}
                                         </p>
                                     </div>
                                 </div>
@@ -359,6 +523,46 @@ export default function OrderDetails({ order }: Props) {
                     </div>
                 </div>
             </div>
+
+            <Dialog open={cancelModalOpen} onOpenChange={setCancelModalOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black italic uppercase">
+                            Cancel <span className="text-[#FF4E00]">Order</span>
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Label
+                            htmlFor="reason"
+                            className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block"
+                        >
+                            Reason for Cancellation
+                        </Label>
+                        <Textarea
+                            id="reason"
+                            placeholder="Please tell us why you want to cancel..."
+                            value={cancelReason}
+                            onChange={(e) => setCancelReason(e.target.value)}
+                            className="h-32 rounded-2xl border-gray-100 focus:border-[#FF4E00] focus:ring-[#FF4E00]/10 transition-all font-medium text-sm"
+                        />
+                    </div>
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCancelModalOpen(false)}
+                            className="font-bold text-xs uppercase tracking-widest rounded-xl h-12"
+                        >
+                            Wait, Keep it
+                        </Button>
+                        <Button
+                            onClick={submitCancellation}
+                            className="bg-black hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded-xl h-12 transition-all px-8"
+                        >
+                            Cancel Order
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </ShopLayout>
     );
 }

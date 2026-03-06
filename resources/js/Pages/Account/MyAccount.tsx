@@ -14,6 +14,7 @@ import {
     ArrowRight,
     Home,
     Phone,
+    AlertCircle,
 } from "lucide-react";
 import { ShopLayout } from "@/Layouts/ShopLayout";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,27 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { Trash2 } from "lucide-react";
+
+interface OrderItem {
+    // Define properties for an order item if needed, e.g.,
+    // id: number;
+    // product_name: string;
+    // quantity: number;
+    // price: number;
+}
+
+interface Order {
+    id: number;
+    status: string;
+    payment_status: string;
+    cancel_reason: string | null;
+    cancelled_by: number | null;
+    canceller: any | null;
+    items: OrderItem[];
+    // Add other order properties as they exist in your application
+}
 
 interface Props {
     auth: {
@@ -41,7 +62,7 @@ interface Props {
             phone: string | null;
         };
     };
-    orders: any[];
+    orders: Order[]; // Changed from any[] to Order[]
     addresses: any[];
     has_password: boolean;
 }
@@ -65,8 +86,10 @@ export default function MyAccount(props: Props) {
 
     const getStatusColor = (status: string) => {
         switch (status?.toLowerCase()) {
+            case "delivered":
             case "completed":
                 return "bg-green-100 text-green-700 border-green-200";
+            case "shipped":
             case "processing":
                 return "bg-blue-100 text-blue-700 border-blue-200";
             case "pending":
@@ -197,15 +220,61 @@ export default function MyAccount(props: Props) {
         });
     };
 
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [cancellingOrderId, setCancellingOrderId] = useState<number | null>(
+        null,
+    );
+    const [cancelReason, setCancelReason] = useState("");
+
     const handleLogout = () => {
         router.post(route("logout"));
+    };
+
+    const handleCancelOrder = (orderId: number) => {
+        setCancellingOrderId(orderId);
+        setCancelModalOpen(true);
+    };
+
+    const submitCancellation = () => {
+        if (!cancelReason.trim()) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Please provide a reason for cancellation.",
+            });
+            return;
+        }
+
+        router.post(
+            route("account.orders.cancel", cancellingOrderId!),
+            {
+                reason: cancelReason,
+            },
+            {
+                onSuccess: () => {
+                    setCancelModalOpen(false);
+                    setCancelReason("");
+                    toast({
+                        title: "Success",
+                        description: "Order cancelled successfully.",
+                    });
+                },
+                onError: (errors) => {
+                    toast({
+                        variant: "destructive",
+                        title: "Error",
+                        description: errors.reason || "Could not cancel order.",
+                    });
+                },
+            },
+        );
     };
 
     return (
         <ShopLayout>
             <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
                 {/* Breadcrumb */}
-                <div className="max-w-6xl mx-auto mb-6 flex items-center gap-2 text-sm text-gray-500">
+                <div className="max-w-7xl mx-auto mb-6 flex items-center gap-2 text-sm text-gray-500">
                     <Link
                         href="/"
                         className="hover:text-[#FF4E00] transition-colors"
@@ -218,7 +287,7 @@ export default function MyAccount(props: Props) {
                     </span>
                 </div>
 
-                <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[300px,1fr] gap-6">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[300px,1fr] gap-6">
                     {/* ── Sidebar ── */}
                     <aside className="space-y-4">
                         {/* Profile Card */}
@@ -744,6 +813,26 @@ export default function MyAccount(props: Props) {
                                                     </div>
                                                 </div>
 
+                                                {order.status.toLowerCase() ===
+                                                    "cancelled" &&
+                                                    order.cancel_reason && (
+                                                        <div className="mb-4 px-4 py-3 bg-red-50/50 border border-red-100/50 rounded-2xl flex items-center gap-3">
+                                                            <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
+                                                            <p className="text-[11px] font-medium text-red-700 leading-tight">
+                                                                <span className="font-black uppercase italic mr-1 text-[10px]">
+                                                                    Cancelled
+                                                                    {order.canceller
+                                                                        ? ` by ${order.canceller.name}`
+                                                                        : ""}
+                                                                    :
+                                                                </span>
+                                                                {
+                                                                    order.cancel_reason
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                    )}
+
                                                 <div className="bg-gray-50/50 rounded-2xl p-4 flex flex-wrap gap-4 items-center">
                                                     <div className="flex -space-x-3 overflow-hidden">
                                                         {order.items
@@ -797,22 +886,39 @@ export default function MyAccount(props: Props) {
                                                             ? "..."
                                                             : ""}
                                                     </p>
-                                                    <Button
-                                                        asChild
-                                                        variant="ghost"
-                                                        className="ml-auto text-xs font-black text-[#FF4E00] hover:text-black hover:bg-transparent group/btn p-0"
-                                                    >
-                                                        <Link
-                                                            href={route(
-                                                                "account.orders.show",
-                                                                order.id,
-                                                            )}
-                                                            className="flex items-center gap-1"
+                                                    <div className="ml-auto flex items-center gap-3">
+                                                        {order.status.toLowerCase() ===
+                                                            "pending" && (
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                    handleCancelOrder(
+                                                                        order.id,
+                                                                    )
+                                                                }
+                                                                className="h-8 rounded-lg border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-bold text-[10px] uppercase tracking-wider transition-all"
+                                                            >
+                                                                Cancel
+                                                            </Button>
+                                                        )}
+                                                        <Button
+                                                            asChild
+                                                            variant="ghost"
+                                                            className="text-xs font-black text-[#FF4E00] hover:text-black hover:bg-transparent group/btn p-0"
                                                         >
-                                                            VIEW DETAILS{" "}
-                                                            <ArrowRight className="h-3.5 w-3.5 ml-1 transition-transform group-hover/btn:translate-x-1" />
-                                                        </Link>
-                                                    </Button>
+                                                            <Link
+                                                                href={route(
+                                                                    "account.orders.show",
+                                                                    order.id,
+                                                                )}
+                                                                className="flex items-center gap-1"
+                                                            >
+                                                                VIEW DETAILS{" "}
+                                                                <ArrowRight className="h-3.5 w-3.5 ml-1 transition-transform group-hover/btn:translate-x-1" />
+                                                            </Link>
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
@@ -1003,6 +1109,45 @@ export default function MyAccount(props: Props) {
                             </Button>
                         </DialogFooter>
                     </form>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={cancelModalOpen} onOpenChange={setCancelModalOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black italic uppercase">
+                            Cancel <span className="text-[#FF4E00]">Order</span>
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Label
+                            htmlFor="reason"
+                            className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block"
+                        >
+                            Reason for Cancellation
+                        </Label>
+                        <Textarea
+                            id="reason"
+                            placeholder="Please tell us why you want to cancel..."
+                            value={cancelReason}
+                            onChange={(e) => setCancelReason(e.target.value)}
+                            className="h-32 rounded-2xl border-gray-100 focus:border-[#FF4E00] focus:ring-[#FF4E00]/10 transition-all font-medium text-sm"
+                        />
+                    </div>
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCancelModalOpen(false)}
+                            className="font-bold text-xs uppercase tracking-widest rounded-xl h-12"
+                        >
+                            Wait, Keep it
+                        </Button>
+                        <Button
+                            onClick={submitCancellation}
+                            className="bg-black hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded-xl h-12 transition-all px-8"
+                        >
+                            Cancel Order
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </ShopLayout>

@@ -15,7 +15,7 @@ class AccountController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['items'])
+        $orders = Order::with(['items', 'canceller'])
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
@@ -36,7 +36,7 @@ class AccountController extends Controller
             abort(403);
         }
 
-        $order->load(['items.product', 'items.variant']);
+        $order->load(['items.product', 'items.variant', 'canceller']);
 
         return Inertia::render('Account/OrderDetails', [
             'order' => $order,
@@ -142,5 +142,29 @@ class AccountController extends Controller
         $address->delete();
 
         return back()->with('success', 'Address deleted successfully.');
+    }
+
+    public function cancelOrder(Request $request, Order $order)
+    {
+        // Ensure user owns the order
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Only allow cancellation of pending orders
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Only pending orders can be cancelled.');
+        }
+
+        $request->validate([
+            'reason' => 'required|string|max:1000',
+        ]);
+
+        $order->status = 'cancelled';
+        $order->cancel_reason = $request->reason;
+        $order->cancelled_by = Auth::id();
+        $order->save();
+
+        return back()->with('success', 'Order cancelled successfully.');
     }
 }

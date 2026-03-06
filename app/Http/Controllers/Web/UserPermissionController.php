@@ -33,6 +33,11 @@ class UserPermissionController extends Controller
                 return redirect()->back()->with('error', "Cannot modify permissions for super-admin.");
             }
 
+            // Prevent modifying customer's permissions
+            if ($user->hasRole('customer')) {
+                return redirect()->back()->with('error', "Cannot modify permissions for a customer.");
+            }
+
             $user->syncPermissions($request->permissions);
 
             DB::commit();

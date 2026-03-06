@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Inertia\Inertia;
@@ -35,9 +35,9 @@ class DashboardController extends Controller
         $currentOrders = Order::whereBetween('order_date', $thisMonth)->count();
         $lastOrders = Order::whereBetween('order_date', $lastMonth)->count();
 
-        $currentCustomers = Customer::whereBetween('created_at', $thisMonth)->count();
-        $lastCustomers = Customer::whereBetween('created_at', $lastMonth)->count();
-        $totalCustomers = Customer::count();
+        $currentCustomers = User::role('customer')->whereBetween('created_at', $thisMonth)->count();
+        $lastCustomers = User::role('customer')->whereBetween('created_at', $lastMonth)->count();
+        $totalCustomers = User::role('customer')->count();
 
         return [
             'revenue' => $this->formatStat($currentRevenue, $lastRevenue),
@@ -50,7 +50,7 @@ class DashboardController extends Controller
             'today_stats' => [
                 'orders' => Order::whereDate('order_date', Carbon::today())->count(),
                 'sales' => (float) Order::whereDate('order_date', Carbon::today())->sum('total_amount'),
-                'new_customers' => Customer::whereDate('created_at', Carbon::today())->count(),
+                'new_customers' => User::role('customer')->whereDate('created_at', Carbon::today())->count(),
                 'out_of_stock' => Product::where('stock', '<=', 0)->count(),
                 'low_stock' => Product::where('stock', '>', 0)->where('stock', '<=', 5)->count(),
             ]
@@ -71,7 +71,7 @@ class DashboardController extends Controller
                 ->join('orders', 'order_items.order_id', '=', 'orders.id')
                 ->join('products', 'order_items.product_id', '=', 'products.id')
                 ->whereBetween('orders.order_date', [$start, $end])
-                ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * products.purchase_price)) as profit'))
+                ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * products.cost_price)) as profit'))
                 ->first()->profit ?? 0;
 
             $revenueTrend[] = [
@@ -96,14 +96,14 @@ class DashboardController extends Controller
             $start = $monthDate->copy()->startOfMonth();
             $end = $monthDate->copy()->endOfMonth();
 
-            $new = Customer::whereBetween('created_at', [$start, $end])->count();
+            $new = User::role('customer')->whereBetween('created_at', [$start, $end])->count();
 
             $returningCount = DB::table('orders')
                 ->whereBetween('order_date', [$start, $end])
-                ->whereIn('customer_id', function ($query) use ($start) {
-                    $query->select('customer_id')->from('orders')->where('order_date', '<', $start);
+                ->whereIn('user_id', function ($query) use ($start) {
+                    $query->select('user_id')->from('orders')->where('order_date', '<', $start);
                 })
-                ->distinct('customer_id')
+                ->distinct('user_id')
                 ->count();
 
             $customerGrowth[] = [
@@ -142,15 +142,15 @@ class DashboardController extends Controller
 
     private function getRecentOrdersData()
     {
-        return Order::with(['customer', 'employee.user'])
+        return Order::with(['user', 'creator'])
             ->latest()
             ->limit(5)
             ->get()
             ->map(function ($order) {
                 return [
                     'id' => $order->order_number,
-                    'customer_name' => $order->customer->name ?? 'N/A',
-                    'officer_name' => $order->employee->user->name ?? 'N/A',
+                    'customer_name' => $order->user->name ?? $order->customer_name ?? 'N/A',
+                    'officer_name' => $order->creator->name ?? 'N/A',
                     'amount' => $order->total_amount,
                     'status' => $order->status,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),

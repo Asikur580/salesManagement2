@@ -46,7 +46,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
 
-        $protectedRoles = ['super-admin', 'admin'];
+        $protectedRoles = ['super-admin', 'admin', 'customer'];
         if (in_array($role->name, $protectedRoles)) {
             return redirect()->back()->with('error', 'Cannot modify system roles.');
         }
@@ -66,7 +66,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
 
-        $protectedRoles = ['super-admin', 'admin'];
+        $protectedRoles = ['super-admin', 'admin', 'customer'];
         if (in_array($role->name, $protectedRoles)) {
             return redirect()->back()->with('error', 'Cannot delete system roles.');
         }
@@ -83,6 +83,11 @@ class RoleController extends Controller
         $request->validate([
             'permissions' => 'required|array',
         ]);
+
+        $protectedRoles = ['super-admin', 'admin', 'customer'];
+        if (in_array($role->name, $protectedRoles)) {
+            return redirect()->back()->with('error', 'Cannot modify permissions for system roles.');
+        }
 
         $role->syncPermissions($request->permissions);
 

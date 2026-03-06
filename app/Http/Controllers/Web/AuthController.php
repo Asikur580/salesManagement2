@@ -55,10 +55,18 @@ class AuthController extends Controller
 
     public function adminLogin(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $request->validate([
+            'login' => ['required', 'string'],
             'password' => ['required'],
         ]);
+
+        $login = $request->input('login');
+        $fieldType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        $credentials = [
+            $fieldType => $login,
+            'password' => $request->input('password'),
+        ];
 
         if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
@@ -71,13 +79,13 @@ class AuthController extends Controller
             // If a customer tries to login through admin page, log them out or redirect to shop
             Auth::logout();
             return back()->withErrors([
-                'email' => 'Access denied. Only administrators can access the dashboard.',
+                'login' => 'Access denied. Only administrators can access the dashboard.',
             ]);
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+            'login' => 'The provided credentials do not match our records.',
+        ])->onlyInput('login');
     }
 
     public function logout(Request $request)

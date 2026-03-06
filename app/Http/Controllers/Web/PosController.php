@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Throwable;
 
 class PosController extends Controller
 {
@@ -33,6 +37,7 @@ class PosController extends Controller
             ->get();
 
         return Inertia::render('Pos/Index', [
+            'customers' => User::role('customer')->select('id', 'name', 'phone')->get(),
             'categories' => $categories,
             'products' => $products,
         ]);
@@ -59,12 +64,24 @@ class PosController extends Controller
             $itemsData = [];
 
             foreach ($request->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $variantName = null;
+                if (!empty($item['variant_id'])) {
+                    $variant = ProductVariant::with('attributeValues')->find($item['variant_id']);
+                    if ($variant) {
+                        $variantName = $variant->attributeValues->pluck('value')->implode(' - ');
+                    }
+                }
+
                 $totalPrice = $item['quantity'] * $item['unit_price'];
                 $subtotal += $totalPrice;
 
                 $itemsData[] = [
                     'product_id' => $item['product_id'],
+                    'variant_id' => $item['variant_id'] ?? null,
                     'product_variant_id' => $item['variant_id'] ?? null,
+                    'product_name' => $product->name,
+                    'variant_name' => $variantName,
                     'unit_price' => $item['unit_price'],
                     'quantity' => $item['quantity'],
                     'total_price' => $totalPrice,
@@ -84,8 +101,14 @@ class PosController extends Controller
             $lastOrder = Order::latest()->first();
             $orderNumber = 'POS-' . str_pad(($lastOrder ? $lastOrder->id : 0) + 1, 6, '0', STR_PAD_LEFT);
 
+            $customer = User::findOrFail($request->customer_id);
             $order = Order::create([
                 'order_number' => $orderNumber,
+                'user_id' => $request->customer_id,
+                'customer_name' => $customer->name,
+                'customer_phone' => $customer->phone ?? 'N/A',
+                'customer_email' => $customer->email,
+                'shipping_address' => 'POS Transaction', // Placeholder for POS
                 'type' => 'sales',
                 'order_date' => now(),
                 'payment_method' => $request->payment_method,
@@ -98,8 +121,8 @@ class PosController extends Controller
                 // POS transactions are immediately delivered
                 'status' => 'delivered',
                 'note' => $request->note,
-                'created_by' => auth()->id(),
-                'approved_by' => auth()->id(), // Auto-approved by the POS operator
+                'created_by' => Auth::id(),
+                'approved_by' => Auth::id(), // Auto-approved by the POS operator
             ]);
 
             foreach ($itemsData as $itemData) {
@@ -111,15 +134,15 @@ class PosController extends Controller
 
                 if (isset($itemData['product_variant_id'])) {
                     // Variant product
-                    \App\Models\ProductVariant::where('id', $itemData['product_variant_id'])
+                    ProductVariant::where('id', $itemData['product_variant_id'])
                         ->decrement('stock', $itemData['quantity']);
 
                     // Also decrement the parent product total stock wrapper
-                    \App\Models\Product::where('id', $itemData['product_id'])
+                    Product::where('id', $itemData['product_id'])
                         ->decrement('stock', $itemData['quantity']);
                 } else {
                     // Simple product
-                    \App\Models\Product::where('id', $itemData['product_id'])
+                    Product::where('id', $itemData['product_id'])
                         ->decrement('stock', $itemData['quantity']);
                 }
             }
@@ -127,7 +150,7 @@ class PosController extends Controller
             DB::commit();
 
             return redirect()->back()->with('success', 'POS Transaction completed successfully.');
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Failed to complete transaction: ' . $th->getMessage());
         }
