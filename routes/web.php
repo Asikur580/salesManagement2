@@ -25,6 +25,7 @@ use Inertia\Inertia;
 Route::get('/', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/new-arrivals', [ShopController::class, 'newArrivals'])->name('shop.new-arrivals');
 Route::get('/flash-sales', [ShopController::class, 'flashSales'])->name('shop.flash-sales');
+Route::get('/shop/offers', [ShopController::class, 'flashSales'])->name('shop.offers');
 Route::get('/all-brands', [ShopController::class, 'allBrands'])->name('shop.all-brands');
 Route::get('/brand/{brand:slug}', [ShopController::class, 'brandProducts'])->name('shop.brand');
 Route::get('/category/{category:slug}', [ShopController::class, 'categoryProducts'])->name('shop.category');

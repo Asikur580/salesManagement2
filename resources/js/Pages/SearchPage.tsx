@@ -282,15 +282,6 @@ const SearchPage = ({
                                         {products?.total || 0}
                                     </span>{" "}
                                     results
-                                    {searchTerm && (
-                                        <>
-                                            {" "}
-                                            for{" "}
-                                            <span className="italic">
-                                                "{searchTerm}"
-                                            </span>
-                                        </>
-                                    )}
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <span className="text-xs font-black text-gray-400 uppercase tracking-wider">
@@ -318,7 +309,7 @@ const SearchPage = ({
                             </div>
 
                             {/* Product Grid */}
-                            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {products?.data?.length > 0 ? (
                                     products.data.map((product) => (
                                         <ProductCard

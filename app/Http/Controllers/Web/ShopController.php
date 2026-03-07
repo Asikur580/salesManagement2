@@ -161,6 +161,7 @@ class ShopController extends Controller
 
     public function categoryProducts(Category $category, Request $request)
     {
+
         $query = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
             ->where('category_id', $category->id);
 
@@ -221,8 +222,21 @@ class ShopController extends Controller
         $relatedProducts = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->take(4)
+            ->where('is_active', true)
+            ->take(6)
             ->get();
+
+        // Fallback: if not enough related products, fill with products from same brand
+        if ($relatedProducts->count() < 4 && $product->brand_id) {
+            $existingIds = $relatedProducts->pluck('id')->push($product->id);
+            $brandFallback = Product::with(['category', 'brand', 'primaryImage', 'variants.primaryImage'])
+                ->where('brand_id', $product->brand_id)
+                ->whereNotIn('id', $existingIds)
+                ->where('is_active', true)
+                ->take(6 - $relatedProducts->count())
+                ->get();
+            $relatedProducts = $relatedProducts->merge($brandFallback);
+        }
 
         $relatedProducts->each(function ($p) {
             $p->setAppends(['price', 'old_price']);

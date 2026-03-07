@@ -547,7 +547,8 @@ export function ShopNavbar() {
                                 Brands
                             </Link>
                             <Link
-                                href="/offers"
+                                href={route("shop.flash-sales")}
+                                onClick={() => setIsMenuOpen(false)}
                                 className="font-bold text-gray-800 border-b pb-2"
                             >
                                 Offers

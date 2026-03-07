@@ -71,12 +71,40 @@ class Product extends Model
 
     public function getPriceAttribute()
     {
-        return $this->base_price;
+        // decimal:2 cast makes "0.00" truthy as a string, so cast to float
+        if ((float) $this->base_price > 0) {
+            return $this->base_price;
+        }
+
+        // For variant-only products, return the minimum variant price
+        $variants = $this->relationLoaded('variants')
+            ? $this->relations['variants']
+            : $this->variants()->get();
+
+        if ($variants && $variants->count() > 0) {
+            $minPrice = $variants->min(fn($v) => (float) $v->price);
+            return $minPrice > 0 ? $minPrice : 0;
+        }
+
+        return 0;
     }
 
     public function getOldPriceAttribute()
     {
-        return $this->base_price ? $this->base_price * 1.15 : null;
+        $basePrice = (float) $this->base_price;
+
+        if ($basePrice <= 0) {
+            // Use min variant price as the base
+            $variants = $this->relationLoaded('variants')
+                ? $this->relations['variants']
+                : $this->variants()->get();
+
+            if ($variants && $variants->count() > 0) {
+                $basePrice = $variants->min(fn($v) => (float) $v->price);
+            }
+        }
+
+        return $basePrice > 0 ? round($basePrice * 1.15, 2) : null;
     }
 
     public function primaryImage()
