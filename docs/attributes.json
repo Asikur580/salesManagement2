@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Color",
+    "values": ["Black", "White", "Red", "Blue", "Yellow", "Silver", "Grey"]
+  },
+  {
+    "name": "Size",
+    "values": ["Small", "Medium", "Large", "XL", "XXL"]
+  },
+  {
+    "name": "Material",
+    "values": ["Carbon Fiber", "Plastic", "Metal", "Leather", "Fabric"]
+  },
+  {
+    "name": "Heat Range",
+    "values": ["IK16", "IK20", "IK22"]
+  }
+]

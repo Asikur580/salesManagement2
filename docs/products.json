@@ -1,0 +1,296 @@
+[
+  {
+    "name": "Castrol Edge 5W-30 Full Synthetic Engine Oil",
+    "description": "Premium full synthetic engine oil designed for maximum performance and protection.",
+    "category": "Performance",
+    "subCategory": "Engine Oil",
+    "brand": "Castrol",
+    "unit": "Piece",
+    "product_type": "simple",
+    "base_price": 4500.00,
+    "cost_price": 3800.00,
+    "sku": "CAS-EDG-5W30",
+    "barcode": "5000123456789",
+    "stock": 100,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/castrol-edge.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "JBL Stage3 627 Coaxial Car Speaker",
+    "description": "High-performance coaxial car speakers with patented Plus One woofers.",
+    "category": "Electronics & Gadgets",
+    "subCategory": "Car Audio & Sound System",
+    "brand": "JBL",
+    "unit": "Pair",
+    "product_type": "simple",
+    "base_price": 8500.00,
+    "cost_price": 7200.00,
+    "sku": "JBL-STG3-627",
+    "barcode": "0500363212345",
+    "stock": 45,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/jbl-speaker.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Powerstop Z23 Evolution Sport Brake Pads",
+    "description": "Carbon-Fiber Ceramic brake pads for superior stopping power.",
+    "category": "Car Spare Parts",
+    "subCategory": "Brake Pads",
+    "brand": "Powerstop",
+    "unit": "Set",
+    "product_type": "simple",
+    "base_price": 12000.00,
+    "cost_price": 9500.00,
+    "sku": "POW-Z23-123",
+    "barcode": "810012345678",
+    "stock": 20,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/powerstop-pads.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Formula 1 Carnauba Paste Wax",
+    "description": "Long-lasting protection and deep shine for all car finishes.",
+    "category": "Car Care",
+    "subCategory": "Car Polish & Wax",
+    "brand": "Formula 1",
+    "unit": "Piece",
+    "product_type": "simple",
+    "base_price": 950.00,
+    "cost_price": 750.00,
+    "sku": "F1-WAX-CP",
+    "barcode": "079012345678",
+    "stock": 150,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/f1-wax.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Little Trees Black Ice Air Freshener",
+    "description": "The world-famous tree-shaped air freshener in the Black Ice scent.",
+    "category": "Perfume & Showpiece",
+    "subCategory": "Hanging Air Freshener",
+    "brand": "Little Trees",
+    "unit": "Piece",
+    "product_type": "simple",
+    "base_price": 180.00,
+    "cost_price": 120.00,
+    "sku": "LT-BI-HF",
+    "barcode": "076012345678",
+    "stock": 500,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/lt-blackice.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Sony XAV-AX5500 Android Auto/CarPlay Receiver",
+    "description": "7-inch Media Receiver with Dual USB and Bluetooth.",
+    "category": "Electronics & Gadgets",
+    "subCategory": "Android & DVD Players",
+    "brand": "Sony",
+    "unit": "Piece",
+    "product_type": "simple",
+    "base_price": 42000.00,
+    "cost_price": 38000.00,
+    "sku": "SON-XAV-5500",
+    "barcode": "4548736123456",
+    "stock": 10,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/sony-player.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Meguiar's Gold Class Leather Sealer System",
+    "description": "Two-step system for cleaning and protecting leather surfaces.",
+    "category": "Car Care",
+    "subCategory": "Leather Care",
+    "brand": "Meguiar's",
+    "unit": "Set",
+    "product_type": "simple",
+    "base_price": 2800.00,
+    "cost_price": 2200.00,
+    "sku": "MEG-GCLS",
+    "barcode": "070382012345",
+    "stock": 30,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/meguiars-leather.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Baseus Gravity Car Mount Phone Holder",
+    "description": "One-handed operation gravity linkage phone holder for car vents.",
+    "category": "Electronics & Gadgets",
+    "subCategory": "Mobile Accessories",
+    "brand": "Baseus",
+    "unit": "Piece",
+    "product_type": "simple",
+    "base_price": 1250.00,
+    "cost_price": 950.00,
+    "sku": "BAS-GRAV-H",
+    "barcode": "6953156123456",
+    "stock": 200,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/baseus-holder.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Toyota Genuine Wiper Blade Set",
+    "description": "Original Toyota wiper blades for clean and clear visibility.",
+    "category": "Car Spare Parts",
+    "subCategory": "Wiper Blades",
+    "brand": "Toyota",
+    "unit": "Set",
+    "product_type": "simple",
+    "base_price": 3500.00,
+    "cost_price": 2800.00,
+    "sku": "TOY-WIP-SET",
+    "barcode": "440123456789",
+    "stock": 60,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/toyota-wiper.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "3M Metallic Series Window Film",
+    "description": "Heat rejection and privacy film for car windows.",
+    "category": "Modifications",
+    "subCategory": "Paint Protection Films",
+    "brand": "3M",
+    "unit": "Roll",
+    "product_type": "simple",
+    "base_price": 15000.00,
+    "cost_price": 12000.00,
+    "sku": "3M-MET-FILM",
+    "barcode": "051131123456",
+    "stock": 15,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/3m-film.jpg",
+        "is_primary": true
+      }
+    ]
+  },
+  {
+    "name": "Denso Iridium Power Spark Plug",
+    "description": "High-performance spark plug with 0.4mm iridium center electrode.",
+    "category": "Car Spare Parts",
+    "subCategory": "Spark Plugs",
+    "brand": "Denso",
+    "unit": "Piece",
+    "product_type": "variant",
+    "base_price": 1200.00,
+    "cost_price": 850.00,
+    "sku": "DEN-IRID-SP",
+    "barcode": "042511123456",
+    "stock": 0,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/denso-spark.jpg",
+        "is_primary": true
+      }
+    ],
+    "variants": [
+      {
+        "sku": "DEN-IRID-IK16",
+        "price": 1200.00,
+        "cost_price": 850.00,
+        "stock": 30,
+        "attributes": {
+          "Heat Range": "IK16"
+        }
+      },
+      {
+        "sku": "DEN-IRID-IK20",
+        "price": 1250.00,
+        "cost_price": 900.00,
+        "stock": 25,
+        "attributes": {
+          "Heat Range": "IK20"
+        }
+      }
+    ]
+  },
+  {
+    "name": "OrenMart Premium Microfiber Towel",
+    "description": "Ultra-soft and absorbent microfiber towel for car detailing.",
+    "category": "Car Care",
+    "subCategory": "Cleaning & Washing Kits",
+    "brand": "OrenMart",
+    "unit": "Piece",
+    "product_type": "variant",
+    "base_price": 450.00,
+    "cost_price": 280.00,
+    "sku": "OM-MICRO-T",
+    "barcode": "912543210987",
+    "stock": 0,
+    "is_active": true,
+    "images": [
+      {
+        "url": "https://orenmart.sgp1.digitaloceanspaces.com/products/om-microfiber.jpg",
+        "is_primary": true
+      }
+    ],
+    "variants": [
+      {
+        "sku": "OM-MICRO-BL-S",
+        "price": 450.00,
+        "cost_price": 280.00,
+        "stock": 100,
+        "attributes": {
+          "Color": "Blue",
+          "Size": "Small"
+        }
+      },
+      {
+        "sku": "OM-MICRO-RD-M",
+        "price": 550.00,
+        "cost_price": 350.00,
+        "stock": 80,
+        "attributes": {
+          "Color": "Red",
+          "Size": "Medium"
+        }
+      }
+    ]
+  }
+]
