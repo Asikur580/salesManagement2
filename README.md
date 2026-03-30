@@ -62,9 +62,14 @@ php artisan migrate
 ```
 ### 5️⃣ Seed required data
 ```bash
-php artisan db:seed --class=DesignationSeeder
+php artisan db:seed
+```
+*Alternatively, seed specific classes:*
+```bash
 php artisan db:seed --class=RoleSeeder
 php artisan db:seed --class=AdminSeeder
+php artisan db:seed --class=CategorySeeder
+php artisan db:seed --class=BrandSeeder
 ```
 ### 6️⃣ Start Laravel server
 ```bash

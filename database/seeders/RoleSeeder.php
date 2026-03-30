@@ -53,7 +53,19 @@ class RoleSeeder extends Seeder
             'brand.view',
             'brand.create',
             'brand.update',
-            'brand.delete',                  
+            'brand.delete',
+
+            // Attribute Management
+            'attribute.view',
+            'attribute.create',
+            'attribute.update',
+            'attribute.delete',
+
+            // Order Management
+            'order.view',
+            'order.create',
+            'order.update',
+            'order.delete',
         ];
 
         // Create all permissions
@@ -67,6 +79,9 @@ class RoleSeeder extends Seeder
 
         // Create other roles
         $admin = Role::firstOrCreate(['name' => 'admin']);        
+        $customer = Role::firstOrCreate(['name' => 'customer']);
+        $sales = Role::firstOrCreate(['name' => 'sales']);
+        $accountant = Role::firstOrCreate(['name' => 'accountant']);
 
         // Assign permissions to Admin (all except role/permission management)
         $admin->syncPermissions([
@@ -88,8 +103,29 @@ class RoleSeeder extends Seeder
             'brand.view',
             'brand.create',
             'brand.update',
-            'brand.delete',            
-        ]);       
+            'brand.delete',
+            'attribute.view',
+            'attribute.create',
+            'attribute.update',
+            'attribute.delete',
+            'order.view',
+            'order.create',
+            'order.update',
+            'order.delete',
+        ]);
+
+        // Sales permissions
+        $sales->syncPermissions([
+            'product.view',
+            'order.view',
+            'order.create',
+            'order.update',
+        ]);
+
+        // Accountant permissions
+        $accountant->syncPermissions([
+            'order.view',
+        ]);
         
     }
 }

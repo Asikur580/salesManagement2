@@ -16,7 +16,9 @@ class DatabaseSeeder extends Seeder
         // Seed roles and permissions first
         $this->call([
             RoleSeeder::class,
-            AdminSeeder::class                       
+            AdminSeeder::class,
+            CategorySeeder::class,
+            BrandSeeder::class
         ]);
     }
 }
