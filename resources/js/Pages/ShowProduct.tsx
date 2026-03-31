@@ -244,9 +244,10 @@ export default function ShowProduct({ product }: PageProps) {
                                     </h3>
                                     {product.description ? (
                                         <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-                                            <div className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed">
-                                                {product.description}
-                                            </div>
+                                            <div 
+                                                className="text-sm text-gray-600 leading-relaxed description-content"
+                                                dangerouslySetInnerHTML={{ __html: product.description }}
+                                            />
                                         </div>
                                     ) : (
                                         <div className="bg-gray-50 border border-gray-200 border-dashed rounded-xl p-6 text-center">

@@ -58,6 +58,6 @@ class ProductVariant extends Model
 
     public function primaryImage()
     {
-        return $this->hasOne(VariantImage::class)->where('is_primary', true)->latestOfMany();
+        return $this->hasOne(VariantImage::class)->where('is_primary', true);
     }
 }

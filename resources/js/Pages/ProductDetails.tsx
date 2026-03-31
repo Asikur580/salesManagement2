@@ -592,38 +592,15 @@ export default function ProductDetails({
                                             className="space-y-6"
                                         >
                                             <div className="prose prose-orange max-w-none">
-                                                <h3 className="text-2xl font-black text-gray-900 uppercase italic">
+                                                <h3 className="text-2xl font-black text-gray-900 uppercase italic mb-6">
                                                     Product Overview
                                                 </h3>
-                                                <div className="text-gray-600 text-lg leading-relaxed space-y-4">
-                                                    {(
-                                                        product.description ||
-                                                        `Experience the ultimate quality with ${product.name}. This premium ${product.category?.name || "product"} from ${product.brand?.name || "our collection"} is designed to deliver unmatched performance and durability.`
-                                                    )
-                                                        .split("\n")
-                                                        .map(
-                                                            (
-                                                                paragraph,
-                                                                idx,
-                                                            ) => (
-                                                                <p key={idx}>
-                                                                    {paragraph}
-                                                                </p>
-                                                            ),
-                                                        )}
-
-                                                    <p className="pt-2">
-                                                        Our products are
-                                                        carefully selected to
-                                                        meet the highest
-                                                        standards of the
-                                                        automotive industry.
-                                                        Whether you're looking
-                                                        for performance, style,
-                                                        or protection, this
-                                                        product has it all.
-                                                    </p>
-                                                </div>
+                                                <div 
+                                                    className="text-gray-600 text-lg leading-relaxed description-content"
+                                                    dangerouslySetInnerHTML={{ 
+                                                        __html: product.description || `Experience the ultimate quality with ${product.name}.` 
+                                                    }}
+                                                />
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 pt-8">
                                                 <div className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100">

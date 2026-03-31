@@ -109,7 +109,7 @@ class Product extends Model
 
     public function primaryImage()
     {
-        return $this->hasOne(ProductImage::class)->where('is_primary', true)->latestOfMany();
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
     }
 
     public function wishlists()

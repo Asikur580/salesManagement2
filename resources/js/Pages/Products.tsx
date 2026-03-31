@@ -61,6 +61,7 @@ interface Product {
     unit: { id: number; name: string } | null;
     primary_image: { image_path: string } | null;
     variants: any[];
+    stock: number | null;
 }
 
 interface ProductsProps {
@@ -335,6 +336,11 @@ export default function Products({
                                                                 }
                                                             </span>
                                                         )}
+                                                        {product.sku && (
+                                                            <span>
+                                                                • SKU: {product.sku}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
@@ -376,9 +382,8 @@ export default function Products({
                                                 <TableCell>
                                                     {product.product_type ===
                                                     "simple" ? (
-                                                        <div className="text-sm font-medium">
-                                                            {product.sku ||
-                                                                "No SKU"}
+                                                        <div className={`text-sm font-medium ${Number(product.stock) <= 5 ? "text-red-600" : "text-gray-900"}`}>
+                                                            {product.stock ?? 0} pcs
                                                         </div>
                                                     ) : (
                                                         <div className="text-sm text-gray-600">
@@ -386,7 +391,7 @@ export default function Products({
                                                                 product.variants
                                                                     .length
                                                             }{" "}
-                                                            combinations
+                                                            Variants
                                                         </div>
                                                     )}
                                                 </TableCell>

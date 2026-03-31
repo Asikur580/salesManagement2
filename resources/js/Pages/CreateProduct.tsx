@@ -13,9 +13,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { ChevronLeft, Save } from "lucide-react";
+import { ChevronLeft, Save, Type } from "lucide-react";
 import { ProductImageUploader } from "@/components/products/ProductImageUploader";
 import { VariantBuilder } from "@/components/products/VariantBuilder";
+import RichTextEditor from "@/components/ui/RichTextEditor";
 import { useToast } from "@/hooks/use-toast";
 
 interface Props {
@@ -259,15 +260,12 @@ export default function CreateProduct({
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea
-                                    id="description"
-                                    placeholder="Product description and details..."
-                                    rows={4}
+                                <Label htmlFor="description" className="flex items-center gap-2">
+                                    <Type className="h-4 w-4" /> Description
+                                </Label>
+                                <RichTextEditor
                                     value={data.description}
-                                    onChange={(e) =>
-                                        setData("description", e.target.value)
-                                    }
+                                    onChange={(val) => setData("description", val)}
                                 />
                             </div>
 
