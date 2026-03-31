@@ -46,6 +46,7 @@ class PosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'customer_id' => 'required|exists:users,id',
             'payment_method' => 'required|in:cash,credit,bank_transfer,card,mobile_banking',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'in:percentage,fixed',
@@ -79,7 +80,6 @@ class PosController extends Controller
                 $itemsData[] = [
                     'product_id' => $item['product_id'],
                     'variant_id' => $item['variant_id'] ?? null,
-                    'product_variant_id' => $item['variant_id'] ?? null,
                     'product_name' => $product->name,
                     'variant_name' => $variantName,
                     'unit_price' => $item['unit_price'],
@@ -120,7 +120,8 @@ class PosController extends Controller
                 'total_amount' => $totalAmount,
                 // POS transactions are immediately delivered
                 'status' => 'delivered',
-                'note' => $request->note,
+                'notes' => $request->note,
+                'source' => 'pos',
                 'created_by' => Auth::id(),
                 'approved_by' => Auth::id(), // Auto-approved by the POS operator
             ]);
@@ -132,9 +133,9 @@ class PosController extends Controller
                 // For a robust system, this should ideally call the existing StockRepository or StockService
                 // But we will decrement directly here for the immediate POS execution requirement.
 
-                if (isset($itemData['product_variant_id'])) {
+                if (isset($itemData['variant_id'])) {
                     // Variant product
-                    ProductVariant::where('id', $itemData['product_variant_id'])
+                    ProductVariant::where('id', $itemData['variant_id'])
                         ->decrement('stock', $itemData['quantity']);
 
                     // Also decrement the parent product total stock wrapper

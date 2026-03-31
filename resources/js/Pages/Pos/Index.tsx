@@ -58,9 +58,9 @@ interface ProductVariant {
     id: number;
     sku: string | null;
     barcode: string | null;
-    selling_price: number;
+    price: number;
     stock: number;
-    attributeValues: VariantAttribute[];
+    attribute_values: VariantAttribute[];
     images: { id: number; image_path: string }[];
 }
 
@@ -112,7 +112,7 @@ export default function PosIndex({
     const [cart, setCart] = useState<CartItem[]>([]);
 
     // Checkout Form state
-    const { data, setData, post, processing, reset, errors } = Object.assign(
+    const { data, setData, post, processing, reset, errors, transform } =
         useForm({
             customer_id: "",
             payment_method: "cash",
@@ -120,8 +120,7 @@ export default function PosIndex({
             discount_type: "fixed",
             note: "",
             items: [] as any[],
-        }),
-    );
+        });
 
     // Focus scanner on mount
     useEffect(() => {
@@ -209,7 +208,7 @@ export default function PosIndex({
         }
 
         const cartItemId = variant ? `v_${variant.id}` : `p_${product.id}`;
-        const price = variant ? variant.selling_price : product.base_price || 0;
+        const price = variant ? variant.price : product.base_price || 0;
         const maxStock = variant ? variant.stock : product.stock;
 
         if (maxStock <= 0) {
@@ -223,7 +222,7 @@ export default function PosIndex({
 
         let variantName = "";
         if (variant) {
-            variantName = variant.attributeValues
+            variantName = variant.attribute_values
                 .map((av) => av.value)
                 .join(" - ");
         }
@@ -327,28 +326,35 @@ export default function PosIndex({
             unit_price: c.price,
         }));
 
-        // CRITICAL FIX: Direct payload injection to bypass asynchronous useForm state updates
-        post("/pos/checkout", {
-            ...data,
+        // Use transform to sync the cart items into the form data for the request
+        transform((oldData) => ({
+            ...oldData,
             items: payloadItems,
-            onSuccess: () => {
-                setCart([]);
-                reset();
-                toast({
-                    title: "Success",
-                    description: "Transaction completed successfully.",
-                });
-                searchInputRef.current?.focus();
+        }));
+
+        post("/pos/checkout", {
+            onSuccess: (page) => {
+                // Only clear if the server didn't send back an error flash
+                if (!(page.props.flash as any)?.error) {
+                    setCart([]);
+                    reset();
+                    toast({
+                        title: "Success",
+                        description: "Transaction completed successfully.",
+                    });
+                    searchInputRef.current?.focus();
+                }
             },
             onError: (err) => {
                 const message = Object.values(err).flat().join(", ");
                 toast({
                     title: "Checkout Failed",
-                    description: message || "Something went wrong during checkout.",
+                    description:
+                        message || "Something went wrong during checkout.",
                     variant: "destructive",
                 });
-            }
-        } as any);
+            },
+        });
     };
 
     return (
@@ -406,9 +412,10 @@ export default function PosIndex({
                 </header>
 
                 {/* Main Content Split */}
+                {/* Main Content: Split Products & Cart */}
                 <div className="flex flex-1 overflow-hidden">
                     {/* Left Panel: Products Section */}
-                    <div className="flex-1 flex flex-col bg-gray-50 border-r border-gray-100 shadow-inner">
+                    <div className="flex-[1.5] min-w-0 flex flex-col bg-gray-50 border-r border-gray-100 relative">
                         {/* Filter Header - Modern & Clean */}
                         <div className="p-6 bg-white border-b border-gray-100 space-y-5 shrink-0 shadow-sm">
                             <div className="relative group">
@@ -463,14 +470,14 @@ export default function PosIndex({
                             </ScrollArea>
                         </div>
 
-                        {/* Products Grid - High Density Modern Cards */}
-                        <ScrollArea className="flex-1 px-4 pt-4">
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 pb-24">
+                        {/* Products Grid - Modern Responsive Grid */}
+                        <ScrollArea className="flex-1">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 p-4 pb-32">
                                 {filteredProducts.map((product) => {
                                     const price =
                                         product.product_type === "simple"
                                             ? product.base_price
-                                            : (product.variants?.[0]?.selling_price || product.base_price);
+                                            : (product.variants?.[0]?.price || product.base_price);
                                     const imgPath = getImageUrl(
                                         getPrimaryImage(product),
                                     );
@@ -479,7 +486,7 @@ export default function PosIndex({
                                     return (
                                         <div
                                             key={product.id}
-                                            className={`group relative bg-white rounded-xl border border-gray-100 p-1.5 transition-all duration-200 hover:shadow-md hover:border-indigo-200 cursor-pointer active:scale-95 flex flex-col h-[180px] ${outOfStock ? "opacity-60 grayscale" : ""}`}
+                                            className={`group relative bg-white rounded-xl border border-gray-200 p-2 transition-all duration-300 hover:shadow-xl hover:border-indigo-400 cursor-pointer active:scale-95 flex flex-col h-[220px] min-w-0 overflow-hidden shadow-sm ${outOfStock ? "opacity-60 grayscale" : ""}`}
                                             onClick={() =>
                                                 !outOfStock && addToCart(product)
                                             }
@@ -548,8 +555,8 @@ export default function PosIndex({
                         </ScrollArea>
                     </div>
 
-                    {/* Right Panel: Cart & Checkout - Premium Receipt Style */}
-                    <div className="w-[400px] flex flex-col bg-white border-l border-gray-100 shadow-[0_0_40px_-10px_rgba(0,0,0,0.05)] z-10 shrink-0">
+                    {/* Right Panel: Checkout / Cart */}
+                    <div className="w-[380px] flex flex-col bg-white border-l border-gray-200 shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] z-10 shrink-0 overflow-hidden">
                         {/* Customer Selection - Refined */}
                         <div className="p-6 bg-gray-50/50 border-b border-gray-100">
                             <div className="flex items-center justify-between mb-3">
@@ -626,8 +633,8 @@ export default function PosIndex({
                                                 key={item.id}
                                                 className="group flex flex-col bg-white border border-gray-100 p-4 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300"
                                             >
-                                                <div className="flex justify-between items-start gap-3">
-                                                    <div className="flex gap-4">
+                                                <div className="flex w-[20rem] justify-between items-start gap-3">
+                                                    <div className="flex gap-4 min-w-0 flex-1">
                                                         <div className="w-14 h-14 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 shrink-0">
                                                             {item.image ? (
                                                                 <img
@@ -641,12 +648,12 @@ export default function PosIndex({
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div className="min-w-0">
-                                                            <h4 className="font-bold text-sm text-gray-900 truncate pr-4">
+                                                        <div className="min-w-0 flex-1">
+                                                            <h4 className="font-bold text-sm text-gray-900 truncate">
                                                                 {item.name}
                                                             </h4>
                                                             {item.variant_name && (
-                                                                <p className="text-[10px] text-indigo-500 font-black uppercase tracking-tighter mt-0.5">
+                                                                <p className="text-[10px] text-indigo-500 font-black uppercase tracking-tighter mt-0.5 truncate">
                                                                     {item.variant_name}
                                                                 </p>
                                                             )}
@@ -659,9 +666,9 @@ export default function PosIndex({
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => removeFromCart(item.id)}
-                                                        className="h-7 w-7 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                                                        className="shrink-0 h-8 w-8 rounded-full text-red-400 hover:text-red-700 hover:bg-red-50 transition-all shadow-sm border border-transparent hover:border-red-100"
                                                     >
-                                                        <X className="h-4 w-4" />
+                                                        <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
                                                 

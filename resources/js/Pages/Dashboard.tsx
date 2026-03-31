@@ -130,14 +130,14 @@ const Dashboard = ({ stats, charts, top_products, recent_orders }: DashboardProp
               title="Today's Sales"
               value={`৳${parseFloat(stats.today_stats.sales.toString()).toLocaleString()}`}
               icon={DollarSign}
-              href="/sales"
+              href="/orders"
               color="success"
             />
             <TodayOrderCard
               title="New Customers"
               value={stats.today_stats.new_customers}
               icon={UserPlus}
-              href="/customers"
+              href="/users"
               color="primary"
             />
             <TodayOrderCard
