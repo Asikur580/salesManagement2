@@ -50,50 +50,52 @@ export function FlashSale({ products = [] }: FlashSaleProps) {
     if (!products || products.length === 0) return null;
 
     return (
-        <div className="w-full bg-card py-10 border-b">
-            <div className="max-w-[100rem] mx-auto px-4">
+        <div className="w-full bg-[#121212] py-8 lg:py-12 border-b border-white/5 relative overflow-hidden">
+            {/* Decorative blobs */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+            <div className="max-w-[100rem] mx-auto px-4 relative z-10">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2">
-                            <Zap className="h-5 w-5 text-primary fill-[#FF4E00]" />
-                            <h2 className="text-xl font-black text-foreground uppercase tracking-tight">
+                    <div className="flex flex-col md:flex-row md:items-center gap-4 lg:gap-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30">
+                                <Zap className="h-5 w-5 text-primary fill-primary" />
+                            </div>
+                            <h2 className="text-2xl md:text-3xl font-black text-white uppercase italic tracking-tighter leading-none skew-x-[-6deg]">
                                 FLASH SALE
                             </h2>
                         </div>
 
-                        {/* Countdown Timer */}
-                        <div className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border border-border shadow-sm">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            <div className="flex items-center gap-1.5">
+                        {/* Styled Countdown Timer (As per image) */}
+                        <div className="inline-flex items-center gap-3 bg-[#1e1e1e] px-4 py-2.5 rounded-2xl border border-white/5 shadow-2xl">
+                            <Clock className="h-4 w-4 text-[#00a651]" />
+                            <div className="flex items-center gap-2">
                                 <div className="flex flex-col items-center">
-                                    <span className="bg-[#1a1a1a] text-white px-1.5 py-0.5 rounded font-black text-xs min-w-[24px] text-center">
-                                        {String(timeLeft.hours).padStart(
-                                            2,
-                                            "0",
-                                        )}
+                                    <div className="bg-[#00a651] text-white w-9 h-9 rounded-lg flex items-center justify-center font-black text-base shadow-lg">
+                                        {String(timeLeft.hours).padStart(2, "0")}
+                                    </div>
+                                    <span className="text-[6px] text-muted-foreground/60 font-black uppercase mt-1 tracking-widest">
+                                        Hours
                                     </span>
                                 </div>
-                                <span className="text-muted-foreground font-black text-xs">
-                                    :
-                                </span>
+                                <span className="text-white font-black text-base mb-3.5">:</span>
                                 <div className="flex flex-col items-center">
-                                    <span className="bg-[#1a1a1a] text-white px-1.5 py-0.5 rounded font-black text-xs min-w-[24px] text-center">
-                                        {String(timeLeft.minutes).padStart(
-                                            2,
-                                            "0",
-                                        )}
+                                    <div className="bg-[#00a651] text-white w-9 h-9 rounded-lg flex items-center justify-center font-black text-base shadow-lg">
+                                        {String(timeLeft.minutes).padStart(2, "0")}
+                                    </div>
+                                    <span className="text-[6px] text-muted-foreground/60 font-black uppercase mt-1 tracking-widest">
+                                        Mins
                                     </span>
                                 </div>
-                                <span className="text-muted-foreground font-black text-xs">
-                                    :
-                                </span>
+                                <span className="text-white font-black text-base mb-3.5">:</span>
                                 <div className="flex flex-col items-center">
-                                    <span className="bg-primary text-white px-1.5 py-0.5 rounded font-black text-xs min-w-[24px] text-center">
-                                        {String(timeLeft.seconds).padStart(
-                                            2,
-                                            "0",
-                                        )}
+                                    <div className="bg-white text-black w-9 h-9 rounded-lg flex items-center justify-center font-black text-base shadow-lg">
+                                        {String(timeLeft.seconds).padStart(2, "0")}
+                                    </div>
+                                    <span className="text-[6px] text-muted-foreground/60 font-black uppercase mt-1 tracking-widest">
+                                        Secs
                                     </span>
                                 </div>
                             </div>
@@ -102,7 +104,7 @@ export function FlashSale({ products = [] }: FlashSaleProps) {
 
                     <Link
                         href={route("shop.flash-sales")}
-                        className="bg-primary hover:bg-orange-600 text-white px-4 py-1.5 rounded-md text-xs font-bold transition-colors uppercase w-fit"
+                        className="bg-primary/10 hover:bg-primary text-primary hover:text-white px-6 py-2 rounded-xl text-xs font-black transition-all uppercase tracking-widest border border-primary/20 shadow-sm"
                     >
                         View all deals
                     </Link>

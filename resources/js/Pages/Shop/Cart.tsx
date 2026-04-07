@@ -78,162 +78,124 @@ export default function Cart({ cart }: CartProps) {
         <ShopLayout>
             <Head title="Shopping Cart | CarMart" />
 
-            <div className="bg-muted/50 py-12 min-h-[60vh]">
-                <div className="max-w-7xl mx-auto px-4">
+            <div className="bg-[#DFE0E2] py-6 md:py-12 min-h-screen">
+                <div className="max-w-4xl mx-auto px-4">
                     <div className="flex items-center gap-4 mb-8">
                         <Link
                             href="/"
-                            className="p-2 hover:bg-card rounded-full transition-all text-muted-foreground hover:text-primary"
+                            className="p-2 hover:bg-white/50 rounded-full transition-all text-foreground"
                         >
-                            <ArrowLeft className="h-6 w-6" />
+                            <ArrowLeft className="h-6 w-6 stroke-[3px]" />
                         </Link>
-                        <h1 className="text-4xl font-black italic uppercase italic">
-                            Your <span className="text-primary">Cart</span>
+                        <h1 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">
+                            Your <span className="text-primary italic">Cart</span>
                         </h1>
                     </div>
 
                     {items.length === 0 ? (
-                        <div className="bg-card rounded-[2.5rem] p-12 text-center shadow-sm border border-border italic">
+                        <div className="bg-white rounded-[3rem] p-12 text-center shadow-xl border border-white/20">
                             <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <ShoppingBag className="h-12 w-12 text-primary" />
                             </div>
-                            <h2 className="text-2xl font-bold text-foreground mb-2">
+                            <h2 className="text-2xl font-black uppercase italic tracking-tight text-foreground mb-2">
                                 Your cart is empty
                             </h2>
-                            <p className="text-muted-foreground mb-8">
+                            <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest mb-8">
                                 Looks like you haven't added anything to your
                                 cart yet.
                             </p>
                             <Button
                                 asChild
-                                className="bg-primary hover:bg-black text-white px-8 py-6 rounded-2xl font-black italic uppercase"
+                                className="bg-primary hover:bg-black text-white px-10 py-7 rounded-2xl font-black italic uppercase tracking-tighter shadow-lg shadow-orange-100"
                             >
                                 <Link href="/">Start Shopping</Link>
                             </Button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div className="space-y-8">
                             {/* Items List */}
-                            <div className="lg:col-span-8 space-y-4">
+                            <div className="space-y-4">
                                 {items.map((item: any) => (
                                     <div
                                         key={item.id}
-                                        className="bg-card rounded-3xl p-6 shadow-sm border border-border flex gap-6 items-center"
+                                        className="bg-white rounded-[2.5rem] p-4 md:p-6 shadow-sm flex gap-4 md:gap-6 items-center relative group"
                                     >
                                         <Link
-                                            href={route(
-                                                "shop.product.show",
-                                                item.slug,
-                                            )}
-                                            className="w-24 h-24 bg-muted rounded-2xl overflow-hidden shrink-0 border border-gray-50 hover:border-primary transition-colors"
+                                            href={route("shop.product.show", item.slug)}
+                                            className="w-28 h-28 md:w-36 md:h-36 bg-[#F3F4F6] rounded-[2rem] overflow-hidden shrink-0 border border-transparent hover:border-primary/20 transition-all p-2"
                                         >
                                             <img
-                                                src={
-                                                    item.image
-                                                        ? item.image.startsWith(
-                                                              "http",
-                                                          )
-                                                            ? item.image
-                                                            : `${item.image}`
-                                                        : `https://placehold.co/200x200?text=${item.name}`
-                                                }
+                                                src={item.image || `https://placehold.co/200x200?text=${item.name}`}
                                                 alt={item.name}
-                                                className="w-full h-full object-contain p-2"
+                                                className="w-full h-full object-contain"
                                             />
                                         </Link>
-                                        <div className="flex-1">
-                                            <Link
-                                                href={route(
-                                                    "shop.product.show",
-                                                    item.slug,
+                                        
+                                        <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                            <div className="max-w-xs">
+                                                <Link
+                                                    href={route("shop.product.show", item.slug)}
+                                                    className="font-black text-sm md:text-xl hover:text-primary transition-colors leading-tight block mb-1 uppercase tracking-tight"
+                                                >
+                                                    {item.name}
+                                                </Link>
+                                                {item.variant_name && (
+                                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em] mb-2">
+                                                        {item.variant_name}
+                                                    </p>
                                                 )}
-                                                className="font-black text-lg hover:text-primary transition-colors leading-tight block mb-1"
-                                            >
-                                                {item.name}
-                                            </Link>
-                                            {item.variant_name && (
-                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                                    {item.variant_name}
+                                                <p className="text-primary font-black text-lg">
+                                                    ৳{parseFloat(item.price).toLocaleString()}
                                                 </p>
-                                            )}
-                                            <p className="text-primary font-black mt-2">
-                                                ৳
-                                                {parseFloat(
-                                                    item.price,
-                                                ).toLocaleString()}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex flex-col items-end gap-4">
-                                            <div className="flex items-center bg-muted rounded-xl p-1">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8 hover:bg-card rounded-lg"
-                                                    onClick={() =>
-                                                        updateQuantity(
-                                                            item.id,
-                                                            item.quantity - 1,
-                                                        )
-                                                    }
-                                                >
-                                                    <Minus className="h-3 w-3" />
-                                                </Button>
-                                                <span className="w-8 text-center font-bold text-sm">
-                                                    {item.quantity}
-                                                </span>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8 hover:bg-card rounded-lg"
-                                                    onClick={() =>
-                                                        updateQuantity(
-                                                            item.id,
-                                                            item.quantity + 1,
-                                                        )
-                                                    }
-                                                >
-                                                    <Plus className="h-3 w-3" />
-                                                </Button>
                                             </div>
-                                            <div className="flex items-center gap-4">
-                                                <p className="font-black text-foreground leading-none">
-                                                    ৳
-                                                    {(
-                                                        item.price *
-                                                        item.quantity
-                                                    ).toLocaleString()}
-                                                </p>
-                                                <button
-                                                    onClick={() =>
-                                                        removeItem(item.id)
-                                                    }
-                                                    className="text-muted-foreground hover:text-red-500 transition-colors"
-                                                >
-                                                    <Trash2 className="h-5 w-5" />
-                                                </button>
+
+                                            <div className="flex flex-col items-end justify-between self-stretch md:self-center">
+                                                {/* Pill-shaped quantity controls */}
+                                                <div className="flex items-center bg-[#D1D5DB] rounded-full p-1 shadow-inner mb-4">
+                                                    <button
+                                                        className="h-8 w-8 flex items-center justify-center hover:bg-white rounded-full transition-all text-gray-600 active:scale-95"
+                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    >
+                                                        <Minus className="h-4 w-4 stroke-[3px]" />
+                                                    </button>
+                                                    <span className="w-10 text-center font-black text-sm text-gray-800">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        className="h-8 w-8 flex items-center justify-center hover:bg-white rounded-full transition-all text-gray-600 active:scale-95"
+                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    >
+                                                        <Plus className="h-4 w-4 stroke-[3px]" />
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <p className="font-black text-lg text-foreground leading-none">
+                                                        ৳{(item.price * item.quantity).toLocaleString()}
+                                                    </p>
+                                                    <button
+                                                        onClick={() => removeItem(item.id)}
+                                                        className="p-2 bg-gray-50 hover:bg-red-50 text-muted-foreground hover:text-red-500 rounded-full transition-all shadow-sm border border-transparent hover:border-red-100"
+                                                    >
+                                                        <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
 
-                                <div className="flex justify-between items-center pt-4">
-                                    <Button
-                                        asChild
-                                        variant="outline"
-                                        className="rounded-2xl border-border font-bold hover:bg-muted"
+                                <div className="flex justify-between items-center px-2 py-4">
+                                    <Link
+                                        href="/"
+                                        className="bg-white hover:bg-gray-50 text-foreground px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-md transition-all active:scale-95"
                                     >
-                                        <Link
-                                            href="/"
-                                            className="flex items-center gap-2"
-                                        >
-                                            <ArrowLeft className="h-4 w-4" />{" "}
-                                            Continue Shopping
-                                        </Link>
-                                    </Button>
+                                        <ArrowLeft className="h-4 w-4 stroke-[3px]" />
+                                        Continue Shopping
+                                    </Link>
                                     <button
                                         onClick={clearCart}
-                                        className="text-sm font-bold text-muted-foreground hover:text-red-500 transition-colors uppercase tracking-widest"
+                                        className="text-xs font-black text-gray-600 hover:text-red-600 transition-colors uppercase tracking-[0.2em]"
                                     >
                                         Clear Cart
                                     </button>
@@ -241,60 +203,54 @@ export default function Cart({ cart }: CartProps) {
                             </div>
 
                             {/* Summary */}
-                            <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit">
-                                <div className="bg-card rounded-[2.5rem] p-8 shadow-sm border border-border">
-                                    <h3 className="text-2xl font-black italic uppercase mb-6">
-                                        Order{" "}
-                                        <span className="text-primary">
-                                            Summary
+                            <div className="bg-white rounded-[3.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                                
+                                <h3 className="text-2xl md:text-3xl font-black italic uppercase italic mb-8">
+                                    Order <span className="text-primary italic">Summary</span>
+                                </h3>
+
+                                <div className="space-y-5 mb-10">
+                                    <div className="flex justify-between text-muted-foreground font-black uppercase text-[10px] md:text-xs tracking-[0.2em]">
+                                        <span>Subtotal ({cart.count} items)</span>
+                                        <span className="text-foreground">
+                                            ৳{cart.total.toLocaleString()}
                                         </span>
-                                    </h3>
-
-                                    <div className="space-y-4 mb-8">
-                                        <div className="flex justify-between text-muted-foreground font-bold uppercase text-xs tracking-widest">
-                                            <span>
-                                                Subtotal ({cart.count} items)
-                                            </span>
-                                            <span className="text-foreground">
-                                                ৳{cart.total.toLocaleString()}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between text-muted-foreground font-bold uppercase text-xs tracking-widest">
-                                            <span>Shipping</span>
-                                            <span className="text-green-600">
-                                                FREE
-                                            </span>
-                                        </div>
-                                        <div className="h-[1px] bg-muted/80 my-2" />
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-lg font-black italic uppercase">
-                                                Total
-                                            </span>
-                                            <span className="text-2xl font-black text-primary">
-                                                ৳{cart.total.toLocaleString()}
-                                            </span>
-                                        </div>
                                     </div>
+                                    <div className="flex justify-between text-muted-foreground font-black uppercase text-[10px] md:text-xs tracking-[0.2em]">
+                                        <span>Shipping</span>
+                                        <span className="text-[#00a651] font-black">
+                                            FREE
+                                        </span>
+                                    </div>
+                                    <div className="h-[2px] bg-muted/30 my-4" />
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xl md:text-2xl font-black italic uppercase tracking-tight">
+                                            Total
+                                        </span>
+                                        <span className="text-3xl md:text-4xl font-black text-primary italic">
+                                            ৳{cart.total.toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
 
-                                    <Button
-                                        asChild
-                                        className="w-full bg-black hover:bg-primary text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-gray-100 group"
+                                <Button
+                                    asChild
+                                    className="w-full bg-black hover:bg-primary text-white py-10 rounded-[2rem] text-xl font-black transition-all shadow-2xl shadow-gray-200 group relative overflow-hidden"
+                                >
+                                    <Link
+                                        href={route("checkout.index")}
+                                        className="flex items-center justify-center w-full h-full"
                                     >
-                                        <Link
-                                            href={route("checkout.index")}
-                                            className="flex items-center justify-center w-full h-full"
-                                        >
-                                            CHECKOUT NOW
-                                            <ShoppingBag className="ml-3 h-5 w-5 transition-transform group-hover:-translate-y-1" />
-                                        </Link>
-                                    </Button>
+                                        <span className="relative z-10">CHECKOUT NOW</span>
+                                        <ShoppingBag className="ml-3 h-6 w-6 relative z-10 transition-transform group-hover:-translate-y-2" />
+                                    </Link>
+                                </Button>
 
-                                    <div className="mt-6 flex flex-col gap-3">
-                                        <p className="text-[10px] text-muted-foreground font-bold text-center uppercase tracking-[0.2em] leading-relaxed px-4">
-                                            Secure Checkout powered by
-                                            SSLCommerz
-                                        </p>
-                                    </div>
+                                <div className="mt-8 flex flex-col gap-3">
+                                    <p className="text-[10px] text-muted-foreground/60 font-black text-center uppercase tracking-[0.3em] leading-relaxed">
+                                        Secure Checkout powered by SSLCommerz
+                                    </p>
                                 </div>
                             </div>
                         </div>
