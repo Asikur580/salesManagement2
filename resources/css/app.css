@@ -175,7 +175,7 @@
         @apply rounded-3xl my-8 mx-auto shadow-lg border border-gray-100 max-w-full h-auto;
     }
     .description-content a {
-        @apply text-[#FF4E00] font-bold underline hover:no-underline transition-all;
+        @apply text-primary font-bold underline hover:no-underline transition-all;
     }
     .description-content br {
         @apply mb-2;

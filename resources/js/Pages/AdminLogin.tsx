@@ -35,21 +35,21 @@ const AdminLogin = () => {
 
     return (
         <div className="min-h-screen items-center justify-center bg-muted/50 flex flex-col font-sans">
-            <Head title="Admin Login - OrenMart" />
+            <Head title="Admin Login - CarMart" />
             <main className="flex w-full items-center justify-center p-4 py-16">
                 <Card className="w-full max-w-[440px] border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-card">
                     <CardContent className="p-8 md:p-12">
                         {/* Header */}
                         <div className="flex flex-col items-center mb-10 text-center">
-                            <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mb-6 shadow-inner relative group">
-                                <ShieldAlert className="w-10 h-10 text-red-500 relative z-10" />
+                            <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6 shadow-inner relative group">
+                                <ShieldAlert className="w-10 h-10 text-primary relative z-10" />
                             </div>
                             <h1 className="text-3xl font-black italic tracking-tighter text-foreground uppercase">
                                 System{" "}
-                                <span className="text-red-500">Access</span>
+                                <span className="text-primary">Access</span>
                             </h1>
                             <div className="flex items-center justify-center gap-2 mt-2">
-                                <Activity className="w-3 h-3 text-red-500 animate-pulse" />
+                                <Activity className="w-3 h-3 text-primary animate-pulse" />
                                 <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest px-2">
                                     Authorized Personnel Only
                                 </p>
@@ -60,11 +60,11 @@ const AdminLogin = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-6">
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-red-500 ml-1">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">
                                         Phone or Email
                                     </Label>
                                     <div className="relative group">
-                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-red-500 transition-colors" />
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                         <Input
                                             type="text"
                                             placeholder="Enter Phone or Email"
@@ -72,12 +72,12 @@ const AdminLogin = () => {
                                             onChange={(e) =>
                                                 setData("login", e.target.value)
                                             }
-                                            className="pl-12 h-14 bg-muted/50 border-border focus:border-red-500 focus:ring-red-500/10 rounded-2xl text-sm font-black"
+                                            className="pl-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black"
                                             required
                                         />
                                     </div>
                                     {errors.login && (
-                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-2 ml-2 flex items-center gap-2">
+                                        <p className="text-primary text-[10px] font-black uppercase tracking-widest mt-2 ml-2 flex items-center gap-2">
                                             <span className="w-1 h-1 bg-current rounded-full" />{" "}
                                             {errors.login}
                                         </p>
@@ -85,12 +85,12 @@ const AdminLogin = () => {
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex justify-between">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-red-500 ml-1">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">
                                             Security Key
                                         </Label>
                                     </div>
                                     <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-red-500 transition-colors" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                         <Input
                                             type={
                                                 showPassword
@@ -105,7 +105,7 @@ const AdminLogin = () => {
                                                     e.target.value,
                                                 )
                                             }
-                                            className="pl-12 pr-12 h-14 bg-muted/50 border-border focus:border-red-500 focus:ring-red-500/10 rounded-2xl text-sm font-black"
+                                            className="pl-12 pr-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black"
                                             required
                                         />
                                         <button
@@ -137,7 +137,7 @@ const AdminLogin = () => {
                                                 e.target.checked,
                                             )
                                         }
-                                        className="w-4 h-4 rounded-md border-border text-red-500 focus:ring-red-500/20"
+                                        className="w-4 h-4 rounded-md border-border text-primary focus:ring-primary/20"
                                     />
                                     <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
                                         Trust Terminal
@@ -148,7 +148,7 @@ const AdminLogin = () => {
                             <Button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full h-14 bg-red-500 hover:bg-black text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-red-100 group mt-4 overflow-hidden"
+                                className="w-full h-14 bg-primary hover:bg-black text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-primary/20 group mt-4 overflow-hidden"
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                     {processing
@@ -164,8 +164,8 @@ const AdminLogin = () => {
                         <div className="mt-10 pt-8 border-t border-gray-50 text-center">
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                                 Core Management by{" "}
-                                <span className="text-red-500">
-                                    OrenMart Systems
+                                <span className="text-primary">
+                                    CarMart Systems
                                 </span>
                             </p>
                         </div>

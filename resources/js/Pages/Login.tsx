@@ -127,18 +127,18 @@ const Login = () => {
 
     return (
         <ShopLayout>
-            <Head title="Login - OrenMart" />
+            <Head title="Login - CarMart" />
             <main className="min-h-[85vh] flex items-center justify-center p-4 py-16 bg-muted/50">
                 <Card className="w-full max-w-[440px] border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-card">
                     <CardContent className="p-8 md:p-12">
                         {/* Header */}
                         <div className="flex flex-col items-center mb-10 text-center">
-                            <div className="w-20 h-20 bg-orange-50 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
-                                <ShieldCheck className="w-10 h-10 text-[#FF4F17]" />
+                            <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
+                                <ShieldCheck className="w-10 h-10 text-primary" />
                             </div>
                             <h1 className="text-3xl font-black italic tracking-tighter text-foreground uppercase">
                                 Welcome{" "}
-                                <span className="text-[#FF4F17]">Back</span>
+                                <span className="text-primary">Back</span>
                             </h1>
                             <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mt-2 px-6">
                                 Choose your preferred secure login method
@@ -154,7 +154,7 @@ const Login = () => {
                                 }}
                                 className={`flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                                     loginMode === "otp"
-                                        ? "bg-card text-[#FF4F17] shadow-sm"
+                                        ? "bg-card text-primary shadow-sm"
                                         : "text-muted-foreground hover:text-muted-foreground"
                                 }`}
                             >
@@ -167,7 +167,7 @@ const Login = () => {
                                 onClick={() => setLoginMode("password")}
                                 className={`flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                                     loginMode === "password"
-                                        ? "bg-card text-[#FF4F17] shadow-sm"
+                                        ? "bg-card text-primary shadow-sm"
                                         : "text-muted-foreground hover:text-muted-foreground"
                                 }`}
                             >
@@ -187,11 +187,11 @@ const Login = () => {
                                         className="space-y-8"
                                     >
                                         <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest text-[#FF4F17] ml-1">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">
                                                 Phone Number
                                             </Label>
                                             <div className="relative group">
-                                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-[#FF4F17] transition-colors" />
+                                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                                 <Input
                                                     type="tel"
                                                     placeholder="01XXXXXXXXX"
@@ -203,7 +203,7 @@ const Login = () => {
                                                                 .value,
                                                         })
                                                     }
-                                                    className="pl-12 h-14 bg-muted/50 border-border focus:border-[#FF4F17] focus:ring-[#FF4F17]/10 rounded-2xl text-lg font-black tracking-tight"
+                                                    className="pl-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-lg font-black tracking-tight"
                                                     required
                                                 />
                                             </div>
@@ -213,7 +213,7 @@ const Login = () => {
                                             disabled={
                                                 isLoading || !otpData.phone
                                             }
-                                            className="w-full h-14 bg-[#FF4F17] hover:bg-black text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-orange-100 group"
+                                            className="w-full h-14 bg-primary hover:bg-black text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-primary/20 group"
                                         >
                                             {isLoading
                                                 ? "Sending..."
@@ -228,7 +228,7 @@ const Login = () => {
                                     >
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-end">
-                                                <Label className="text-[10px] font-black uppercase tracking-widest text-[#FF4F17] ml-1">
+                                                <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">
                                                     Enter 6-Digit Code
                                                 </Label>
                                                 <button
@@ -236,13 +236,13 @@ const Login = () => {
                                                     onClick={() =>
                                                         setOtpSent(false)
                                                     }
-                                                    className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-[#FF4F17] transition-colors"
+                                                    className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
                                                 >
                                                     Change Number?
                                                 </button>
                                             </div>
                                             <div className="relative group">
-                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-[#FF4F17] transition-colors" />
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                                 <Input
                                                     type="text"
                                                     placeholder="Enter OTP"
@@ -254,7 +254,7 @@ const Login = () => {
                                                             otp: e.target.value,
                                                         })
                                                     }
-                                                    className="pl-12 h-14 bg-muted/50 border-border focus:border-[#FF4F17] focus:ring-[#FF4F17]/10 rounded-2xl text-2xl font-black tracking-[0.4em] text-center"
+                                                    className="pl-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-2xl font-black tracking-[0.4em] text-center"
                                                     required
                                                 />
                                             </div>
@@ -269,7 +269,7 @@ const Login = () => {
                                                     isLoading ||
                                                     otpData.otp.length !== 6
                                                 }
-                                                className="w-full h-14 bg-black hover:bg-[#FF4F17] text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl"
+                                                className="w-full h-14 bg-black hover:bg-primary text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl"
                                             >
                                                 {isLoading
                                                     ? "Verifying..."
@@ -283,7 +283,7 @@ const Login = () => {
                                                 <button
                                                     type="button"
                                                     onClick={handleSendOtp}
-                                                    className="w-full text-[10px] font-black uppercase tracking-widest text-[#FF4F17] hover:underline"
+                                                    className="w-full text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
                                                 >
                                                     Resend New Code
                                                 </button>
@@ -299,11 +299,11 @@ const Login = () => {
                             >
                                 <div className="space-y-6">
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-[#FF4F17] ml-1">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">
                                             Phone or Email
                                         </Label>
                                         <div className="relative group">
-                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-[#FF4F17] transition-colors" />
+                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                             <Input
                                                 type="text"
                                                 placeholder="Enter Phone or Email"
@@ -314,25 +314,25 @@ const Login = () => {
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="pl-12 h-14 bg-muted/50 border-border focus:border-[#FF4F17] focus:ring-[#FF4F17]/10 rounded-2xl text-sm font-black"
+                                                className="pl-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black"
                                                 required
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest text-[#FF4F17] ml-1">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">
                                                 Password
                                             </Label>
                                             <button
                                                 type="button"
-                                                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-[#FF4F17]"
+                                                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary"
                                             >
                                                 Forgot?
                                             </button>
                                         </div>
                                         <div className="relative group">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-[#FF4F17] transition-colors" />
+                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                             <Input
                                                 type={
                                                     showPassword
@@ -349,7 +349,7 @@ const Login = () => {
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="pl-12 pr-12 h-14 bg-muted/50 border-border focus:border-[#FF4F17] focus:ring-[#FF4F17]/10 rounded-2xl text-sm font-black"
+                                                className="pl-12 pr-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black"
                                                 required
                                             />
                                             <button
@@ -373,7 +373,7 @@ const Login = () => {
                                 <Button
                                     type="submit"
                                     disabled={passwordForm.processing}
-                                    className="w-full h-14 bg-[#FF4F17] hover:bg-black text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-orange-100 group mt-4 overflow-hidden"
+                                    className="w-full h-14 bg-primary hover:bg-black text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-xl shadow-primary/20 group mt-4 overflow-hidden"
                                 >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                         {passwordForm.processing
@@ -390,8 +390,8 @@ const Login = () => {
                         <div className="mt-10 pt-8 border-t border-gray-50 text-center">
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                                 Secure gateway provided by{" "}
-                                <span className="text-[#FF4F17]">
-                                    OrenMart v2.0
+                                <span className="text-primary">
+                                    CarMart v2.0
                                 </span>
                             </p>
                         </div>
