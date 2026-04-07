@@ -119,10 +119,10 @@ export default function CreateProduct({
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             Add New Product
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             Create a simple or variant product in your catalog.
                         </p>
                     </div>
@@ -130,7 +130,7 @@ export default function CreateProduct({
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Basic Info */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                    <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                         <h2 className="text-lg font-semibold border-bottom pb-2">
                             Basic Information
                         </h2>
@@ -286,7 +286,7 @@ export default function CreateProduct({
 
                     {/* Pricing & Inventory (For Simple Products) */}
                     {data.product_type === "simple" && (
-                        <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                        <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                             <h2 className="text-lg font-semibold border-bottom pb-2">
                                 Pricing & Inventory
                             </h2>
@@ -355,7 +355,7 @@ export default function CreateProduct({
                                     />
                                 </div>
                             </div>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                                 Note: Stock quantity is managed through
                                 Purchases / Stock In.
                             </p>
@@ -364,7 +364,7 @@ export default function CreateProduct({
 
                     {/* Variant Builder */}
                     {data.product_type === "variant" && (
-                        <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                        <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                             <div className="flex justify-between items-center border-bottom pb-2 mb-4">
                                 <h2 className="text-lg font-semibold">
                                     Variants Configuration
@@ -388,7 +388,7 @@ export default function CreateProduct({
                     )}
 
                     {/* Product Level Images */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                    <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                         <h2 className="text-lg font-semibold border-bottom pb-2">
                             Product Images
                         </h2>

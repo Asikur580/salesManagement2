@@ -184,10 +184,10 @@ export default function EditProduct({
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             Edit Product: {product.name}
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             Update product details, pricing, and variants.
                         </p>
                     </div>
@@ -195,7 +195,7 @@ export default function EditProduct({
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Basic Info */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                    <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                         <h2 className="text-lg font-semibold border-bottom pb-2">
                             Basic Information
                         </h2>
@@ -230,7 +230,7 @@ export default function EditProduct({
                                     }
                                     disabled
                                 >
-                                    <SelectTrigger className="bg-gray-50">
+                                    <SelectTrigger className="bg-muted">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -242,7 +242,7 @@ export default function EditProduct({
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                     Type cannot be changed after creation.
                                 </p>
                             </div>
@@ -354,7 +354,7 @@ export default function EditProduct({
 
                     {/* Pricing & Inventory (For Simple Products) */}
                     {data.product_type === "simple" && (
-                        <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                        <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                             <h2 className="text-lg font-semibold border-bottom pb-2">
                                 Pricing & Inventory
                             </h2>
@@ -426,7 +426,7 @@ export default function EditProduct({
 
                     {/* Variant Builder */}
                     {data.product_type === "variant" && (
-                        <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                        <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                             <div className="flex justify-between items-center border-bottom pb-2 mb-4">
                                 <h2 className="text-lg font-semibold">
                                     Variants Configuration
@@ -448,7 +448,7 @@ export default function EditProduct({
                     )}
 
                     {/* Product Level Images */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border space-y-6">
+                    <div className="bg-card p-6 rounded-lg shadow-sm border space-y-6">
                         <h2 className="text-lg font-semibold border-bottom pb-2">
                             Product Images
                         </h2>

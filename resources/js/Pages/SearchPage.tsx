@@ -107,26 +107,26 @@ const SearchPage = ({
             {/* Header Section */}
             <div className="bg-[#F8F9FA] py-8 border-b">
                 <div className="max-w-[100rem] mx-auto px-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-                        <Link href="/" className="hover:text-[#FF4E00]">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                        <Link href="/" className="hover:text-primary">
                             Home
                         </Link>
                         <ChevronRight className="h-4 w-4" />
-                        <span className="text-gray-900 font-medium">
+                        <span className="text-foreground font-medium">
                             Search Results
                         </span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[#FF4E00]/10 flex items-center justify-center shrink-0">
-                            <Search className="h-6 w-6 text-[#FF4E00]" />
+                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                            <Search className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-black text-gray-900 uppercase italic tracking-tighter">
+                            <h1 className="text-2xl md:text-3xl font-black text-foreground uppercase italic tracking-tighter">
                                 {searchTerm
                                     ? `Results for "${searchTerm}"`
                                     : "All Products"}
                             </h1>
-                            <p className="text-gray-500 font-medium mt-1">
+                            <p className="text-muted-foreground font-medium mt-1">
                                 We found {products?.total || 0} great products
                                 for you.
                             </p>
@@ -135,14 +135,14 @@ const SearchPage = ({
                 </div>
             </div>
 
-            <div className="py-12 bg-white">
+            <div className="py-12 bg-card">
                 <div className="max-w-[100rem] mx-auto px-4">
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Sidebar Filters */}
                         <aside className="w-full lg:w-72 shrink-0 space-y-8">
                             {/* Category Filter */}
                             <div>
-                                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight mb-4 border-b pb-2">
+                                <h3 className="text-lg font-black text-foreground uppercase tracking-tight mb-4 border-b pb-2">
                                     Categories
                                 </h3>
                                 <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
@@ -156,8 +156,8 @@ const SearchPage = ({
                                             })}
                                             className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-bold transition-all ${
                                                 filters?.category === cat.slug
-                                                    ? "bg-[#FF4E00]/10 text-[#FF4E00]"
-                                                    : "text-gray-600 hover:bg-gray-100 hover:text-[#FF4E00]"
+                                                    ? "bg-primary/10 text-primary"
+                                                    : "text-muted-foreground hover:bg-muted/80 hover:text-primary"
                                             }`}
                                         >
                                             {cat.name}
@@ -180,13 +180,13 @@ const SearchPage = ({
 
                             {/* Price Filter */}
                             <div>
-                                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight mb-4 border-b pb-2">
+                                <h3 className="text-lg font-black text-foreground uppercase tracking-tight mb-4 border-b pb-2">
                                     Price Range
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2">
                                         <div className="relative flex-1">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-bold">
                                                 ৳
                                             </span>
                                             <input
@@ -196,14 +196,14 @@ const SearchPage = ({
                                                 onChange={(e) =>
                                                     setMinPrice(e.target.value)
                                                 }
-                                                className="w-full pl-7 pr-3 py-2 border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
+                                                className="w-full pl-7 pr-3 py-2 border-border rounded-lg text-sm focus:ring-[#FF4E00] focus:border-primary"
                                             />
                                         </div>
-                                        <span className="text-gray-400 font-bold">
+                                        <span className="text-muted-foreground font-bold">
                                             -
                                         </span>
                                         <div className="relative flex-1">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-bold">
                                                 ৳
                                             </span>
                                             <input
@@ -213,13 +213,13 @@ const SearchPage = ({
                                                 onChange={(e) =>
                                                     setMaxPrice(e.target.value)
                                                 }
-                                                className="w-full pl-7 pr-3 py-2 border-gray-200 rounded-lg text-sm focus:ring-[#FF4E00] focus:border-[#FF4E00]"
+                                                className="w-full pl-7 pr-3 py-2 border-border rounded-lg text-sm focus:ring-[#FF4E00] focus:border-primary"
                                             />
                                         </div>
                                     </div>
                                     <button
                                         onClick={applyFilters}
-                                        className="w-full bg-[#FF4E00] text-white py-2.5 rounded-lg text-sm font-black hover:bg-orange-600 transition-all shadow-lg shadow-orange-100"
+                                        className="w-full bg-primary text-white py-2.5 rounded-lg text-sm font-black hover:bg-orange-600 transition-all shadow-lg shadow-orange-100"
                                     >
                                         Filter Results
                                     </button>
@@ -228,16 +228,16 @@ const SearchPage = ({
 
                             {/* Brand Filter */}
                             <div>
-                                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight mb-4 border-b pb-2">
+                                <h3 className="text-lg font-black text-foreground uppercase tracking-tight mb-4 border-b pb-2">
                                     Brands
                                 </h3>
                                 <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                                     {brands.map((brand) => (
                                         <label
                                             key={brand.id}
-                                            className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group"
+                                            className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer group"
                                         >
-                                            <span className="text-sm font-bold text-gray-600 group-hover:text-[#FF4E00] transition-colors">
+                                            <span className="text-sm font-bold text-muted-foreground group-hover:text-primary transition-colors">
                                                 {brand.name}
                                             </span>
                                             <div className="relative">
@@ -253,7 +253,7 @@ const SearchPage = ({
                                                     }
                                                     className="peer hidden"
                                                 />
-                                                <div className="w-5 h-5 border-2 border-gray-200 rounded-md peer-checked:bg-[#FF4E00] peer-checked:border-[#FF4E00] transition-all" />
+                                                <div className="w-5 h-5 border-2 border-border rounded-md peer-checked:bg-primary peer-checked:border-primary transition-all" />
                                                 <Check className="h-3.5 w-3.5 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 transition-opacity" />
                                             </div>
                                         </label>
@@ -271,26 +271,26 @@ const SearchPage = ({
                         {/* Main Content */}
                         <div className="flex-1">
                             {/* Toolbar */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 bg-gray-50 p-4 rounded-2xl border border-gray-100 gap-4">
-                                <div className="text-sm font-bold text-gray-700">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 bg-muted p-4 rounded-2xl border border-border gap-4">
+                                <div className="text-sm font-bold text-card-foreground">
                                     Showing{" "}
-                                    <span className="text-[#FF4E00]">
+                                    <span className="text-primary">
                                         {products?.data?.length || 0}
                                     </span>{" "}
                                     of{" "}
-                                    <span className="text-[#FF4E00]">
+                                    <span className="text-primary">
                                         {products?.total || 0}
                                     </span>{" "}
                                     results
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <span className="text-xs font-black text-gray-400 uppercase tracking-wider">
+                                    <span className="text-xs font-black text-muted-foreground uppercase tracking-wider">
                                         Sort By:
                                     </span>
                                     <select
                                         value={currentSort}
                                         onChange={handleSortChange}
-                                        className="border-gray-200 bg-white rounded-lg text-sm font-bold text-gray-900 focus:ring-[#FF4E00] focus:border-[#FF4E00] cursor-pointer"
+                                        className="border-border bg-card rounded-lg text-sm font-bold text-foreground focus:ring-[#FF4E00] focus:border-primary cursor-pointer"
                                     >
                                         <option value="default">
                                             Relevance
@@ -318,8 +318,8 @@ const SearchPage = ({
                                         />
                                     ))
                                 ) : (
-                                    <div className="col-span-full py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-300">
-                                        <h4 className="text-xl font-bold text-gray-400">
+                                    <div className="col-span-full py-20 text-center bg-muted rounded-3xl border border-dashed border-border">
+                                        <h4 className="text-xl font-bold text-muted-foreground">
                                             No products found for this search
                                         </h4>
                                     </div>
@@ -339,8 +339,8 @@ const SearchPage = ({
                                                 }}
                                                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
                                                     link.active
-                                                        ? "bg-[#FF4E00] text-white shadow-lg shadow-orange-200"
-                                                        : "bg-white text-gray-600 border border-gray-200 hover:border-[#FF4E00] hover:text-[#FF4E00]"
+                                                        ? "bg-primary text-white shadow-lg shadow-orange-200"
+                                                        : "bg-card text-muted-foreground border border-border hover:border-primary hover:text-primary"
                                                 } ${!link.url && "opacity-50 cursor-not-allowed"}`}
                                             />
                                         ))}

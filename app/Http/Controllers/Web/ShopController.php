@@ -20,7 +20,7 @@ class ShopController extends Controller
 
         $flashSaleProducts = (clone $baseQuery)
             ->inRandomOrder()
-            ->take(4)
+            ->take(6)
             ->get();
 
         $flashSaleProducts->each(function ($p) {
@@ -32,7 +32,7 @@ class ShopController extends Controller
 
         $newArrivals = (clone $baseQuery)
             ->latest()
-            ->take(8)
+            ->take(10)
             ->get();
 
         $newArrivals->each(function ($p) {
@@ -60,7 +60,7 @@ class ShopController extends Controller
             ->orderBy('order')
             ->get();
 
-        $brands = Brand::take(10)->get();
+        $brands = Brand::take(20)->get();
 
 
         return Inertia::render('Index', [

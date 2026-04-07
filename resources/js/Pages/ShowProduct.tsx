@@ -131,7 +131,7 @@ export default function ShowProduct({ product }: PageProps) {
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900 flex items-center gap-3">
+                            <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
                                 {product.name}
                                 <Badge
                                     variant={
@@ -212,46 +212,46 @@ export default function ShowProduct({ product }: PageProps) {
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                     <div>
-                                        <p className="text-sm text-gray-500 font-medium">
+                                        <p className="text-sm text-muted-foreground font-medium">
                                             Category
                                         </p>
-                                        <p className="font-medium text-gray-900 mt-1">
+                                        <p className="font-medium text-foreground mt-1">
                                             {product.category?.name || "N/A"}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 font-medium">
+                                        <p className="text-sm text-muted-foreground font-medium">
                                             Brand
                                         </p>
-                                        <p className="font-medium text-gray-900 mt-1">
+                                        <p className="font-medium text-foreground mt-1">
                                             {product.brand?.name || "N/A"}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 font-medium">
+                                        <p className="text-sm text-muted-foreground font-medium">
                                             Unit
                                         </p>
-                                        <p className="font-medium text-gray-900 mt-1">
+                                        <p className="font-medium text-foreground mt-1">
                                             {product.unit?.name || "N/A"}
                                         </p>
                                     </div>
                                 </div>
                                 <Separator />
                                 <div className="mt-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                        <FileText className="h-4 w-4 text-gray-500" />
+                                    <h3 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
+                                        <FileText className="h-4 w-4 text-muted-foreground" />
                                         Product Description
                                     </h3>
                                     {product.description ? (
-                                        <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+                                        <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
                                             <div 
-                                                className="text-sm text-gray-600 leading-relaxed description-content"
+                                                className="text-sm text-muted-foreground leading-relaxed description-content"
                                                 dangerouslySetInnerHTML={{ __html: product.description }}
                                             />
                                         </div>
                                     ) : (
-                                        <div className="bg-gray-50 border border-gray-200 border-dashed rounded-xl p-6 text-center">
-                                            <p className="text-gray-400 italic text-sm">
+                                        <div className="bg-muted border border-border border-dashed rounded-xl p-6 text-center">
+                                            <p className="text-muted-foreground italic text-sm">
                                                 No description provided for this
                                                 product.
                                             </p>
@@ -273,7 +273,7 @@ export default function ShowProduct({ product }: PageProps) {
                                 <CardContent>
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm text-left">
-                                            <thead className="text-xs text-gray-500 uppercase bg-gray-50/50">
+                                            <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
                                                 <tr>
                                                     <th className="px-4 py-3 font-medium">
                                                         Variant
@@ -300,7 +300,7 @@ export default function ShowProduct({ product }: PageProps) {
                                                     (variant) => (
                                                         <tr
                                                             key={variant.id}
-                                                            className="hover:bg-gray-50/50 transition-colors"
+                                                            className="hover:bg-muted/50 transition-colors"
                                                         >
                                                             <td className="px-4 py-3">
                                                                 <div className="flex flex-wrap gap-1">
@@ -330,7 +330,7 @@ export default function ShowProduct({ product }: PageProps) {
                                                                     )}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3 font-medium text-gray-700">
+                                                            <td className="px-4 py-3 font-medium text-card-foreground">
                                                                 {variant.sku ||
                                                                     "-"}
                                                             </td>
@@ -389,7 +389,7 @@ export default function ShowProduct({ product }: PageProps) {
                                                                             ),
                                                                         )
                                                                     ) : (
-                                                                        <span className="text-gray-400 text-xs italic">
+                                                                        <span className="text-muted-foreground text-xs italic">
                                                                             none
                                                                         </span>
                                                                     )}
@@ -418,23 +418,23 @@ export default function ShowProduct({ product }: PageProps) {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="flex justify-between items-center py-2 border-b">
-                                        <span className="text-gray-500">
+                                        <span className="text-muted-foreground">
                                             SKU
                                         </span>
-                                        <span className="font-medium text-gray-900">
+                                        <span className="font-medium text-foreground">
                                             {product.sku || "N/A"}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b">
-                                        <span className="text-gray-500">
+                                        <span className="text-muted-foreground">
                                             Barcode
                                         </span>
-                                        <span className="font-mono text-gray-900 bg-gray-100 px-2 py-0.5 rounded text-sm">
+                                        <span className="font-mono text-foreground bg-muted/80 px-2 py-0.5 rounded text-sm">
                                             {product.barcode || "N/A"}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b">
-                                        <span className="text-gray-500">
+                                        <span className="text-muted-foreground">
                                             Cost Price
                                         </span>
                                         <span className="font-medium text-red-600">
@@ -445,7 +445,7 @@ export default function ShowProduct({ product }: PageProps) {
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b">
-                                        <span className="text-gray-500 font-medium">
+                                        <span className="text-muted-foreground font-medium">
                                             Selling Price
                                         </span>
                                         <span className="font-bold text-green-700 text-lg">
@@ -456,7 +456,7 @@ export default function ShowProduct({ product }: PageProps) {
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 pt-4">
-                                        <span className="text-gray-500 font-medium">
+                                        <span className="text-muted-foreground font-medium">
                                             Current Stock
                                         </span>
                                         <Badge className="text-base px-3 py-1 font-bold">
@@ -488,15 +488,15 @@ export default function ShowProduct({ product }: PageProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-lg flex items-center gap-2">
-                                    <ImageIcon className="h-5 w-5 text-gray-400" />
+                                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
                                     Product Gallery
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {product.images.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
-                                        <Package className="h-10 w-10 text-gray-400 mb-2" />
-                                        <p className="text-sm text-gray-500 font-medium">
+                                    <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-border rounded-xl bg-muted">
+                                        <Package className="h-10 w-10 text-muted-foreground mb-2" />
+                                        <p className="text-sm text-muted-foreground font-medium">
                                             No images uploaded
                                         </p>
                                     </div>
@@ -504,7 +504,7 @@ export default function ShowProduct({ product }: PageProps) {
                                     <div className="space-y-4">
                                         {/* Primary Image */}
                                         {primaryImage && (
-                                            <div className="relative aspect-square w-full rounded-xl overflow-hidden border border-gray-200 shadow-sm group">
+                                            <div className="relative aspect-square w-full rounded-xl overflow-hidden border border-border shadow-sm group">
                                                 <img
                                                     src={getImageUrl(
                                                         primaryImage.image_path,
@@ -526,7 +526,7 @@ export default function ShowProduct({ product }: PageProps) {
                                                 {otherImages.map((img) => (
                                                     <div
                                                         key={img.id}
-                                                        className="aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm group cursor-pointer"
+                                                        className="aspect-square rounded-lg overflow-hidden border border-border shadow-sm group cursor-pointer"
                                                     >
                                                         <img
                                                             src={getImageUrl(

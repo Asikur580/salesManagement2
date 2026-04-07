@@ -116,7 +116,7 @@ export default function Show({ order }: OrdersShowProps) {
 
     const getPaymentBadge = (status: string) => {
         const variants: any = {
-            pending: "bg-gray-100 text-gray-800 border-gray-200",
+            pending: "bg-muted/80 text-foreground border-border",
             paid: "bg-green-100 text-green-800 border-green-200",
             failed: "bg-red-100 text-red-800 border-red-200",
             partially_paid: "bg-orange-100 text-orange-800 border-orange-200",
@@ -145,22 +145,22 @@ export default function Show({ order }: OrdersShowProps) {
                     <div>
                         <Link
                             href="/orders"
-                            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-2"
+                            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2"
                         >
                             <ChevronLeft className="h-4 w-4" /> Back to Orders
                         </Link>
                         <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                            <h1 className="text-3xl font-bold tracking-tight text-foreground">
                                 Order #{order.order_number}
                             </h1>
                             <Badge
                                 variant="outline"
-                                className="bg-gray-100 text-gray-600 border-gray-200 px-2 py-0 text-xs font-semibold uppercase"
+                                className="bg-muted/80 text-muted-foreground border-border px-2 py-0 text-xs font-semibold uppercase"
                             >
                                 {order.source}
                             </Badge>
                         </div>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Placed on{" "}
                             {format(
                                 new Date(order.created_at),
@@ -171,7 +171,7 @@ export default function Show({ order }: OrdersShowProps) {
 
                     <div className="flex gap-2">
                         <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold text-gray-500 uppercase px-1">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase px-1">
                                 Order Status
                             </span>
                             <Select
@@ -205,7 +205,7 @@ export default function Show({ order }: OrdersShowProps) {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold text-gray-500 uppercase px-1">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase px-1">
                                 Payment Status
                             </span>
                             <Select
@@ -266,9 +266,9 @@ export default function Show({ order }: OrdersShowProps) {
                     {/* Left Column: Items and Totals */}
                     <div className="lg:col-span-2 space-y-6">
                         <Card className="border-border shadow-sm">
-                            <CardHeader className="border-b bg-gray-50/50 py-4">
+                            <CardHeader className="border-b bg-muted/50 py-4">
                                 <CardTitle className="text-lg font-bold flex items-center gap-2">
-                                    <Package className="h-5 w-5 text-gray-500" />
+                                    <Package className="h-5 w-5 text-muted-foreground" />
                                     Order Items
                                 </CardTitle>
                             </CardHeader>
@@ -279,7 +279,7 @@ export default function Show({ order }: OrdersShowProps) {
                                             key={item.id}
                                             className="p-4 flex gap-4"
                                         >
-                                            <div className="h-16 w-16 rounded-lg bg-gray-50 border flex items-center justify-center overflow-hidden shrink-0">
+                                            <div className="h-16 w-16 rounded-lg bg-muted border flex items-center justify-center overflow-hidden shrink-0">
                                                 {item.product?.primary_image ? (
                                                     <img
                                                         src={
@@ -291,19 +291,19 @@ export default function Show({ order }: OrdersShowProps) {
                                                         className="h-full w-full object-cover"
                                                     />
                                                 ) : (
-                                                    <Package className="h-6 w-6 text-gray-300" />
+                                                    <Package className="h-6 w-6 text-muted-foreground" />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-gray-900 truncate">
+                                                <h4 className="font-bold text-foreground truncate">
                                                     {item.product_name}
                                                 </h4>
                                                 {item.variant_name && (
-                                                    <p className="text-xs text-gray-500 font-medium">
+                                                    <p className="text-xs text-muted-foreground font-medium">
                                                         {item.variant_name}
                                                     </p>
                                                 )}
-                                                <div className="mt-1 text-sm text-gray-500">
+                                                <div className="mt-1 text-sm text-muted-foreground">
                                                     ৳
                                                     {Number(
                                                         item.unit_price,
@@ -311,7 +311,7 @@ export default function Show({ order }: OrdersShowProps) {
                                                     × {item.quantity}
                                                 </div>
                                             </div>
-                                            <div className="text-right font-bold text-gray-900">
+                                            <div className="text-right font-bold text-foreground">
                                                 ৳
                                                 {Number(
                                                     item.total_price,
@@ -321,10 +321,10 @@ export default function Show({ order }: OrdersShowProps) {
                                     ))}
                                 </div>
 
-                                <div className="p-6 bg-gray-50/30">
+                                <div className="p-6 bg-muted/30">
                                     <div className="space-y-3 max-w-sm ml-auto">
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">
+                                            <span className="text-muted-foreground">
                                                 Subtotal
                                             </span>
                                             <span className="font-medium">
@@ -333,7 +333,7 @@ export default function Show({ order }: OrdersShowProps) {
                                         </div>
                                         {Number(order.tax_amount) > 0 && (
                                             <div className="flex justify-between text-sm">
-                                                <span className="text-gray-500">
+                                                <span className="text-muted-foreground">
                                                     Tax
                                                 </span>
                                                 <span className="font-medium">
@@ -346,7 +346,7 @@ export default function Show({ order }: OrdersShowProps) {
                                         )}
                                         {Number(order.shipping_amount) > 0 && (
                                             <div className="flex justify-between text-sm">
-                                                <span className="text-gray-500">
+                                                <span className="text-muted-foreground">
                                                     Shipping
                                                 </span>
                                                 <span className="font-medium text-green-600">
@@ -359,7 +359,7 @@ export default function Show({ order }: OrdersShowProps) {
                                         )}
                                         {Number(order.discount_amount) > 0 && (
                                             <div className="flex justify-between text-sm">
-                                                <span className="text-gray-500">
+                                                <span className="text-muted-foreground">
                                                     Discount
                                                 </span>
                                                 <span className="font-medium text-red-600">
@@ -391,11 +391,11 @@ export default function Show({ order }: OrdersShowProps) {
                             <Card className="border-border shadow-sm">
                                 <CardHeader className="py-4 border-b">
                                     <CardTitle className="text-md font-bold flex items-center gap-2">
-                                        <Info className="h-4 w-4 text-gray-500" />
+                                        <Info className="h-4 w-4 text-muted-foreground" />
                                         Customer Notes
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-4 italic text-gray-600 text-sm">
+                                <CardContent className="p-4 italic text-muted-foreground text-sm">
                                     "{order.notes}"
                                 </CardContent>
                             </Card>
@@ -408,32 +408,32 @@ export default function Show({ order }: OrdersShowProps) {
                         <Card className="border-border shadow-sm">
                             <CardHeader className="py-4 border-b">
                                 <CardTitle className="text-md font-bold flex items-center gap-2">
-                                    <User className="h-4 w-4 text-gray-500" />
+                                    <User className="h-4 w-4 text-muted-foreground" />
                                     Customer Info
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-4 space-y-4">
                                 <div className="flex items-start gap-3">
-                                    <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500 border">
+                                    <div className="h-10 w-10 rounded-full bg-muted/80 flex items-center justify-center font-bold text-muted-foreground border">
                                         {order.customer_name.charAt(0)}
                                     </div>
                                     <div>
-                                        <div className="font-bold text-gray-900">
+                                        <div className="font-bold text-foreground">
                                             {order.customer_name}
                                         </div>
-                                        <div className="text-xs text-gray-500">
+                                        <div className="text-xs text-muted-foreground">
                                             ID: #{order.user_id || "Guest"}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-2 pt-2">
-                                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                                        <Phone className="h-4 w-4 text-gray-400" />
+                                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                        <Phone className="h-4 w-4 text-muted-foreground" />
                                         {order.customer_phone}
                                     </div>
                                     {order.customer_email && (
-                                        <div className="flex items-center gap-3 text-sm text-gray-600">
-                                            <Mail className="h-4 w-4 text-gray-400" />
+                                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                            <Mail className="h-4 w-4 text-muted-foreground" />
                                             {order.customer_email}
                                         </div>
                                     )}
@@ -445,25 +445,25 @@ export default function Show({ order }: OrdersShowProps) {
                         <Card className="border-border shadow-sm">
                             <CardHeader className="py-4 border-b">
                                 <CardTitle className="text-md font-bold flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                    <MapPin className="h-4 w-4 text-muted-foreground" />
                                     Address Details
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-4 space-y-6">
                                 <div>
-                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">
                                         Shipping Address
                                     </h4>
-                                    <p className="text-sm text-gray-700 leading-relaxed font-medium">
+                                    <p className="text-sm text-card-foreground leading-relaxed font-medium">
                                         {order.shipping_address}
                                     </p>
                                 </div>
                                 {order.billing_address && (
                                     <div>
-                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                                        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">
                                             Billing Address
                                         </h4>
-                                        <p className="text-sm text-gray-700 leading-relaxed font-medium">
+                                        <p className="text-sm text-card-foreground leading-relaxed font-medium">
                                             {order.billing_address}
                                         </p>
                                     </div>
@@ -475,30 +475,30 @@ export default function Show({ order }: OrdersShowProps) {
                         <Card className="border-border shadow-sm">
                             <CardHeader className="py-4 border-b">
                                 <CardTitle className="text-md font-bold flex items-center gap-2">
-                                    <CreditCard className="h-4 w-4 text-gray-500" />
+                                    <CreditCard className="h-4 w-4 text-muted-foreground" />
                                     Payment Info
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-4 space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-muted-foreground">
                                         Method
                                     </span>
                                     <Badge
                                         variant="outline"
-                                        className="bg-gray-50 uppercase font-bold text-[10px]"
+                                        className="bg-muted uppercase font-bold text-[10px]"
                                     >
                                         {order.payment_method.replace("_", " ")}
                                     </Badge>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-muted-foreground">
                                         Status
                                     </span>
                                     {getPaymentBadge(order.payment_status)}
                                 </div>
                                 <div className="pt-2 border-t mt-2">
-                                    <p className="text-[10px] text-gray-400 flex items-start gap-2 italic">
+                                    <p className="text-[10px] text-muted-foreground flex items-start gap-2 italic">
                                         <Info className="h-3 w-3 mt-0.5" />
                                         This order was{" "}
                                         {order.payment_status === "paid"

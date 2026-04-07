@@ -223,10 +223,10 @@ export default function Attributes({ attributes }: PageProps) {
             <div className="space-y-6 max-w-5xl mx-auto pb-10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             Attributes
                         </h1>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Manage product variations like Size, Color,
                             Material.
                         </p>
@@ -239,10 +239,10 @@ export default function Attributes({ attributes }: PageProps) {
                     </Button>
                 </div>
 
-                <div className="bg-white border rounded-lg shadow-sm">
+                <div className="bg-card border rounded-lg shadow-sm">
                     <div className="p-4 border-b">
                         <div className="relative w-full sm:w-80">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search attributes..."
                                 className="pl-9"
@@ -253,7 +253,7 @@ export default function Attributes({ attributes }: PageProps) {
                     </div>
 
                     <Table>
-                        <TableHeader className="bg-gray-50/50">
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead className="w-1/4">
                                     Attribute Name
@@ -269,7 +269,7 @@ export default function Attributes({ attributes }: PageProps) {
                                 <TableRow>
                                     <TableCell
                                         colSpan={3}
-                                        className="h-32 text-center text-gray-500"
+                                        className="h-32 text-center text-muted-foreground"
                                     >
                                         No attributes found.
                                     </TableCell>
@@ -277,7 +277,7 @@ export default function Attributes({ attributes }: PageProps) {
                             ) : (
                                 filteredAttributes.map((attr) => (
                                     <TableRow key={attr.id}>
-                                        <TableCell className="font-medium text-gray-900">
+                                        <TableCell className="font-medium text-foreground">
                                             {attr.name}
                                         </TableCell>
                                         <TableCell>
@@ -293,7 +293,7 @@ export default function Attributes({ attributes }: PageProps) {
                                                         </Badge>
                                                     ))
                                                 ) : (
-                                                    <span className="text-sm text-gray-400 italic">
+                                                    <span className="text-sm text-muted-foreground italic">
                                                         No values configured
                                                     </span>
                                                 )}
@@ -363,10 +363,10 @@ export default function Attributes({ attributes }: PageProps) {
                             )}
                         </div>
 
-                        <div className="space-y-4 border rounded-xl p-4 bg-gray-50/50">
+                        <div className="space-y-4 border rounded-xl p-4 bg-muted/50">
                             <div>
                                 <Label>Attribute Values</Label>
-                                <p className="text-xs text-gray-500 mt-1 mb-3">
+                                <p className="text-xs text-muted-foreground mt-1 mb-3">
                                     Add the predefined values (e.g. Small,
                                     Medium, Large, Red, Blue).
                                 </p>
@@ -379,7 +379,7 @@ export default function Attributes({ attributes }: PageProps) {
                                             setNewValueText(e.target.value)
                                         }
                                         onKeyDown={handleValueKeyDown}
-                                        className="bg-white"
+                                        className="bg-card"
                                     />
                                     <Button
                                         type="button"
@@ -399,7 +399,7 @@ export default function Attributes({ attributes }: PageProps) {
                                     </p>
                                 )}
 
-                                <div className="flex flex-wrap gap-2 min-h-12 p-3 bg-white border rounded-lg">
+                                <div className="flex flex-wrap gap-2 min-h-12 p-3 bg-card border rounded-lg">
                                     {attributeValues.length > 0 ? (
                                         attributeValues.map((val, index) => (
                                             <Badge
@@ -421,7 +421,7 @@ export default function Attributes({ attributes }: PageProps) {
                                             </Badge>
                                         ))
                                     ) : (
-                                        <p className="text-sm text-gray-400 italic w-full text-center py-2">
+                                        <p className="text-sm text-muted-foreground italic w-full text-center py-2">
                                             No values added yet
                                         </p>
                                     )}

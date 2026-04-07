@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Cart;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -54,14 +56,19 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
                 'message' => $request->session()->get('message'),
             ],
-            'categories' => \App\Models\Category::with('children.children')
+            'categories' => Category::with(['children' => function($q) {
+                $q->withCount('products')->with(['children' => function($q2) {
+                    $q2->withCount('products');
+                }]);
+            }])
+                ->withCount('products')
                 ->whereNull('parent_id')
                 ->where('is_active', true)
                 ->orderBy('order')
                 ->get(),
             'cart' => (function () use ($request) {
                 if ($request->user()) {
-                    $dbItems = \App\Models\Cart::with(['product', 'variant'])
+                    $dbItems = Cart::with(['product', 'variant'])
                         ->where('user_id', $request->user()->id)
                         ->get();
 

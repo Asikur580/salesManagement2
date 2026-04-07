@@ -162,10 +162,10 @@ export default function Units({ units }: PageProps) {
             <div className="space-y-6 max-w-4xl mx-auto pb-10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             Units
                         </h1>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Manage measurements like kg, pieces, liters.
                         </p>
                     </div>
@@ -177,10 +177,10 @@ export default function Units({ units }: PageProps) {
                     </Button>
                 </div>
 
-                <div className="bg-white border rounded-lg shadow-sm">
+                <div className="bg-card border rounded-lg shadow-sm">
                     <div className="p-4 border-b">
                         <div className="relative w-full sm:w-80">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search units..."
                                 className="pl-9"
@@ -191,7 +191,7 @@ export default function Units({ units }: PageProps) {
                     </div>
 
                     <Table>
-                        <TableHeader className="bg-gray-50/50">
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead>Unit Name</TableHead>
                                 <TableHead>Abbreviation</TableHead>
@@ -205,7 +205,7 @@ export default function Units({ units }: PageProps) {
                                 <TableRow>
                                     <TableCell
                                         colSpan={3}
-                                        className="h-32 text-center text-gray-500"
+                                        className="h-32 text-center text-muted-foreground"
                                     >
                                         No units found.
                                     </TableCell>
@@ -213,7 +213,7 @@ export default function Units({ units }: PageProps) {
                             ) : (
                                 filteredUnits.map((unit) => (
                                     <TableRow key={unit.id}>
-                                        <TableCell className="font-medium text-gray-900">
+                                        <TableCell className="font-medium text-foreground">
                                             {unit.name}
                                         </TableCell>
                                         <TableCell>

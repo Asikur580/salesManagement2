@@ -151,10 +151,10 @@ export default function Products({
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             Products
                         </h1>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Manage your inventory, pricing, and variants.
                         </p>
                     </div>
@@ -169,7 +169,7 @@ export default function Products({
                     <CardHeader className="pb-3 border-b">
                         <div className="flex flex-col md:flex-row gap-4 items-center">
                             <div className="relative flex-1 w-full">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Search products by name, SKU, or barcode..."
                                     className="pl-9 w-full"
@@ -262,7 +262,7 @@ export default function Products({
                     <CardContent className="p-0">
                         <div className="rounded-md border-0">
                             <Table>
-                                <TableHeader className="bg-gray-50/50">
+                                <TableHeader className="bg-muted/50">
                                     <TableRow>
                                         <TableHead className="w-[60px]">
                                             Image
@@ -282,10 +282,10 @@ export default function Products({
                                         <TableRow>
                                             <TableCell
                                                 colSpan={7}
-                                                className="h-32 text-center text-gray-500"
+                                                className="h-32 text-center text-muted-foreground"
                                             >
                                                 <div className="flex flex-col items-center justify-center">
-                                                    <Package className="h-8 w-8 text-gray-400 mb-2" />
+                                                    <Package className="h-8 w-8 text-muted-foreground mb-2" />
                                                     <p>No products found</p>
                                                 </div>
                                             </TableCell>
@@ -294,7 +294,7 @@ export default function Products({
                                         products.data.map((product) => (
                                             <TableRow key={product.id}>
                                                 <TableCell>
-                                                    <div className="h-10 w-10 rounded-md border flex items-center justify-center bg-gray-50 overflow-hidden">
+                                                    <div className="h-10 w-10 rounded-md border flex items-center justify-center bg-muted overflow-hidden">
                                                         {product.primary_image ? (
                                                             <img
                                                                 src={
@@ -308,15 +308,15 @@ export default function Products({
                                                                 className="h-full w-full object-cover"
                                                             />
                                                         ) : (
-                                                            <Package className="h-5 w-5 text-gray-400" />
+                                                            <Package className="h-5 w-5 text-muted-foreground" />
                                                         )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="font-medium text-gray-900">
+                                                    <div className="font-medium text-foreground">
                                                         {product.name}
                                                     </div>
-                                                    <div className="text-xs text-gray-500 mt-1 flex gap-2">
+                                                    <div className="text-xs text-muted-foreground mt-1 flex gap-2">
                                                         {product.category && (
                                                             <span>
                                                                 {
@@ -362,7 +362,7 @@ export default function Products({
                                                 <TableCell>
                                                     {product.product_type ===
                                                     "simple" ? (
-                                                        <span className="font-medium text-gray-900">
+                                                        <span className="font-medium text-foreground">
                                                             ৳
                                                             {Number(
                                                                 product.base_price ||
@@ -370,7 +370,7 @@ export default function Products({
                                                             ).toFixed(2)}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-gray-500 text-sm">
+                                                        <span className="text-muted-foreground text-sm">
                                                             {
                                                                 product.variants
                                                                     .length
@@ -382,11 +382,11 @@ export default function Products({
                                                 <TableCell>
                                                     {product.product_type ===
                                                     "simple" ? (
-                                                        <div className={`text-sm font-medium ${Number(product.stock) <= 5 ? "text-red-600" : "text-gray-900"}`}>
+                                                        <div className={`text-sm font-medium ${Number(product.stock) <= 5 ? "text-red-600" : "text-foreground"}`}>
                                                             {product.stock ?? 0} pcs
                                                         </div>
                                                     ) : (
-                                                        <div className="text-sm text-gray-600">
+                                                        <div className="text-sm text-muted-foreground">
                                                             {
                                                                 product.variants
                                                                     .length
@@ -422,7 +422,7 @@ export default function Products({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-8 w-8 text-gray-600"
+                                                                className="h-8 w-8 text-muted-foreground"
                                                             >
                                                                 <Eye className="h-4 w-4" />
                                                             </Button>
@@ -462,7 +462,7 @@ export default function Products({
                         {/* Pagination Links */}
                         {products.last_page > 1 && (
                             <div className="p-4 border-t flex items-center justify-between">
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-muted-foreground">
                                     Showing{" "}
                                     <span className="font-medium">
                                         {products.data.length}
@@ -479,7 +479,7 @@ export default function Products({
                                             return (
                                                 <span
                                                     key={idx}
-                                                    className="cursor-not-allowed opacity-50 px-3 py-1 text-sm border rounded-md bg-gray-50 text-gray-500"
+                                                    className="cursor-not-allowed opacity-50 px-3 py-1 text-sm border rounded-md bg-muted text-muted-foreground"
                                                     dangerouslySetInnerHTML={{
                                                         __html: link.label,
                                                     }}
@@ -490,7 +490,7 @@ export default function Products({
                                             <Link
                                                 key={idx}
                                                 href={link.url}
-                                                className={`px-3 py-1 text-sm border rounded-md transition-colors ${link.active ? "bg-primary text-primary-foreground border-primary" : "bg-white text-gray-700 hover:bg-gray-50"}`}
+                                                className={`px-3 py-1 text-sm border rounded-md transition-colors ${link.active ? "bg-primary text-primary-foreground border-primary" : "bg-card text-card-foreground hover:bg-muted"}`}
                                                 dangerouslySetInnerHTML={{
                                                     __html: link.label,
                                                 }}

@@ -4,7 +4,7 @@ import { ArrowRight, ShieldCheck } from "lucide-react";
 
 export const Service = () => {
     return (
-        <div className="py-20 bg-white">
+        <div className="py-20 bg-card">
             <div className="max-w-[100rem] mx-auto px-4">
                 <div className="flex flex-col lg:flex-row items-center gap-12">
                     <div className="flex-1 relative">
@@ -17,16 +17,16 @@ export const Service = () => {
                         />
                     </div>
                     <div className="flex-1 space-y-6">
-                        <div className="bg-orange-50 text-[#FF4E00] text-xs font-black px-4 py-1.5 rounded-full inline-block uppercase tracking-[0.2em]">
+                        <div className="bg-orange-50 text-primary text-xs font-black px-4 py-1.5 rounded-full inline-block uppercase tracking-[0.2em]">
                             Premium Services
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight uppercase italic">
+                        <h2 className="text-4xl md:text-5xl font-black text-foreground leading-tight uppercase italic">
                             Nano Ceramic <br />
-                            <span className="text-[#FF4E00]">
+                            <span className="text-primary">
                                 Coating Service
                             </span>
                         </h2>
-                        <p className="text-gray-600 text-lg leading-relaxed font-medium">
+                        <p className="text-muted-foreground text-lg leading-relaxed font-medium">
                             Protect your vehicle's paint with our world-class 9H
                             & 10H Nano Ceramic Coating. Experience unmatched
                             gloss, UV protection, and hydrophobic properties
@@ -45,14 +45,14 @@ export const Service = () => {
                                     <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                                         <ShieldCheck className="h-4 w-4 text-green-600" />
                                     </div>
-                                    <span className="font-bold text-gray-700">
+                                    <span className="font-bold text-card-foreground">
                                         {item}
                                     </span>
                                 </li>
                             ))}
                         </ul>
                         <div className="pt-6">
-                            <Button className="bg-black hover:bg-[#FF4E00] text-white font-black px-10 py-7 rounded-xl text-lg transition-all shadow-xl group">
+                            <Button className="bg-black hover:bg-primary text-white font-black px-10 py-7 rounded-xl text-lg transition-all shadow-xl group">
                                 BOOK APPOINTMENT
                                 <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform" />
                             </Button>

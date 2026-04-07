@@ -23,16 +23,16 @@ export default function Cart({ cart }: CartProps) {
                 <Head title="Shopping Cart | CarMart" />
                 <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center px-4">
                     <ShoppingBag className="h-16 w-16 text-gray-200" />
-                    <h2 className="text-2xl font-black text-gray-900 uppercase">
+                    <h2 className="text-2xl font-black text-foreground uppercase">
                         Sign in to view your cart
                     </h2>
-                    <p className="text-gray-400 font-bold max-w-sm uppercase text-xs tracking-widest">
+                    <p className="text-muted-foreground font-bold max-w-sm uppercase text-xs tracking-widest">
                         Please log in with your phone number or password to
                         access your shopping cart.
                     </p>
                     <Button
                         onClick={() => router.visit(route("login"))}
-                        className="mt-4 bg-[#FF4E00] hover:bg-black text-white px-10 py-7 rounded-2xl font-black uppercase italic tracking-tighter shadow-xl shadow-orange-100"
+                        className="mt-4 bg-primary hover:bg-black text-white px-10 py-7 rounded-2xl font-black uppercase italic tracking-tighter shadow-xl shadow-orange-100"
                     >
                         Sign In Now
                     </Button>
@@ -78,35 +78,35 @@ export default function Cart({ cart }: CartProps) {
         <ShopLayout>
             <Head title="Shopping Cart | CarMart" />
 
-            <div className="bg-gray-50/50 py-12 min-h-[60vh]">
+            <div className="bg-muted/50 py-12 min-h-[60vh]">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center gap-4 mb-8">
                         <Link
                             href="/"
-                            className="p-2 hover:bg-white rounded-full transition-all text-gray-500 hover:text-[#FF4E00]"
+                            className="p-2 hover:bg-card rounded-full transition-all text-muted-foreground hover:text-primary"
                         >
                             <ArrowLeft className="h-6 w-6" />
                         </Link>
                         <h1 className="text-4xl font-black italic uppercase italic">
-                            Your <span className="text-[#FF4E00]">Cart</span>
+                            Your <span className="text-primary">Cart</span>
                         </h1>
                     </div>
 
                     {items.length === 0 ? (
-                        <div className="bg-white rounded-[2.5rem] p-12 text-center shadow-sm border border-gray-100 italic">
+                        <div className="bg-card rounded-[2.5rem] p-12 text-center shadow-sm border border-border italic">
                             <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <ShoppingBag className="h-12 w-12 text-[#FF4E00]" />
+                                <ShoppingBag className="h-12 w-12 text-primary" />
                             </div>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                            <h2 className="text-2xl font-bold text-foreground mb-2">
                                 Your cart is empty
                             </h2>
-                            <p className="text-gray-500 mb-8">
+                            <p className="text-muted-foreground mb-8">
                                 Looks like you haven't added anything to your
                                 cart yet.
                             </p>
                             <Button
                                 asChild
-                                className="bg-[#FF4E00] hover:bg-black text-white px-8 py-6 rounded-2xl font-black italic uppercase"
+                                className="bg-primary hover:bg-black text-white px-8 py-6 rounded-2xl font-black italic uppercase"
                             >
                                 <Link href="/">Start Shopping</Link>
                             </Button>
@@ -118,9 +118,15 @@ export default function Cart({ cart }: CartProps) {
                                 {items.map((item: any) => (
                                     <div
                                         key={item.id}
-                                        className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex gap-6 items-center"
+                                        className="bg-card rounded-3xl p-6 shadow-sm border border-border flex gap-6 items-center"
                                     >
-                                        <div className="w-24 h-24 bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-50">
+                                        <Link
+                                            href={route(
+                                                "shop.product.show",
+                                                item.slug,
+                                            )}
+                                            className="w-24 h-24 bg-muted rounded-2xl overflow-hidden shrink-0 border border-gray-50 hover:border-primary transition-colors"
+                                        >
                                             <img
                                                 src={
                                                     item.image
@@ -134,23 +140,23 @@ export default function Cart({ cart }: CartProps) {
                                                 alt={item.name}
                                                 className="w-full h-full object-contain p-2"
                                             />
-                                        </div>
+                                        </Link>
                                         <div className="flex-1">
                                             <Link
                                                 href={route(
                                                     "shop.product.show",
                                                     item.slug,
                                                 )}
-                                                className="font-black text-lg hover:text-[#FF4E00] transition-colors leading-tight block mb-1"
+                                                className="font-black text-lg hover:text-primary transition-colors leading-tight block mb-1"
                                             >
                                                 {item.name}
                                             </Link>
                                             {item.variant_name && (
-                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                                                     {item.variant_name}
                                                 </p>
                                             )}
-                                            <p className="text-[#FF4E00] font-black mt-2">
+                                            <p className="text-primary font-black mt-2">
                                                 ৳
                                                 {parseFloat(
                                                     item.price,
@@ -159,11 +165,11 @@ export default function Cart({ cart }: CartProps) {
                                         </div>
 
                                         <div className="flex flex-col items-end gap-4">
-                                            <div className="flex items-center bg-gray-50 rounded-xl p-1">
+                                            <div className="flex items-center bg-muted rounded-xl p-1">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 hover:bg-white rounded-lg"
+                                                    className="h-8 w-8 hover:bg-card rounded-lg"
                                                     onClick={() =>
                                                         updateQuantity(
                                                             item.id,
@@ -179,7 +185,7 @@ export default function Cart({ cart }: CartProps) {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 hover:bg-white rounded-lg"
+                                                    className="h-8 w-8 hover:bg-card rounded-lg"
                                                     onClick={() =>
                                                         updateQuantity(
                                                             item.id,
@@ -191,7 +197,7 @@ export default function Cart({ cart }: CartProps) {
                                                 </Button>
                                             </div>
                                             <div className="flex items-center gap-4">
-                                                <p className="font-black text-gray-900 leading-none">
+                                                <p className="font-black text-foreground leading-none">
                                                     ৳
                                                     {(
                                                         item.price *
@@ -202,7 +208,7 @@ export default function Cart({ cart }: CartProps) {
                                                     onClick={() =>
                                                         removeItem(item.id)
                                                     }
-                                                    className="text-gray-300 hover:text-red-500 transition-colors"
+                                                    className="text-muted-foreground hover:text-red-500 transition-colors"
                                                 >
                                                     <Trash2 className="h-5 w-5" />
                                                 </button>
@@ -215,7 +221,7 @@ export default function Cart({ cart }: CartProps) {
                                     <Button
                                         asChild
                                         variant="outline"
-                                        className="rounded-2xl border-gray-200 font-bold hover:bg-gray-50"
+                                        className="rounded-2xl border-border font-bold hover:bg-muted"
                                     >
                                         <Link
                                             href="/"
@@ -227,7 +233,7 @@ export default function Cart({ cart }: CartProps) {
                                     </Button>
                                     <button
                                         onClick={clearCart}
-                                        className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors uppercase tracking-widest"
+                                        className="text-sm font-bold text-muted-foreground hover:text-red-500 transition-colors uppercase tracking-widest"
                                     >
                                         Clear Cart
                                     </button>
@@ -236,35 +242,35 @@ export default function Cart({ cart }: CartProps) {
 
                             {/* Summary */}
                             <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit">
-                                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100">
+                                <div className="bg-card rounded-[2.5rem] p-8 shadow-sm border border-border">
                                     <h3 className="text-2xl font-black italic uppercase mb-6">
                                         Order{" "}
-                                        <span className="text-[#FF4E00]">
+                                        <span className="text-primary">
                                             Summary
                                         </span>
                                     </h3>
 
                                     <div className="space-y-4 mb-8">
-                                        <div className="flex justify-between text-gray-500 font-bold uppercase text-xs tracking-widest">
+                                        <div className="flex justify-between text-muted-foreground font-bold uppercase text-xs tracking-widest">
                                             <span>
                                                 Subtotal ({cart.count} items)
                                             </span>
-                                            <span className="text-gray-900">
+                                            <span className="text-foreground">
                                                 ৳{cart.total.toLocaleString()}
                                             </span>
                                         </div>
-                                        <div className="flex justify-between text-gray-500 font-bold uppercase text-xs tracking-widest">
+                                        <div className="flex justify-between text-muted-foreground font-bold uppercase text-xs tracking-widest">
                                             <span>Shipping</span>
                                             <span className="text-green-600">
                                                 FREE
                                             </span>
                                         </div>
-                                        <div className="h-[1px] bg-gray-100 my-2" />
+                                        <div className="h-[1px] bg-muted/80 my-2" />
                                         <div className="flex justify-between items-center">
                                             <span className="text-lg font-black italic uppercase">
                                                 Total
                                             </span>
-                                            <span className="text-2xl font-black text-[#FF4E00]">
+                                            <span className="text-2xl font-black text-primary">
                                                 ৳{cart.total.toLocaleString()}
                                             </span>
                                         </div>
@@ -272,7 +278,7 @@ export default function Cart({ cart }: CartProps) {
 
                                     <Button
                                         asChild
-                                        className="w-full bg-black hover:bg-[#FF4E00] text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-gray-100 group"
+                                        className="w-full bg-black hover:bg-primary text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-gray-100 group"
                                     >
                                         <Link
                                             href={route("checkout.index")}
@@ -284,7 +290,7 @@ export default function Cart({ cart }: CartProps) {
                                     </Button>
 
                                     <div className="mt-6 flex flex-col gap-3">
-                                        <p className="text-[10px] text-gray-400 font-bold text-center uppercase tracking-[0.2em] leading-relaxed px-4">
+                                        <p className="text-[10px] text-muted-foreground font-bold text-center uppercase tracking-[0.2em] leading-relaxed px-4">
                                             Secure Checkout powered by
                                             SSLCommerz
                                         </p>

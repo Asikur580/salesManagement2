@@ -34,23 +34,23 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen items-center justify-center bg-gray-50/50 flex flex-col font-sans">
+        <div className="min-h-screen items-center justify-center bg-muted/50 flex flex-col font-sans">
             <Head title="Admin Login - OrenMart" />
             <main className="flex w-full items-center justify-center p-4 py-16">
-                <Card className="w-full max-w-[440px] border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-white">
+                <Card className="w-full max-w-[440px] border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-card">
                     <CardContent className="p-8 md:p-12">
                         {/* Header */}
                         <div className="flex flex-col items-center mb-10 text-center">
                             <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mb-6 shadow-inner relative group">
                                 <ShieldAlert className="w-10 h-10 text-red-500 relative z-10" />
                             </div>
-                            <h1 className="text-3xl font-black italic tracking-tighter text-gray-900 uppercase">
+                            <h1 className="text-3xl font-black italic tracking-tighter text-foreground uppercase">
                                 System{" "}
                                 <span className="text-red-500">Access</span>
                             </h1>
                             <div className="flex items-center justify-center gap-2 mt-2">
                                 <Activity className="w-3 h-3 text-red-500 animate-pulse" />
-                                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest px-2">
+                                <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest px-2">
                                     Authorized Personnel Only
                                 </p>
                             </div>
@@ -64,7 +64,7 @@ const AdminLogin = () => {
                                         Phone or Email
                                     </Label>
                                     <div className="relative group">
-                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-red-500 transition-colors" />
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-red-500 transition-colors" />
                                         <Input
                                             type="text"
                                             placeholder="Enter Phone or Email"
@@ -72,7 +72,7 @@ const AdminLogin = () => {
                                             onChange={(e) =>
                                                 setData("login", e.target.value)
                                             }
-                                            className="pl-12 h-14 bg-gray-50/50 border-gray-100 focus:border-red-500 focus:ring-red-500/10 rounded-2xl text-sm font-black"
+                                            className="pl-12 h-14 bg-muted/50 border-border focus:border-red-500 focus:ring-red-500/10 rounded-2xl text-sm font-black"
                                             required
                                         />
                                     </div>
@@ -90,7 +90,7 @@ const AdminLogin = () => {
                                         </Label>
                                     </div>
                                     <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-red-500 transition-colors" />
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-red-500 transition-colors" />
                                         <Input
                                             type={
                                                 showPassword
@@ -105,7 +105,7 @@ const AdminLogin = () => {
                                                     e.target.value,
                                                 )
                                             }
-                                            className="pl-12 pr-12 h-14 bg-gray-50/50 border-gray-100 focus:border-red-500 focus:ring-red-500/10 rounded-2xl text-sm font-black"
+                                            className="pl-12 pr-12 h-14 bg-muted/50 border-border focus:border-red-500 focus:ring-red-500/10 rounded-2xl text-sm font-black"
                                             required
                                         />
                                         <button
@@ -113,7 +113,7 @@ const AdminLogin = () => {
                                             onClick={() =>
                                                 setShowPassword(!showPassword)
                                             }
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
                                         >
                                             {showPassword ? (
                                                 <EyeOff className="w-4 h-4" />
@@ -137,9 +137,9 @@ const AdminLogin = () => {
                                                 e.target.checked,
                                             )
                                         }
-                                        className="w-4 h-4 rounded-md border-gray-300 text-red-500 focus:ring-red-500/20"
+                                        className="w-4 h-4 rounded-md border-border text-red-500 focus:ring-red-500/20"
                                     />
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-gray-600 transition-colors">
+                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
                                         Trust Terminal
                                     </span>
                                 </label>
@@ -162,7 +162,7 @@ const AdminLogin = () => {
                         </form>
 
                         <div className="mt-10 pt-8 border-t border-gray-50 text-center">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                                 Core Management by{" "}
                                 <span className="text-red-500">
                                     OrenMart Systems

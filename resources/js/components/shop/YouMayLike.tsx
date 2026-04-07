@@ -9,9 +9,9 @@ export function YouMayLike({ products = [] }: YouMayLikeProps) {
     if (!products || products.length === 0) return null;
 
     return (
-        <div className="w-full bg-white py-10 border-b">
+        <div className="w-full bg-card py-10 border-b">
             <div className="max-w-[100rem] mx-auto px-4">
-                <h2 className="text-xl font-black text-gray-900 mb-8 uppercase tracking-tight">
+                <h2 className="text-xl font-black text-foreground mb-8 uppercase tracking-tight">
                     YOU MAY LIKE
                 </h2>
 

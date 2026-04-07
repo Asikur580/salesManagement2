@@ -94,34 +94,34 @@ const BANNER_SLIDES = [
 const RIGHT_PANELS = [
     [
         {
-            image: "https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&q=80&w=800&h=600",
+            image: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=800&q=80",
             title: "Ceramic Coating",
             sub: "Starts from ৳5,999",
         },
         {
-            image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&q=80&w=800&h=600",
+            image: "https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=800&q=80",
             title: "Paint Protection",
             sub: "PPF from ৳12,999",
         },
         {
-            image: "https://images.unsplash.com/photo-1552933529-e359b24772ff?auto=format&fit=crop&q=80&w=800&h=600",
+            image: "https://images.unsplash.com/photo-1483721310020-03333e577078?auto=format&fit=crop&w=800&q=80",
             title: "Car Detailing",
             sub: "Deep Clean ৳2,499",
         },
     ],
     [
         {
-            image: "https://images.unsplash.com/photo-1552650272-b8a34de21b22?auto=format&fit=crop&q=80&w=800&h=600",
+            image: "https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=800&q=80",
             title: "LED & Lighting",
             sub: "30% Discount",
         },
         {
-            image: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=800&h=600",
+            image: "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80",
             title: "Dash Cameras",
             sub: "Best Sellers",
         },
         {
-            image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&q=80&w=800&h=600",
+            image: "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80",
             title: "Combo Packs",
             sub: "Save up to 40%",
         },
@@ -201,13 +201,13 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
             >
                 {/* ── Column 1: Main Categories ── */}
                 <div
-                    className="hidden lg:flex flex-col w-[240px] shrink-0 bg-white rounded-2xl shadow-sm border border-gray-100 relative h-full"
+                    className="hidden lg:flex flex-col w-[240px] shrink-0 bg-card rounded-2xl shadow-sm border border-border relative h-full"
                     onMouseLeave={() => {
                         setHoveredCat(null);
                         setHoveredSub(null);
                     }}
                 >
-                    <div className="bg-[#FF4E00] px-5 py-4 flex items-center gap-3 shrink-0 rounded-t-2xl">
+                    <div className="bg-primary px-5 py-4 flex items-center gap-3 shrink-0 rounded-t-2xl">
                         <Menu className="h-5 w-5 text-white" />
                         <span className="font-black text-white uppercase tracking-wider text-sm">
                             All Categories
@@ -221,16 +221,16 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                 onMouseEnter={() => handleCatEnter(cat.id)}
                                 className={`px-4 py-2.5 flex items-center justify-between cursor-pointer transition-all group ${
                                     hoveredCat === cat.id
-                                        ? "bg-orange-50 border-l-4 border-[#FF4E00]"
-                                        : "border-l-4 border-transparent hover:bg-orange-50 hover:border-[#FF4E00]"
+                                        ? "bg-orange-50 border-l-4 border-primary"
+                                        : "border-l-4 border-transparent hover:bg-orange-50 hover:border-primary"
                                 }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <span
                                         className={`${
                                             hoveredCat === cat.id
-                                                ? "text-[#FF4E00]"
-                                                : "text-gray-400 group-hover:text-[#FF4E00]"
+                                                ? "text-primary"
+                                                : "text-muted-foreground group-hover:text-primary"
                                         } transition-colors`}
                                     >
                                         {getCategoryIcon(cat.icon)}
@@ -238,8 +238,8 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                     <span
                                         className={`text-[13px] font-bold transition-colors ${
                                             hoveredCat === cat.id
-                                                ? "text-[#FF4E00]"
-                                                : "text-gray-700 group-hover:text-[#FF4E00]"
+                                                ? "text-primary"
+                                                : "text-card-foreground group-hover:text-primary"
                                         }`}
                                     >
                                         {cat.name}
@@ -248,8 +248,8 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                 <ChevronRight
                                     className={`h-3.5 w-3.5 shrink-0 ${
                                         hoveredCat === cat.id
-                                            ? "text-[#FF4E00]"
-                                            : "text-gray-300"
+                                            ? "text-primary"
+                                            : "text-muted-foreground"
                                     }`}
                                 />
                             </div>
@@ -261,14 +261,14 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                         activeCat.children &&
                         activeCat.children.length > 0 && (
                             <div
-                                className="absolute left-[240px] top-0 z-40 w-[210px] min-h-full bg-white border border-gray-100 shadow-2xl rounded-r-2xl"
+                                className="absolute left-[240px] top-0 z-40 w-[210px] min-h-full bg-card border border-border shadow-2xl rounded-r-2xl"
                                 onMouseLeave={() => setHoveredSub(null)}
                             >
                                 <div className="bg-orange-50 px-4 py-3 border-b border-orange-100 rounded-tr-2xl shrink-0">
-                                    <p className="text-[9px] font-black text-[#FF4E00] uppercase tracking-[0.2em]">
+                                    <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">
                                         Categories
                                     </p>
-                                    <p className="text-[13px] font-black text-gray-800 mt-0.5">
+                                    <p className="text-[13px] font-black text-foreground mt-0.5">
                                         {activeCat.name}
                                     </p>
                                 </div>
@@ -283,14 +283,14 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                                 className="flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all hover:bg-orange-50"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <span className="w-1.5 h-1.5 rounded-full shrink-0 transition-colors bg-[#FF4E00]" />
-                                                    <span className="text-[13px] font-bold transition-colors text-gray-700 group-hover/sub:text-[#FF4E00]">
+                                                    <span className="w-1.5 h-1.5 rounded-full shrink-0 transition-colors bg-primary" />
+                                                    <span className="text-[13px] font-bold transition-colors text-card-foreground group-hover/sub:text-primary">
                                                         {sub.name}
                                                     </span>
                                                 </div>
                                                 {sub.children &&
                                                     sub.children.length > 0 && (
-                                                        <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
+                                                        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
                                                     )}
                                             </Link>
 
@@ -308,7 +308,7 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                                                         "shop.category",
                                                                         child.slug,
                                                                     )}
-                                                                    className="text-[12px] text-gray-500 hover:text-[#FF4E00] transition-colors font-medium border-l border-gray-100 pl-3 py-0.5"
+                                                                    className="text-[12px] text-muted-foreground hover:text-primary transition-colors font-medium border-l border-border pl-3 py-0.5"
                                                                 >
                                                                     {child.name}
                                                                 </Link>
@@ -348,7 +348,7 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                 className={`absolute inset-0 bg-gradient-to-r ${s.bg} to-transparent`}
                             />
                             <div className="absolute inset-0 flex flex-col justify-center p-10 md:p-14 text-white z-10">
-                                <div className="inline-flex items-center gap-2 mb-5 bg-[#FF4E00] py-1 px-3 rounded-full self-start">
+                                <div className="inline-flex items-center gap-2 mb-5 bg-primary py-1 px-3 rounded-full self-start">
                                     <Star className="h-3.5 w-3.5 fill-white" />
                                     <span className="text-xs font-black uppercase tracking-widest">
                                         {s.badge}
@@ -356,7 +356,7 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                 </div>
                                 <h2 className="text-3xl md:text-5xl font-black mb-2 leading-tight uppercase italic drop-shadow-lg">
                                     {s.title} <br />
-                                    <span className="text-[#FF4E00]">
+                                    <span className="text-primary">
                                         {s.highlight}
                                     </span>{" "}
                                     <br />
@@ -368,25 +368,25 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                     {s.desc}
                                 </p>
                                 <div className="flex flex-wrap gap-4">
-                                    <Button className="bg-[#FF4E00] hover:bg-white hover:text-[#FF4E00] text-white font-black px-7 py-5 rounded-lg text-base transition-all transform hover:-translate-y-1 shadow-lg border-2 border-[#FF4E00]">
+                                    <Button className="bg-primary hover:bg-card hover:text-primary text-white font-black px-7 py-5 rounded-lg text-base transition-all transform hover:-translate-y-1 shadow-lg border-2 border-primary">
                                         {s.cta}
                                     </Button>
                                     <Button
                                         variant="outline"
-                                        className="bg-transparent border-white text-white hover:bg-white hover:text-black font-black px-7 py-5 rounded-lg text-base transition-all"
+                                        className="bg-transparent border-white text-white hover:bg-card hover:text-black font-black px-7 py-5 rounded-lg text-base transition-all"
                                     >
                                         BROWSE ALL
                                     </Button>
                                 </div>
                                 <div className="flex gap-5 pt-5 border-t border-white/20 mt-6">
                                     <div className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-[#FF4E00]" />
+                                        <ShieldCheck className="h-4 w-4 text-primary" />
                                         <span className="text-xs font-bold uppercase">
                                             Genuine Parts
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Truck className="h-4 w-4 text-[#FF4E00]" />
+                                        <Truck className="h-4 w-4 text-primary" />
                                         <span className="text-xs font-bold uppercase">
                                             Free Delivery
                                         </span>
@@ -399,13 +399,13 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                     {/* Prev / Next Arrows */}
                     <button
                         onClick={prev}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-[#FF4E00] text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
                     >
                         <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button
                         onClick={next}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-[#FF4E00] text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
                     >
                         <ChevronRight className="h-5 w-5" />
                     </button>
@@ -418,8 +418,8 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                                 onClick={() => setCurrent(i)}
                                 className={`transition-all rounded-full ${
                                     i === current
-                                        ? "bg-[#FF4E00] w-8 h-2.5"
-                                        : "bg-white/50 hover:bg-white w-2.5 h-2.5"
+                                        ? "bg-primary w-8 h-2.5"
+                                        : "bg-card/50 hover:bg-card w-2.5 h-2.5"
                                 }`}
                             />
                         ))}

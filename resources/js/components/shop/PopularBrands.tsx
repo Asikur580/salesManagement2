@@ -35,14 +35,14 @@ export function PopularBrands({ brands = [] }: PopularBrandsProps) {
     return (
         <div className="w-full bg-[#F8F9FA] py-6">
             <div className="max-w-[100rem] mx-auto px-4">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="bg-card rounded-xl shadow-sm border border-border p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-base font-black text-gray-900 uppercase tracking-tight">
+                        <h3 className="text-base font-black text-foreground uppercase tracking-tight">
                             POPULAR BRANDS
                         </h3>
                         <Link
                             href={route("shop.all-brands")}
-                            className="text-xs font-bold text-[#FF4E00] hover:underline uppercase tracking-wider"
+                            className="text-xs font-bold text-primary hover:underline uppercase tracking-wider"
                         >
                             View All
                         </Link>
@@ -52,15 +52,15 @@ export function PopularBrands({ brands = [] }: PopularBrandsProps) {
                         {/* Arrows */}
                         <button
                             onClick={() => scroll("left")}
-                            className="absolute left-0 top-1/2 -translate-y-[150%] z-20 bg-white shadow-md rounded-full p-2 border border-gray-100 hover:bg-gray-50 transition-all transform -translate-x-1/2"
+                            className="absolute left-0 top-1/2 -translate-y-[150%] z-20 bg-card shadow-md rounded-full p-2 border border-border hover:bg-muted transition-all transform -translate-x-1/2"
                         >
-                            <ChevronLeft className="h-4 w-4 text-gray-400" />
+                            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
                         </button>
                         <button
                             onClick={() => scroll("right")}
-                            className="absolute right-0 top-1/2 -translate-y-[150%] z-20 bg-white shadow-md rounded-full p-2 border border-gray-100 hover:bg-gray-50 transition-all transform translate-x-1/2"
+                            className="absolute right-0 top-1/2 -translate-y-[150%] z-20 bg-card shadow-md rounded-full p-2 border border-border hover:bg-muted transition-all transform translate-x-1/2"
                         >
-                            <ChevronRight className="h-4 w-4 text-gray-400" />
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </button>
 
                         <div
@@ -73,7 +73,7 @@ export function PopularBrands({ brands = [] }: PopularBrandsProps) {
                                     href={route("shop.brand", brand.slug)}
                                     className="flex flex-col items-center flex-shrink-0 group w-[100px]"
                                 >
-                                    <div className="w-20 h-20 rounded-full border border-gray-100 bg-white p-2 mb-3 shadow-sm group-hover:shadow-md transition-all flex items-center justify-center overflow-hidden">
+                                    <div className="w-20 h-20 rounded-full border border-border bg-card p-2 mb-3 shadow-sm group-hover:shadow-md transition-all flex items-center justify-center overflow-hidden">
                                         <img
                                             src={
                                                 brand.logo
@@ -91,7 +91,7 @@ export function PopularBrands({ brands = [] }: PopularBrandsProps) {
                                             className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform"
                                         />
                                     </div>
-                                    <span className="text-[13px] font-bold text-center text-gray-800 leading-tight group-hover:text-[#FF4E00] transition-colors truncate w-full">
+                                    <span className="text-[13px] font-bold text-center text-foreground leading-tight group-hover:text-primary transition-colors truncate w-full">
                                         {brand.name}
                                     </span>
                                 </Link>

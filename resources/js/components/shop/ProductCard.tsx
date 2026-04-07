@@ -103,11 +103,11 @@ export function ProductCard({ product }: ProductCardProps) {
         `https://placehold.co/400x400/f5f5f5/333333?text=${product.name}`;
 
     return (
-        <div className="bg-white rounded-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col relative h-full">
+        <div className="bg-card rounded-lg border border-border overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col relative h-full">
             {/* Badges */}
             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
                 {product.old_price > product.price && (
-                    <Badge className="bg-[#FF4E00] text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
+                    <Badge className="bg-primary text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
                         -
                         {Math.round(
                             ((product.old_price - product.price) /
@@ -152,8 +152,8 @@ export function ProductCard({ product }: ProductCardProps) {
                         onClick={handleWishlistToggle}
                         className={`rounded-full shadow-md scale-90 group-hover:scale-100 transition-transform duration-300 ${
                             product.is_wishlisted
-                                ? "bg-[#FF4E00] text-white hover:bg-[#FF4E00]/90 border-[#FF4E00]"
-                                : "bg-white text-gray-600 hover:text-[#FF4E00]"
+                                ? "bg-primary text-white hover:bg-primary/90 border-primary"
+                                : "bg-card text-muted-foreground hover:text-primary"
                         }`}
                     >
                         <Heart
@@ -172,7 +172,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Content */}
             <div className="p-4 flex flex-col flex-1">
-                <span className="text-[10px] font-bold text-[#FF4E00] uppercase tracking-wider mb-1">
+                <span className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">
                     {product.category?.name || "Uncategorized"}
                 </span>
                 <Link
@@ -182,7 +182,7 @@ export function ProductCard({ product }: ProductCardProps) {
                             : "#"
                     }
                 >
-                    <h4 className="font-bold text-sm text-[#333] line-clamp-2 mb-2 min-h-[40px] group-hover:text-[#FF4E00] transition-colors">
+                    <h4 className="font-bold text-sm text-[#333] line-clamp-2 mb-2 min-h-[40px] group-hover:text-primary transition-colors">
                         {product.name}
                     </h4>
                 </Link>
@@ -193,28 +193,28 @@ export function ProductCard({ product }: ProductCardProps) {
                         {[...Array(5)].map((_, i) => (
                             <svg
                                 key={i}
-                                className={`w-3 h-3 ${i < 4 ? "text-yellow-400" : "text-gray-300"}`}
+                                className={`w-3 h-3 ${i < 4 ? "text-yellow-400" : "text-muted-foreground"}`}
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                             >
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                         ))}
-                        <span className="text-[10px] text-gray-400 ml-1">
+                        <span className="text-[10px] text-muted-foreground ml-1">
                             (24 reviews)
                         </span>
                     </div>
 
                     <div className="flex items-center justify-between gap-2">
                         <div className="flex flex-col">
-                            <span className="text-lg font-black text-[#FF4E00]">
+                            <span className="text-lg font-black text-primary">
                                 ৳
                                 {product.price
                                     ? parseFloat(product.price).toLocaleString()
                                     : "0"}
                             </span>
                             {product.old_price > product.price && (
-                                <span className="text-[10px] text-gray-400 line-through font-bold">
+                                <span className="text-[10px] text-muted-foreground line-through font-bold">
                                     ৳
                                     {parseFloat(
                                         product.old_price,
@@ -226,7 +226,7 @@ export function ProductCard({ product }: ProductCardProps) {
                             size="sm"
                             disabled={product.stock <= 0 || isAdding}
                             onClick={handleAddToCart}
-                            className={`bg-gray-100 hover:bg-[#FF4E00] text-[#333] hover:text-white rounded-md transition-all shadow-none h-8 w-8 px-0 ${isAdding ? "opacity-50" : ""}`}
+                            className={`bg-muted/80 hover:bg-primary text-[#333] hover:text-white rounded-md transition-all shadow-none h-8 w-8 px-0 ${isAdding ? "opacity-50" : ""}`}
                         >
                             <ShoppingCart
                                 className={`h-4 w-4 ${isAdding ? "animate-pulse" : ""}`}

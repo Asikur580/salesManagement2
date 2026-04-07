@@ -103,7 +103,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
 
     const getPaymentBadge = (status: string) => {
         const variants: any = {
-            pending: "bg-gray-100 text-gray-800 border-gray-200",
+            pending: "bg-muted/80 text-foreground border-border",
             paid: "bg-green-100 text-green-800 border-green-200",
             failed: "bg-red-100 text-red-800 border-red-200",
             partially_paid: "bg-orange-100 text-orange-800 border-orange-200",
@@ -120,10 +120,10 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             Orders
                         </h1>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Manage customer orders, track fulfillment, and
                             update statuses.
                         </p>
@@ -134,7 +134,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                     <CardHeader className="pb-3 border-b">
                         <div className="flex flex-col lg:flex-row gap-4 items-center">
                             <div className="relative flex-1 w-full">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Search by order #, customer name or phone..."
                                     className="pl-9 w-full"
@@ -227,7 +227,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                         variant="ghost"
                                         size="sm"
                                         onClick={handleClearFilters}
-                                        className="text-gray-500"
+                                        className="text-muted-foreground"
                                     >
                                         <X className="h-4 w-4 mr-1" /> Clear
                                     </Button>
@@ -238,7 +238,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                     <CardContent className="p-0">
                         <div className="rounded-md border-0 overflow-x-auto">
                             <Table>
-                                <TableHeader className="bg-gray-50/50">
+                                <TableHeader className="bg-muted/50">
                                     <TableRow>
                                         <TableHead className="font-semibold">
                                             Order #
@@ -271,10 +271,10 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                         <TableRow>
                                             <TableCell
                                                 colSpan={8}
-                                                className="h-32 text-center text-gray-500"
+                                                className="h-32 text-center text-muted-foreground"
                                             >
                                                 <div className="flex flex-col items-center justify-center">
-                                                    <ClipboardList className="h-8 w-8 text-gray-400 mb-2" />
+                                                    <ClipboardList className="h-8 w-8 text-muted-foreground mb-2" />
                                                     <p>No orders found</p>
                                                 </div>
                                             </TableCell>
@@ -283,7 +283,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                         orders.data.map((order) => (
                                             <TableRow
                                                 key={order.id}
-                                                className="hover:bg-gray-50/50"
+                                                className="hover:bg-muted/50"
                                             >
                                                 <TableCell className="font-medium text-blue-600">
                                                     <Link
@@ -292,7 +292,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                                         {order.order_number}
                                                     </Link>
                                                 </TableCell>
-                                                <TableCell className="text-gray-600">
+                                                <TableCell className="text-muted-foreground">
                                                     {format(
                                                         new Date(
                                                             order.created_at,
@@ -301,10 +301,10 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <div className="text-sm font-medium text-foreground">
                                                         {order.customer_name}
                                                     </div>
-                                                    <div className="text-xs text-gray-500">
+                                                    <div className="text-xs text-muted-foreground">
                                                         {order.customer_phone}
                                                     </div>
                                                 </TableCell>
@@ -327,7 +327,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                                 <TableCell>
                                                     <Badge
                                                         variant="secondary"
-                                                        className="bg-gray-100 text-gray-600 capitalize"
+                                                        className="bg-muted/80 text-muted-foreground capitalize"
                                                     >
                                                         {order.source}
                                                     </Badge>
@@ -354,7 +354,7 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
 
                         {orders.last_page > 1 && (
                             <div className="p-4 border-t flex items-center justify-between">
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-muted-foreground">
                                     Showing{" "}
                                     <span className="font-medium">
                                         {orders.data.length}
@@ -372,10 +372,10 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                             href={link.url || "#"}
                                             className={`px-3 py-1 text-sm border rounded-md transition-colors ${
                                                 !link.url
-                                                    ? "cursor-not-allowed opacity-50 bg-gray-50 text-gray-400"
+                                                    ? "cursor-not-allowed opacity-50 bg-muted text-muted-foreground"
                                                     : link.active
                                                       ? "bg-primary text-primary-foreground border-primary"
-                                                      : "bg-white text-gray-700 hover:bg-gray-50"
+                                                      : "bg-card text-card-foreground hover:bg-muted"
                                             }`}
                                             dangerouslySetInnerHTML={{
                                                 __html: link.label,

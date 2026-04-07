@@ -15,7 +15,7 @@ class AccountController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['items', 'canceller'])
+        $orders = Order::with(['items.product.primaryImage', 'items.variant', 'canceller'])
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
@@ -36,7 +36,7 @@ class AccountController extends Controller
             abort(403);
         }
 
-        $order->load(['items.product', 'items.variant', 'canceller']);
+        $order->load(['items.product.primaryImage', 'items.variant', 'canceller']);
 
         return Inertia::render('Account/OrderDetails', [
             'order' => $order,

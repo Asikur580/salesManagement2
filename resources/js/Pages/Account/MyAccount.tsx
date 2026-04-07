@@ -97,7 +97,7 @@ export default function MyAccount(props: Props) {
             case "cancelled":
                 return "bg-red-100 text-red-700 border-red-200";
             default:
-                return "bg-gray-100 text-gray-700 border-gray-200";
+                return "bg-muted/80 text-card-foreground border-border";
         }
     };
 
@@ -272,17 +272,17 @@ export default function MyAccount(props: Props) {
 
     return (
         <ShopLayout>
-            <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
+            <div className="min-h-screen bg-muted py-8 px-4 md:px-8">
                 {/* Breadcrumb */}
-                <div className="max-w-7xl mx-auto mb-6 flex items-center gap-2 text-sm text-gray-500">
+                <div className="max-w-7xl mx-auto mb-6 flex items-center gap-2 text-sm text-muted-foreground">
                     <Link
                         href="/"
-                        className="hover:text-[#FF4E00] transition-colors"
+                        className="hover:text-primary transition-colors"
                     >
                         <Home className="h-4 w-4" />
                     </Link>
                     <ChevronRight className="h-3 w-3" />
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-foreground">
                         My Account
                     </span>
                 </div>
@@ -291,16 +291,16 @@ export default function MyAccount(props: Props) {
                     {/* ── Sidebar ── */}
                     <aside className="space-y-4">
                         {/* Profile Card */}
-                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center">
-                            <Avatar className="h-20 w-20 mx-auto mb-4 border-4 border-orange-100">
-                                <AvatarFallback className="bg-gradient-to-br from-[#FF4E00] to-orange-400 text-white text-2xl font-black">
+                        <div className="bg-card rounded-3xl p-6 shadow-sm border border-border text-center">
+                            <Avatar className="h-20 w-20 mx-auto mb-4 border-4 border-primary/20">
+                                <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground text-2xl font-black">
                                     {getInitials(user.name)}
                                 </AvatarFallback>
                             </Avatar>
-                            <h2 className="font-black text-lg text-gray-900">
+                            <h2 className="font-black text-lg text-foreground">
                                 {user.name}
                             </h2>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                                 {user.email || user.phone}
                             </p>
                             <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 border border-green-100">
@@ -312,7 +312,7 @@ export default function MyAccount(props: Props) {
                         </div>
 
                         {/* Navigation */}
-                        <nav className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <nav className="bg-card rounded-3xl shadow-sm border border-border overflow-hidden">
                             {MENU_ITEMS.map((item, idx) => {
                                 const Icon = item.icon;
                                 const isActive = activeSection === item.id;
@@ -328,13 +328,13 @@ export default function MyAccount(props: Props) {
                                                     : ""
                                             } hover:bg-orange-50`}
                                         >
-                                            <div className="w-9 h-9 rounded-xl bg-gray-100 group-hover:bg-white flex items-center justify-center transition-colors">
-                                                <Icon className="h-4.5 w-4.5 text-gray-500 group-hover:text-[#FF4E00] transition-colors" />
+                                            <div className="w-9 h-9 rounded-xl bg-muted/80 group-hover:bg-card flex items-center justify-center transition-colors">
+                                                <Icon className="h-4.5 w-4.5 text-muted-foreground group-hover:text-primary transition-colors" />
                                             </div>
-                                            <span className="font-bold text-sm text-gray-700 group-hover:text-[#FF4E00] transition-colors">
+                                            <span className="font-bold text-sm text-card-foreground group-hover:text-primary transition-colors">
                                                 {item.label}
                                             </span>
-                                            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-[#FF4E00] transition-colors" />
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto group-hover:text-primary transition-colors" />
                                         </Link>
                                     );
                                 }
@@ -354,23 +354,23 @@ export default function MyAccount(props: Props) {
                                         <div
                                             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
                                                 isActive
-                                                    ? "bg-[#FF4E00]"
-                                                    : "bg-gray-100 group-hover:bg-white"
+                                                    ? "bg-primary"
+                                                    : "bg-muted/80 group-hover:bg-card"
                                             }`}
                                         >
                                             <Icon
                                                 className={`h-[18px] w-[18px] transition-colors ${
                                                     isActive
                                                         ? "text-white"
-                                                        : "text-gray-500 group-hover:text-[#FF4E00]"
+                                                        : "text-muted-foreground group-hover:text-primary"
                                                 }`}
                                             />
                                         </div>
                                         <span
                                             className={`font-bold text-sm transition-colors ${
                                                 isActive
-                                                    ? "text-[#FF4E00]"
-                                                    : "text-gray-700 group-hover:text-[#FF4E00]"
+                                                    ? "text-primary"
+                                                    : "text-card-foreground group-hover:text-primary"
                                             }`}
                                         >
                                             {item.label}
@@ -378,8 +378,8 @@ export default function MyAccount(props: Props) {
                                         <ChevronRight
                                             className={`h-4 w-4 ml-auto transition-colors ${
                                                 isActive
-                                                    ? "text-[#FF4E00]"
-                                                    : "text-gray-300 group-hover:text-[#FF4E00]"
+                                                    ? "text-primary"
+                                                    : "text-muted-foreground group-hover:text-primary"
                                             }`}
                                         />
                                     </button>
@@ -391,10 +391,10 @@ export default function MyAccount(props: Props) {
                                 onClick={handleLogout}
                                 className="w-full flex items-center gap-3 px-5 py-4 border-t border-gray-50 group hover:bg-red-50 transition-all"
                             >
-                                <div className="w-9 h-9 rounded-xl bg-gray-100 group-hover:bg-white flex items-center justify-center transition-colors">
-                                    <LogOut className="h-[18px] w-[18px] text-gray-500 group-hover:text-red-500 transition-colors" />
+                                <div className="w-9 h-9 rounded-xl bg-muted/80 group-hover:bg-card flex items-center justify-center transition-colors">
+                                    <LogOut className="h-[18px] w-[18px] text-muted-foreground group-hover:text-red-500 transition-colors" />
                                 </div>
-                                <span className="font-bold text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                <span className="font-bold text-sm text-card-foreground group-hover:text-red-500 transition-colors">
                                     Logout
                                 </span>
                             </button>
@@ -405,18 +405,18 @@ export default function MyAccount(props: Props) {
                     <main>
                         {/* Profile Information */}
                         {activeSection === "profile" && (
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
-                                        <h3 className="text-xl font-black text-gray-900 uppercase italic">
+                                        <h3 className="text-xl font-black text-foreground uppercase italic">
                                             Profile Information
                                         </h3>
-                                        <p className="text-sm text-gray-500 mt-1">
+                                        <p className="text-sm text-muted-foreground mt-1">
                                             Update your personal details
                                         </p>
                                     </div>
                                     <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center">
-                                        <Edit3 className="h-5 w-5 text-[#FF4E00]" />
+                                        <Edit3 className="h-5 w-5 text-primary" />
                                     </div>
                                 </div>
 
@@ -426,7 +426,7 @@ export default function MyAccount(props: Props) {
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
-                                            <Label className="text-xs font-black uppercase tracking-widest text-gray-400">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                                 Full Name
                                             </Label>
                                             <Input
@@ -437,7 +437,7 @@ export default function MyAccount(props: Props) {
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="h-12 rounded-xl border-gray-200 focus:border-[#FF4E00] focus:ring-[#FF4E00]/20 font-semibold"
+                                                className="h-12 rounded-xl border-border focus:border-primary focus:ring-[#FF4E00]/20 font-semibold"
                                                 placeholder="Your name"
                                             />
                                             {profileForm.errors.name && (
@@ -447,7 +447,7 @@ export default function MyAccount(props: Props) {
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-xs font-black uppercase tracking-widest text-gray-400">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                                 Email Address
                                             </Label>
                                             <Input
@@ -459,7 +459,7 @@ export default function MyAccount(props: Props) {
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="h-12 rounded-xl border-gray-200 focus:border-[#FF4E00] focus:ring-[#FF4E00]/20 font-semibold"
+                                                className="h-12 rounded-xl border-border focus:border-primary focus:ring-[#FF4E00]/20 font-semibold"
                                                 placeholder="you@email.com"
                                             />
                                             {profileForm.errors.email && (
@@ -469,7 +469,7 @@ export default function MyAccount(props: Props) {
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-xs font-black uppercase tracking-widest text-gray-400">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                                                 Phone Number
                                             </Label>
                                             <Input
@@ -480,7 +480,7 @@ export default function MyAccount(props: Props) {
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="h-12 rounded-xl border-gray-200 focus:border-[#FF4E00] focus:ring-[#FF4E00]/20 font-semibold"
+                                                className="h-12 rounded-xl border-border focus:border-primary focus:ring-[#FF4E00]/20 font-semibold"
                                                 placeholder="01XXXXXXXXX"
                                             />
                                             {profileForm.errors.phone && (
@@ -495,7 +495,7 @@ export default function MyAccount(props: Props) {
                                         <Button
                                             type="submit"
                                             disabled={profileForm.processing}
-                                            className="h-12 px-8 bg-[#FF4E00] hover:bg-black text-white rounded-xl font-black gap-2 transition-all"
+                                            className="h-12 px-8 bg-primary hover:bg-black text-white rounded-xl font-black gap-2 transition-all"
                                         >
                                             Save Changes{" "}
                                             <ArrowRight className="h-4 w-4" />
@@ -507,14 +507,14 @@ export default function MyAccount(props: Props) {
 
                         {/* Password Section */}
                         {activeSection === "password" && (
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                                 <div className="mb-8">
-                                    <h3 className="text-xl font-black text-gray-900 uppercase italic">
+                                    <h3 className="text-xl font-black text-foreground uppercase italic">
                                         {has_password
                                             ? "Change Password"
                                             : "Set Password"}
                                     </h3>
-                                    <p className="text-sm text-gray-500 mt-1">
+                                    <p className="text-sm text-muted-foreground mt-1">
                                         {has_password
                                             ? "Update your password to keep your account secure"
                                             : "Create a password for your account to login without OTP"}
@@ -529,14 +529,14 @@ export default function MyAccount(props: Props) {
                                         <div className="space-y-2">
                                             <Label
                                                 htmlFor="current_password"
-                                                className="text-xs font-black uppercase tracking-widest text-gray-400"
+                                                className="text-xs font-black uppercase tracking-widest text-muted-foreground"
                                             >
                                                 Current Password
                                             </Label>
                                             <Input
                                                 id="current_password"
                                                 type="password"
-                                                className="h-12 border-gray-100 rounded-xl focus:ring-[#FF4E00] focus:border-[#FF4E00]"
+                                                className="h-12 border-border rounded-xl focus:ring-[#FF4E00] focus:border-primary"
                                                 value={
                                                     passwordForm.data
                                                         .current_password
@@ -554,14 +554,14 @@ export default function MyAccount(props: Props) {
                                     <div className="space-y-2">
                                         <Label
                                             htmlFor="password"
-                                            className="text-xs font-black uppercase tracking-widest text-gray-400"
+                                            className="text-xs font-black uppercase tracking-widest text-muted-foreground"
                                         >
                                             New Password
                                         </Label>
                                         <Input
                                             id="password"
                                             type="password"
-                                            className="h-12 border-gray-100 rounded-xl focus:ring-[#FF4E00] focus:border-[#FF4E00]"
+                                            className="h-12 border-border rounded-xl focus:ring-[#FF4E00] focus:border-primary"
                                             value={passwordForm.data.password}
                                             onChange={(e) =>
                                                 passwordForm.setData(
@@ -575,14 +575,14 @@ export default function MyAccount(props: Props) {
                                     <div className="space-y-2">
                                         <Label
                                             htmlFor="password_confirmation"
-                                            className="text-xs font-black uppercase tracking-widest text-gray-400"
+                                            className="text-xs font-black uppercase tracking-widest text-muted-foreground"
                                         >
                                             Confirm New Password
                                         </Label>
                                         <Input
                                             id="password_confirmation"
                                             type="password"
-                                            className="h-12 border-gray-100 rounded-xl focus:ring-[#FF4E00] focus:border-[#FF4E00]"
+                                            className="h-12 border-border rounded-xl focus:ring-[#FF4E00] focus:border-primary"
                                             value={
                                                 passwordForm.data
                                                     .password_confirmation
@@ -598,7 +598,7 @@ export default function MyAccount(props: Props) {
 
                                     <Button
                                         disabled={passwordForm.processing}
-                                        className="w-full h-12 bg-black hover:bg-[#FF4E00] text-white rounded-xl font-black transition-all"
+                                        className="w-full h-12 bg-black hover:bg-primary text-white rounded-xl font-black transition-all"
                                     >
                                         {has_password
                                             ? "Update Password"
@@ -610,13 +610,13 @@ export default function MyAccount(props: Props) {
 
                         {/* Address Book */}
                         {activeSection === "address" && (
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
-                                        <h3 className="text-xl font-black text-gray-900 uppercase italic">
+                                        <h3 className="text-xl font-black text-foreground uppercase italic">
                                             Address Book
                                         </h3>
-                                        <p className="text-sm text-gray-500 mt-1">
+                                        <p className="text-sm text-muted-foreground mt-1">
                                             Manage your delivery addresses
                                         </p>
                                     </div>
@@ -626,7 +626,7 @@ export default function MyAccount(props: Props) {
                                             addressForm.reset();
                                             setIsAddressModalOpen(true);
                                         }}
-                                        className="h-10 px-5 bg-[#FF4E00] hover:bg-black text-white rounded-xl font-black gap-2 transition-all text-sm"
+                                        className="h-10 px-5 bg-primary hover:bg-black text-white rounded-xl font-black gap-2 transition-all text-sm"
                                     >
                                         + Add New Address
                                     </Button>
@@ -634,13 +634,13 @@ export default function MyAccount(props: Props) {
 
                                 {addresses.length === 0 ? (
                                     <div className="text-center py-16">
-                                        <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                                            <MapPin className="h-9 w-9 text-gray-400" />
+                                        <div className="w-20 h-20 bg-muted/80 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                                            <MapPin className="h-9 w-9 text-muted-foreground" />
                                         </div>
-                                        <h4 className="font-black text-gray-900 text-lg">
+                                        <h4 className="font-black text-foreground text-lg">
                                             No addresses saved
                                         </h4>
-                                        <p className="text-gray-500 text-sm mt-2">
+                                        <p className="text-muted-foreground text-sm mt-2">
                                             Save your addresses for a faster
                                             checkout.
                                         </p>
@@ -652,16 +652,16 @@ export default function MyAccount(props: Props) {
                                                 key={address.id}
                                                 className={`p-6 rounded-[2rem] border-2 transition-all ${
                                                     address.is_default
-                                                        ? "border-[#FF4E00] bg-orange-50/30"
-                                                        : "border-gray-50 hover:border-gray-200 bg-gray-50/30"
+                                                        ? "border-primary bg-orange-50/30"
+                                                        : "border-gray-50 hover:border-border bg-muted/30"
                                                 }`}
                                             >
                                                 <div className="flex items-center justify-between mb-4">
                                                     <span
                                                         className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                                                             address.is_default
-                                                                ? "bg-[#FF4E00] text-white"
-                                                                : "bg-gray-100 text-gray-400"
+                                                                ? "bg-primary text-white"
+                                                                : "bg-muted/80 text-muted-foreground"
                                                         }`}
                                                     >
                                                         {address.type}{" "}
@@ -675,7 +675,7 @@ export default function MyAccount(props: Props) {
                                                                     address,
                                                                 )
                                                             }
-                                                            className="p-2 bg-white rounded-lg hover:text-[#FF4E00] transition-colors shadow-sm"
+                                                            className="p-2 bg-card rounded-lg hover:text-primary transition-colors shadow-sm"
                                                         >
                                                             <Edit3 className="h-4 w-4" />
                                                         </button>
@@ -685,16 +685,16 @@ export default function MyAccount(props: Props) {
                                                                     address.id,
                                                                 )
                                                             }
-                                                            className="p-2 bg-white rounded-lg hover:text-red-500 transition-colors shadow-sm"
+                                                            className="p-2 bg-card rounded-lg hover:text-red-500 transition-colors shadow-sm"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <h4 className="font-black text-gray-900 text-sm italic uppercase mb-2">
+                                                <h4 className="font-black text-foreground text-sm italic uppercase mb-2">
                                                     {address.full_name}
                                                 </h4>
-                                                <p className="text-xs text-gray-500 font-medium leading-relaxed mb-3 italic">
+                                                <p className="text-xs text-muted-foreground font-medium leading-relaxed mb-3 italic">
                                                     {address.address_line_1}
                                                     <br />
                                                     {address.address_line_2 && (
@@ -711,8 +711,8 @@ export default function MyAccount(props: Props) {
                                                     )}
                                                     {address.postal_code}
                                                 </p>
-                                                <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 italic">
-                                                    <Phone className="h-3 w-3 text-[#FF4E00]" />{" "}
+                                                <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground italic">
+                                                    <Phone className="h-3 w-3 text-primary" />{" "}
                                                     {address.phone}
                                                 </div>
                                             </div>
@@ -724,34 +724,34 @@ export default function MyAccount(props: Props) {
 
                         {/* My Orders */}
                         {activeSection === "orders" && (
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-6 md:p-8">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
-                                        <h3 className="text-xl font-black text-gray-900 uppercase italic">
+                                        <h3 className="text-xl font-black text-foreground uppercase italic">
                                             My Orders
                                         </h3>
-                                        <p className="text-sm text-gray-500 mt-1">
+                                        <p className="text-sm text-muted-foreground mt-1">
                                             Track and manage your orders
                                         </p>
                                     </div>
                                     <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center">
-                                        <Package className="h-5 w-5 text-[#FF4E00]" />
+                                        <Package className="h-5 w-5 text-primary" />
                                     </div>
                                 </div>
 
                                 {orders.length === 0 ? (
                                     <div className="text-center py-16">
-                                        <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                                            <Package className="h-9 w-9 text-gray-400" />
+                                        <div className="w-20 h-20 bg-muted/80 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                                            <Package className="h-9 w-9 text-muted-foreground" />
                                         </div>
-                                        <h4 className="font-black text-gray-900 text-lg">
+                                        <h4 className="font-black text-foreground text-lg">
                                             No orders yet
                                         </h4>
-                                        <p className="text-gray-500 text-sm mt-2">
+                                        <p className="text-muted-foreground text-sm mt-2">
                                             Your order history will appear here.
                                         </p>
                                         <Link href="/">
-                                            <Button className="mt-6 h-12 px-8 bg-[#FF4E00] hover:bg-black text-white rounded-xl font-black gap-2 transition-all">
+                                            <Button className="mt-6 h-12 px-8 bg-primary hover:bg-black text-white rounded-xl font-black gap-2 transition-all">
                                                 Start Shopping{" "}
                                                 <ArrowRight className="h-4 w-4" />
                                             </Button>
@@ -762,24 +762,30 @@ export default function MyAccount(props: Props) {
                                         {orders.map((order) => (
                                             <div
                                                 key={order.id}
-                                                className="group border border-gray-100 rounded-[2rem] p-5 md:p-6 hover:border-[#FF4E00]/30 hover:shadow-xl hover:shadow-orange-50/50 transition-all duration-300"
+                                                className="group border border-border rounded-[2rem] p-5 md:p-6 hover:border-primary/30 hover:shadow-xl hover:shadow-orange-50/50 transition-all duration-300"
                                             >
                                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center font-black text-[#FF4E00] group-hover:bg-[#FF4E00] group-hover:text-white transition-colors italic">
+                                                    <Link
+                                                        href={route(
+                                                            "account.orders.show",
+                                                            order.id,
+                                                        )}
+                                                        className="flex items-center gap-4 hover:opacity-80 transition-opacity"
+                                                    >
+                                                        <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center font-black text-primary group-hover:bg-primary group-hover:text-white transition-colors italic">
                                                             #
                                                             {order.order_number.slice(
                                                                 -4,
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <h4 className="font-black text-gray-900 text-sm uppercase tracking-tight">
+                                                            <h4 className="font-black text-foreground text-sm uppercase tracking-tight">
                                                                 Order{" "}
                                                                 {
                                                                     order.order_number
                                                                 }
                                                             </h4>
-                                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
                                                                 {new Date(
                                                                     order.created_at,
                                                                 ).toLocaleDateString(
@@ -792,7 +798,7 @@ export default function MyAccount(props: Props) {
                                                                 )}
                                                             </p>
                                                         </div>
-                                                    </div>
+                                                    </Link>
                                                     <div className="flex items-center gap-3">
                                                         <span
                                                             className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order.status)}`}
@@ -800,10 +806,10 @@ export default function MyAccount(props: Props) {
                                                             {order.status}
                                                         </span>
                                                         <div className="text-right">
-                                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                                                                 Total
                                                             </p>
-                                                            <p className="text-lg font-black text-gray-900">
+                                                            <p className="text-lg font-black text-foreground">
                                                                 ৳
                                                                 {parseFloat(
                                                                     order.total_amount,
@@ -833,7 +839,13 @@ export default function MyAccount(props: Props) {
                                                         </div>
                                                     )}
 
-                                                <div className="bg-gray-50/50 rounded-2xl p-4 flex flex-wrap gap-4 items-center">
+                                                <Link
+                                                    href={route(
+                                                        "account.orders.show",
+                                                        order.id,
+                                                    )}
+                                                    className="bg-muted/50 rounded-2xl p-4 flex flex-wrap gap-4 items-center hover:bg-muted transition-all active:scale-[0.99] w-full"
+                                                >
                                                     <div className="flex -space-x-3 overflow-hidden">
                                                         {order.items
                                                             .slice(0, 3)
@@ -844,12 +856,15 @@ export default function MyAccount(props: Props) {
                                                                 ) => (
                                                                     <div
                                                                         key={i}
-                                                                        className="inline-block h-10 w-10 rounded-xl ring-2 ring-white bg-white overflow-hidden border border-gray-100 shadow-sm"
+                                                                        className="inline-block h-10 w-10 rounded-xl ring-2 ring-white bg-card overflow-hidden border border-border shadow-sm"
                                                                     >
                                                                         <img
                                                                             src={
-                                                                                item.image ||
-                                                                                `https://placehold.co/100x100?text=${item.product_name[0]}`
+                                                                                (item.product?.primary_image?.image_path || item.image)
+                                                                                    ? (item.product?.primary_image?.image_path || item.image).startsWith("http") || (item.product?.primary_image?.image_path || item.image).startsWith("/storage/")
+                                                                                        ? (item.product?.primary_image?.image_path || item.image)
+                                                                                        : `/storage/${(item.product?.primary_image?.image_path || item.image)}`
+                                                                                    : `https://placehold.co/100x100?text=${item.product_name[0]}`
                                                                             }
                                                                             alt={
                                                                                 item.product_name
@@ -861,14 +876,14 @@ export default function MyAccount(props: Props) {
                                                             )}
                                                         {order.items.length >
                                                             3 && (
-                                                            <div className="flex items-center justify-center h-10 w-10 rounded-xl ring-2 ring-white bg-[#FF4E00] text-white text-[10px] font-black">
+                                                            <div className="flex items-center justify-center h-10 w-10 rounded-xl ring-2 ring-white bg-primary text-white text-[10px] font-black">
                                                                 +
                                                                 {order.items
                                                                     .length - 3}
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs font-bold text-gray-600">
+                                                    <p className="text-xs font-bold text-muted-foreground">
                                                         {order.items
                                                             .map(
                                                                 (it: any) =>
@@ -886,7 +901,8 @@ export default function MyAccount(props: Props) {
                                                             ? "..."
                                                             : ""}
                                                     </p>
-                                                    <div className="ml-auto flex items-center gap-3">
+                                                </Link>
+                                                <div className="ml-auto flex items-center gap-3">
                                                         {order.status.toLowerCase() ===
                                                             "pending" && (
                                                             <Button
@@ -905,7 +921,7 @@ export default function MyAccount(props: Props) {
                                                         <Button
                                                             asChild
                                                             variant="ghost"
-                                                            className="text-xs font-black text-[#FF4E00] hover:text-black hover:bg-transparent group/btn p-0"
+                                                            className="text-xs font-black text-primary hover:text-black hover:bg-transparent group/btn p-0"
                                                         >
                                                             <Link
                                                                 href={route(
@@ -919,7 +935,6 @@ export default function MyAccount(props: Props) {
                                                             </Link>
                                                         </Button>
                                                     </div>
-                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -936,10 +951,10 @@ export default function MyAccount(props: Props) {
                 onOpenChange={setIsAddressModalOpen}
             >
                 <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                    <DialogHeader className="p-8 bg-gray-50/50">
+                    <DialogHeader className="p-8 bg-muted/50">
                         <DialogTitle className="text-2xl font-black italic uppercase italic">
                             {editingAddress ? "Edit" : "Add"}{" "}
-                            <span className="text-[#FF4E00]">Address</span>
+                            <span className="text-primary">Address</span>
                         </DialogTitle>
                     </DialogHeader>
 
@@ -949,11 +964,11 @@ export default function MyAccount(props: Props) {
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                     Address Type
                                 </Label>
                                 <select
-                                    className="w-full h-12 px-4 rounded-xl border border-gray-100 focus:ring-2 focus:ring-[#FF4E00]/20 focus:border-[#FF4E00] outline-none font-bold text-sm bg-white"
+                                    className="w-full h-12 px-4 rounded-xl border border-border focus:ring-2 focus:ring-[#FF4E00]/20 focus:border-primary outline-none font-bold text-sm bg-card"
                                     value={addressForm.data.type}
                                     onChange={(e) =>
                                         addressForm.setData(
@@ -968,7 +983,7 @@ export default function MyAccount(props: Props) {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                     Full Name
                                 </Label>
                                 <Input
@@ -987,7 +1002,7 @@ export default function MyAccount(props: Props) {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                     Phone
                                 </Label>
                                 <Input
@@ -1003,7 +1018,7 @@ export default function MyAccount(props: Props) {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                     Email (Optional)
                                 </Label>
                                 <Input
@@ -1021,7 +1036,7 @@ export default function MyAccount(props: Props) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                 Address Line 1
                             </Label>
                             <Input
@@ -1039,7 +1054,7 @@ export default function MyAccount(props: Props) {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                     City
                                 </Label>
                                 <Input
@@ -1055,7 +1070,7 @@ export default function MyAccount(props: Props) {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                     Postal Code
                                 </Label>
                                 <Input
@@ -1075,7 +1090,7 @@ export default function MyAccount(props: Props) {
                             <input
                                 type="checkbox"
                                 id="is_default"
-                                className="w-4 h-4 rounded border-gray-300 text-[#FF4E00] focus:ring-[#FF4E00]"
+                                className="w-4 h-4 rounded border-border text-primary focus:ring-[#FF4E00]"
                                 checked={addressForm.data.is_default}
                                 onChange={(e) =>
                                     addressForm.setData(
@@ -1086,13 +1101,13 @@ export default function MyAccount(props: Props) {
                             />
                             <Label
                                 htmlFor="is_default"
-                                className="text-xs font-bold text-gray-600 cursor-pointer"
+                                className="text-xs font-bold text-muted-foreground cursor-pointer"
                             >
                                 Set as default address
                             </Label>
                         </div>
 
-                        <DialogFooter className="pt-4 border-t border-gray-100 flex-row gap-2">
+                        <DialogFooter className="pt-4 border-t border-border flex-row gap-2">
                             <Button
                                 type="button"
                                 variant="ghost"
@@ -1103,7 +1118,7 @@ export default function MyAccount(props: Props) {
                             </Button>
                             <Button
                                 disabled={addressForm.processing}
-                                className="flex-1 h-12 bg-black hover:bg-[#FF4E00] text-white rounded-xl font-black uppercase tracking-widest text-xs transition-all"
+                                className="flex-1 h-12 bg-black hover:bg-primary text-white rounded-xl font-black uppercase tracking-widest text-xs transition-all"
                             >
                                 {editingAddress ? "Update" : "Save"} Address
                             </Button>
@@ -1115,13 +1130,13 @@ export default function MyAccount(props: Props) {
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-black italic uppercase">
-                            Cancel <span className="text-[#FF4E00]">Order</span>
+                            Cancel <span className="text-primary">Order</span>
                         </DialogTitle>
                     </DialogHeader>
                     <div className="py-4">
                         <Label
                             htmlFor="reason"
-                            className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 block"
+                            className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block"
                         >
                             Reason for Cancellation
                         </Label>
@@ -1130,7 +1145,7 @@ export default function MyAccount(props: Props) {
                             placeholder="Please tell us why you want to cancel..."
                             value={cancelReason}
                             onChange={(e) => setCancelReason(e.target.value)}
-                            className="h-32 rounded-2xl border-gray-100 focus:border-[#FF4E00] focus:ring-[#FF4E00]/10 transition-all font-medium text-sm"
+                            className="h-32 rounded-2xl border-border focus:border-primary focus:ring-[#FF4E00]/10 transition-all font-medium text-sm"
                         />
                     </div>
                     <DialogFooter className="gap-2 sm:gap-0">

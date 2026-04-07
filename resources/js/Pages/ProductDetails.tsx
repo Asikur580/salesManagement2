@@ -242,13 +242,13 @@ export default function ProductDetails({
         <ShopLayout>
             <Head title={`${product.name} | CarMart`} />
 
-            <div className="bg-gray-50/50 py-8 md:py-12">
+            <div className="bg-muted/50 py-8 md:py-12">
                 <div className="max-w-[100rem] mx-auto px-4">
                     {/* Breadcrumbs */}
-                    <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8 overflow-x-auto whitespace-nowrap">
+                    <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8 overflow-x-auto whitespace-nowrap">
                         <Link
                             href="/"
-                            className="hover:text-[#FF4E00] transition-colors"
+                            className="hover:text-primary transition-colors"
                         >
                             Home
                         </Link>
@@ -258,12 +258,12 @@ export default function ProductDetails({
                                 "shop.category",
                                 product.category?.slug || "",
                             )}
-                            className="hover:text-[#FF4E00] transition-colors"
+                            className="hover:text-primary transition-colors"
                         >
                             {product.category?.name || "Category"}
                         </Link>
                         <span>/</span>
-                        <span className="text-gray-900 font-medium truncate">
+                        <span className="text-foreground font-medium truncate">
                             {product.name}
                         </span>
                     </nav>
@@ -271,7 +271,7 @@ export default function ProductDetails({
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
                         {/* Main Content Area: 9/12 columns */}
                         <div className="lg:col-span-9 space-y-6 lg:space-y-12">
-                            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 bg-white rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-8 lg:p-10 shadow-sm border border-gray-100">
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 bg-card rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-8 lg:p-10 shadow-sm border border-border">
                                 {/* Left: Product Images (5/12 of main) */}
                                 <div className="col-span-1 md:col-span-12 lg:col-span-5 space-y-4">
                                     <div className="relative aspect-square bg-[#F9F9F9] rounded-[2rem] overflow-hidden border border-gray-50 group">
@@ -284,7 +284,7 @@ export default function ProductDetails({
                                             className="w-full h-full object-contain p-8 transition-transform duration-700 group-hover:scale-105"
                                         />
                                         {discount > 0 && (
-                                            <Badge className="absolute top-6 left-6 bg-[#FF4E00] text-white px-4 py-1.5 rounded-full text-sm font-black border-none shadow-lg">
+                                            <Badge className="absolute top-6 left-6 bg-primary text-white px-4 py-1.5 rounded-full text-sm font-black border-none shadow-lg">
                                                 SAVE {discount}%
                                             </Badge>
                                         )}
@@ -300,8 +300,8 @@ export default function ProductDetails({
                                                 }}
                                                 className={`rounded-full shadow-xl shadow-black/5 w-12 h-12 transition-all hover:scale-110 active:scale-95 duration-300 ${
                                                     product.is_wishlisted
-                                                        ? "bg-[#FF4E00] text-white hover:bg-[#FF4E00]/90 border-none"
-                                                        : "bg-white text-gray-400 hover:text-[#FF4E00]"
+                                                        ? "bg-primary text-white hover:bg-primary/90 border-none"
+                                                        : "bg-card text-muted-foreground hover:text-primary"
                                                 }`}
                                             >
                                                 <Heart
@@ -326,13 +326,13 @@ export default function ProductDetails({
                                                                 ),
                                                             )
                                                         }
-                                                        className={`aspect-square rounded-2xl border-2 transition-all p-2 bg-gray-50 ${
+                                                        className={`aspect-square rounded-2xl border-2 transition-all p-2 bg-muted ${
                                                             selectedImage ===
                                                             getImagePath(
                                                                 img.image_path,
                                                             )
-                                                                ? "border-[#FF4E00] ring-2 ring-orange-100"
-                                                                : "border-transparent hover:border-gray-200"
+                                                                ? "border-primary ring-2 ring-orange-100"
+                                                                : "border-transparent hover:border-border"
                                                         }`}
                                                     >
                                                         <img
@@ -348,7 +348,7 @@ export default function ProductDetails({
                                                 ),
                                             )
                                         ) : (
-                                            <button className="aspect-square rounded-2xl border-2 border-[#FF4E00] transition-all p-2 bg-gray-50 ring-2 ring-orange-100">
+                                            <button className="aspect-square rounded-2xl border-2 border-primary transition-all p-2 bg-muted ring-2 ring-orange-100">
                                                 <img
                                                     src={selectedImage || ""}
                                                     alt={product.name}
@@ -365,7 +365,7 @@ export default function ProductDetails({
                                         <div className="flex items-center gap-3 mb-4">
                                             <Badge
                                                 variant="outline"
-                                                className="border-gray-200 text-gray-500 font-bold uppercase tracking-wider px-3 py-1"
+                                                className="border-border text-muted-foreground font-bold uppercase tracking-wider px-3 py-1"
                                             >
                                                 {product.brand?.name ||
                                                     "CarMart"}
@@ -377,20 +377,20 @@ export default function ProductDetails({
                                                         className={`h-4 w-4 ${i < 4 ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`}
                                                     />
                                                 ))}
-                                                <span className="text-sm text-gray-400 font-medium ml-2">
+                                                <span className="text-sm text-muted-foreground font-medium ml-2">
                                                     (4.8 / 5.0)
                                                 </span>
                                             </div>
                                         </div>
-                                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight uppercase italic mb-3 md:mb-4">
+                                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-foreground leading-tight uppercase italic mb-3 md:mb-4">
                                             {product.name}
                                         </h1>
                                         <div className="flex flex-wrap items-baseline gap-3 md:gap-4 mb-4 md:mb-6">
-                                            <span className="text-3xl md:text-4xl font-black text-[#FF4E00]">
+                                            <span className="text-3xl md:text-4xl font-black text-primary">
                                                 ৳{activePrice.toLocaleString()}
                                             </span>
                                             {originalPrice > activePrice && (
-                                                <span className="text-xl text-gray-400 line-through font-medium">
+                                                <span className="text-xl text-muted-foreground line-through font-medium">
                                                     ৳
                                                     {originalPrice.toLocaleString()}
                                                 </span>
@@ -398,9 +398,9 @@ export default function ProductDetails({
                                         </div>
                                         <div className="bg-orange-50/50 p-4 rounded-2xl border border-orange-100 flex items-start gap-3">
                                             <div className="h-6 w-6 rounded-full bg-orange-100 flex items-center justify-center shrink-0 mt-0.5">
-                                                <CheckCircle2 className="h-4 w-4 text-[#FF4E00]" />
+                                                <CheckCircle2 className="h-4 w-4 text-primary" />
                                             </div>
-                                            <p className="text-sm text-gray-700 font-medium">
+                                            <p className="text-sm text-card-foreground font-medium">
                                                 {activeStock > 0
                                                     ? `In Stock. Quick delivery available within 2-3 business days.`
                                                     : `Currently out of stock. Contact us for availability.`}
@@ -409,14 +409,14 @@ export default function ProductDetails({
 
                                         {/* Variants Selectors */}
                                         {availableAttributes.length > 0 && (
-                                            <div className="mt-6 pt-6 border-t border-gray-100 space-y-6">
+                                            <div className="mt-6 pt-6 border-t border-border space-y-6">
                                                 {availableAttributes.map(
                                                     (attr) => (
                                                         <div
                                                             key={attr.id}
                                                             className="space-y-3"
                                                         >
-                                                            <h4 className="font-bold text-gray-900 uppercase text-sm tracking-wider">
+                                                            <h4 className="font-bold text-foreground uppercase text-sm tracking-wider">
                                                                 {attr.name}
                                                             </h4>
                                                             <div className="flex flex-wrap gap-3">
@@ -446,8 +446,8 @@ export default function ProductDetails({
                                                                                 }
                                                                                 className={`px-5 py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${
                                                                                     isSelected
-                                                                                        ? "border-[#FF4E00] text-[#FF4E00] bg-orange-50"
-                                                                                        : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                                                                                        ? "border-primary text-primary bg-orange-50"
+                                                                                        : "border-border text-muted-foreground hover:border-border hover:bg-muted"
                                                                                 }`}
                                                                             >
                                                                                 {
@@ -468,12 +468,12 @@ export default function ProductDetails({
                                     <div className="space-y-6">
                                         {/* Quantity & Actions */}
                                         <div className="flex flex-col sm:flex-row items-center gap-4">
-                                            <div className="flex items-center bg-gray-100 rounded-xl p-1 w-full sm:w-auto">
+                                            <div className="flex items-center bg-muted/80 rounded-xl p-1 w-full sm:w-auto">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={decrementQty}
-                                                    className="h-12 w-12 hover:bg-white rounded-lg transition-all"
+                                                    className="h-12 w-12 hover:bg-card rounded-lg transition-all"
                                                 >
                                                     <Minus className="h-4 w-4" />
                                                 </Button>
@@ -484,7 +484,7 @@ export default function ProductDetails({
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={incrementQty}
-                                                    className="h-12 w-12 hover:bg-white rounded-lg transition-all"
+                                                    className="h-12 w-12 hover:bg-card rounded-lg transition-all"
                                                 >
                                                     <Plus className="h-4 w-4" />
                                                 </Button>
@@ -496,7 +496,7 @@ export default function ProductDetails({
                                                 disabled={
                                                     isAdding || activeStock <= 0
                                                 }
-                                                className="w-full sm:flex-1 bg-black hover:bg-[#FF4E00] text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-gray-200 group"
+                                                className="w-full sm:flex-1 bg-black hover:bg-primary text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-gray-200 group"
                                             >
                                                 <ShoppingCart
                                                     className={`mr-3 h-5 w-5 transition-transform ${isAdding ? "animate-pulse" : "group-hover:-translate-y-1"}`}
@@ -515,7 +515,7 @@ export default function ProductDetails({
                                                 disabled={
                                                     isAdding || activeStock <= 0
                                                 }
-                                                className="flex-1 bg-[#FF4E00] hover:bg-black text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-orange-100"
+                                                className="flex-1 bg-primary hover:bg-black text-white py-8 rounded-[1.25rem] text-lg font-black transition-all shadow-xl shadow-orange-100"
                                             >
                                                 BUY IT NOW
                                             </Button>
@@ -523,12 +523,12 @@ export default function ProductDetails({
                                     </div>
 
                                     {/* Features Mini Grid */}
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-6 border-t border-gray-100">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-6 border-t border-border">
                                         <div className="flex flex-col items-center text-center gap-2">
                                             <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center">
                                                 <Truck className="h-6 w-6 text-blue-600" />
                                             </div>
-                                            <span className="text-xs font-bold text-gray-600 uppercase">
+                                            <span className="text-xs font-bold text-muted-foreground uppercase">
                                                 Fast Delivery
                                             </span>
                                         </div>
@@ -536,7 +536,7 @@ export default function ProductDetails({
                                             <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center">
                                                 <ShieldCheck className="h-6 w-6 text-green-600" />
                                             </div>
-                                            <span className="text-xs font-bold text-gray-600 uppercase">
+                                            <span className="text-xs font-bold text-muted-foreground uppercase">
                                                 Secure Payment
                                             </span>
                                         </div>
@@ -544,7 +544,7 @@ export default function ProductDetails({
                                             <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center">
                                                 <RotateCcw className="h-6 w-6 text-purple-600" />
                                             </div>
-                                            <span className="text-xs font-bold text-gray-600 uppercase">
+                                            <span className="text-xs font-bold text-muted-foreground uppercase">
                                                 7 Days Return
                                             </span>
                                         </div>
@@ -552,7 +552,7 @@ export default function ProductDetails({
 
                                     {/* Share button */}
                                     <div className="flex items-center justify-center pt-2">
-                                        <button className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-[#FF4E00] transition-colors uppercase tracking-widest">
+                                        <button className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
                                             <Share2 className="h-4 w-4" />
                                             Share this product
                                         </button>
@@ -561,27 +561,27 @@ export default function ProductDetails({
                             </div>
 
                             {/* Tabs Section */}
-                            <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-8 lg:p-10 shadow-sm border border-gray-100">
+                            <div className="bg-card rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-8 lg:p-10 shadow-sm border border-border">
                                 <Tabs
                                     defaultValue="description"
                                     className="w-full"
                                 >
-                                    <TabsList className="w-full flex justify-start md:justify-center overflow-x-auto bg-transparent border-b border-gray-200 rounded-none h-auto p-0 gap-2 md:gap-8 scrollbar-none">
+                                    <TabsList className="w-full flex justify-start md:justify-center overflow-x-auto bg-transparent border-b border-border rounded-none h-auto p-0 gap-2 md:gap-8 scrollbar-none">
                                         <TabsTrigger
                                             value="description"
-                                            className="data-[state=active]:border-[#FF4E00] data-[state=active]:text-[#FF4E00] border-b-2 border-transparent rounded-none px-4 md:px-8 py-3 md:py-4 text-xs md:text-sm font-black uppercase tracking-widest shrink-0"
+                                            className="data-[state=active]:border-primary data-[state=active]:text-primary border-b-2 border-transparent rounded-none px-4 md:px-8 py-3 md:py-4 text-xs md:text-sm font-black uppercase tracking-widest shrink-0"
                                         >
                                             Description
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="specifications"
-                                            className="data-[state=active]:border-[#FF4E00] data-[state=active]:text-[#FF4E00] border-b-2 border-transparent rounded-none px-4 md:px-8 py-3 md:py-4 text-xs md:text-sm font-black uppercase tracking-widest shrink-0"
+                                            className="data-[state=active]:border-primary data-[state=active]:text-primary border-b-2 border-transparent rounded-none px-4 md:px-8 py-3 md:py-4 text-xs md:text-sm font-black uppercase tracking-widest shrink-0"
                                         >
                                             Specifications
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="reviews"
-                                            className="data-[state=active]:border-[#FF4E00] data-[state=active]:text-[#FF4E00] border-b-2 border-transparent rounded-none px-8 py-4 text-sm font-black uppercase tracking-widest"
+                                            className="data-[state=active]:border-primary data-[state=active]:text-primary border-b-2 border-transparent rounded-none px-8 py-4 text-sm font-black uppercase tracking-widest"
                                         >
                                             Reviews (24)
                                         </TabsTrigger>
@@ -592,18 +592,18 @@ export default function ProductDetails({
                                             className="space-y-6"
                                         >
                                             <div className="prose prose-orange max-w-none">
-                                                <h3 className="text-2xl font-black text-gray-900 uppercase italic mb-6">
+                                                <h3 className="text-2xl font-black text-foreground uppercase italic mb-6">
                                                     Product Overview
                                                 </h3>
                                                 <div 
-                                                    className="text-gray-600 text-lg leading-relaxed description-content"
+                                                    className="text-muted-foreground text-lg leading-relaxed description-content"
                                                     dangerouslySetInnerHTML={{ 
                                                         __html: product.description || `Experience the ultimate quality with ${product.name}.` 
                                                     }}
                                                 />
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 pt-8">
-                                                <div className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100">
+                                                <div className="bg-muted p-6 md:p-8 rounded-[2rem] border border-border">
                                                     <h4 className="text-lg font-black mb-4 uppercase italic">
                                                         Key Features
                                                     </h4>
@@ -619,14 +619,14 @@ export default function ProductDetails({
                                                                 className="flex items-center gap-3"
                                                             >
                                                                 <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
-                                                                <span className="font-bold text-gray-700">
+                                                                <span className="font-bold text-card-foreground">
                                                                     {item}
                                                                 </span>
                                                             </li>
                                                         ))}
                                                     </ul>
                                                 </div>
-                                                <div className="bg-gray-50 p-6 md:p-8 rounded-[2rem] border border-gray-100">
+                                                <div className="bg-muted p-6 md:p-8 rounded-[2rem] border border-border">
                                                     <h4 className="text-lg font-black mb-4 uppercase italic">
                                                         What's in the Box
                                                     </h4>
@@ -642,7 +642,7 @@ export default function ProductDetails({
                                                                 className="flex items-center gap-3"
                                                             >
                                                                 <Info className="h-5 w-5 text-blue-500 shrink-0" />
-                                                                <span className="font-bold text-gray-700">
+                                                                <span className="font-bold text-card-foreground">
                                                                     {item}
                                                                 </span>
                                                             </li>
@@ -652,24 +652,24 @@ export default function ProductDetails({
                                             </div>
                                         </TabsContent>
                                         <TabsContent value="specifications">
-                                            <div className="bg-white rounded-[2rem] border border-gray-100 overflow-x-auto">
+                                            <div className="bg-card rounded-[2rem] border border-border overflow-x-auto">
                                                 <table className="w-full min-w-[360px] text-left">
                                                     <tbody>
-                                                        <tr className="border-b border-gray-100">
-                                                            <th className="px-8 py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
+                                                        <tr className="border-b border-border">
+                                                            <th className="px-8 py-4 bg-muted w-1/3 font-black uppercase text-xs">
                                                                 Brand
                                                             </th>
-                                                            <td className="px-8 py-4 text-gray-600 font-medium">
+                                                            <td className="px-8 py-4 text-muted-foreground font-medium">
                                                                 {product.brand
                                                                     ?.name ||
                                                                     "N/A"}
                                                             </td>
                                                         </tr>
-                                                        <tr className="border-b border-gray-100">
-                                                            <th className="px-8 py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
+                                                        <tr className="border-b border-border">
+                                                            <th className="px-8 py-4 bg-muted w-1/3 font-black uppercase text-xs">
                                                                 Category
                                                             </th>
-                                                            <td className="px-8 py-4 text-gray-600 font-medium">
+                                                            <td className="px-8 py-4 text-muted-foreground font-medium">
                                                                 {product
                                                                     .category
                                                                     ?.name ||
@@ -682,14 +682,14 @@ export default function ProductDetails({
                                                                     key={
                                                                         attr.id
                                                                     }
-                                                                    className="border-b border-gray-100"
+                                                                    className="border-b border-border"
                                                                 >
-                                                                    <th className="px-4 md:px-8 py-3 md:py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
+                                                                    <th className="px-4 md:px-8 py-3 md:py-4 bg-muted w-1/3 font-black uppercase text-xs">
                                                                         {
                                                                             attr.name
                                                                         }
                                                                     </th>
-                                                                    <td className="px-4 md:px-8 py-3 md:py-4 text-gray-600 font-medium">
+                                                                    <td className="px-4 md:px-8 py-3 md:py-4 text-muted-foreground font-medium">
                                                                         {attr.values
                                                                             .map(
                                                                                 (
@@ -704,21 +704,21 @@ export default function ProductDetails({
                                                                 </tr>
                                                             ),
                                                         )}
-                                                        <tr className="border-b border-gray-100">
-                                                            <th className="px-8 py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
+                                                        <tr className="border-b border-border">
+                                                            <th className="px-8 py-4 bg-muted w-1/3 font-black uppercase text-xs">
                                                                 Stock Status
                                                             </th>
-                                                            <td className="px-8 py-4 text-gray-600 font-medium">
+                                                            <td className="px-8 py-4 text-muted-foreground font-medium">
                                                                 {activeStock > 0
                                                                     ? `${activeStock} Units Available`
                                                                     : "Out of Stock"}
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <th className="px-8 py-4 bg-gray-50 w-1/3 font-black uppercase text-xs">
+                                                            <th className="px-8 py-4 bg-muted w-1/3 font-black uppercase text-xs">
                                                                 Warranty
                                                             </th>
-                                                            <td className="px-8 py-4 text-gray-600 font-medium">
+                                                            <td className="px-8 py-4 text-muted-foreground font-medium">
                                                                 1 Year
                                                                 Replacement
                                                                 Warranty
@@ -736,14 +736,14 @@ export default function ProductDetails({
                         {/* Sidebar: 3/12 columns */}
                         <div className="lg:col-span-3 space-y-6 lg:space-y-8">
                             {relatedProducts.length > 0 && (
-                                <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-6 shadow-sm border border-gray-100 lg:sticky lg:top-32">
+                                <div className="bg-card rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-6 shadow-sm border border-border lg:sticky lg:top-32">
                                     <div className="mb-6">
-                                        <div className="bg-orange-50 text-[#FF4E00] text-[10px] font-black px-3 py-1 rounded-full inline-block uppercase tracking-[0.2em] mb-2">
+                                        <div className="bg-orange-50 text-primary text-[10px] font-black px-3 py-1 rounded-full inline-block uppercase tracking-[0.2em] mb-2">
                                             Related
                                         </div>
-                                        <h3 className="text-xl font-black text-gray-900 uppercase italic">
+                                        <h3 className="text-xl font-black text-foreground uppercase italic">
                                             People also{" "}
-                                            <span className="text-[#FF4E00]">
+                                            <span className="text-primary">
                                                 Viewed
                                             </span>
                                         </h3>
@@ -760,7 +760,7 @@ export default function ProductDetails({
                                                     )}
                                                     className="group flex gap-4"
                                                 >
-                                                    <div className="w-24 h-24 bg-gray-50 rounded-2xl p-2 shrink-0 border border-gray-100 overflow-hidden group-hover:border-orange-200 transition-colors">
+                                                    <div className="w-24 h-24 bg-muted rounded-2xl p-2 shrink-0 border border-border overflow-hidden group-hover:border-orange-200 transition-colors">
                                                         <img
                                                             src={
                                                                 getImagePath(
@@ -789,11 +789,11 @@ export default function ProductDetails({
                                                         />
                                                     </div>
                                                     <div className="flex flex-col justify-center min-w-0">
-                                                        <h4 className="font-bold text-gray-900 text-sm italic uppercase truncate group-hover:text-[#FF4E00] transition-colors leading-tight mb-1">
+                                                        <h4 className="font-bold text-foreground text-sm italic uppercase truncate group-hover:text-primary transition-colors leading-tight mb-1">
                                                             {related.name}
                                                         </h4>
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-[#FF4E00] font-black text-sm">
+                                                            <span className="text-primary font-black text-sm">
                                                                 ৳
                                                                 {(
                                                                     parseFloat(
@@ -805,7 +805,7 @@ export default function ProductDetails({
                                                                 parseFloat(
                                                                     related.old_price,
                                                                 ) > 0 && (
-                                                                    <span className="text-[10px] text-gray-400 line-through font-medium">
+                                                                    <span className="text-[10px] text-muted-foreground line-through font-medium">
                                                                         ৳
                                                                         {(
                                                                             parseFloat(
@@ -825,7 +825,7 @@ export default function ProductDetails({
                                             "shop.category",
                                             product.category?.slug || "",
                                         )}
-                                        className="mt-8 flex items-center justify-center gap-2 text-[11px] font-black text-gray-400 hover:text-[#FF4E00] transition-colors uppercase tracking-[0.1em] py-3 border-t border-gray-50 group"
+                                        className="mt-8 flex items-center justify-center gap-2 text-[11px] font-black text-muted-foreground hover:text-primary transition-colors uppercase tracking-[0.1em] py-3 border-t border-gray-50 group"
                                     >
                                         VIEW ALL CATEGORY
                                         <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
@@ -835,13 +835,13 @@ export default function ProductDetails({
 
                             {/* Small Promotional/Trust card in sidebar */}
                             <div className="bg-orange-50/50 rounded-[2.5rem] p-8 border border-orange-100 text-center space-y-4">
-                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-                                    <ShieldCheck className="h-6 w-6 text-[#FF4E00]" />
+                                <div className="w-12 h-12 bg-card rounded-full flex items-center justify-center mx-auto shadow-sm">
+                                    <ShieldCheck className="h-6 w-6 text-primary" />
                                 </div>
-                                <h4 className="font-black text-gray-900 uppercase italic">
+                                <h4 className="font-black text-foreground uppercase italic">
                                     Authneticity
                                 </h4>
-                                <p className="text-xs text-gray-600 font-medium leading-relaxed">
+                                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
                                     100% Genuine Auto Parts with Official
                                     Warranty.
                                 </p>
