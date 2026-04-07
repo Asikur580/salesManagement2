@@ -266,30 +266,10 @@ export function ShopNavbar() {
     );
 
     return (
-        <header className="w-full sticky top-0 z-50 shadow-md transition-all duration-300">
+        <header className="w-full fixed top-0 left-0 right-0 z-50 shadow-md transition-all duration-300 transform-gpu translate-z-0 pt-[env(safe-area-inset-top)]">
             {/* Main Orange Header */}
             <div className="bg-primary text-white py-3 px-4 md:px-6 lg:px-12 flex items-center justify-between gap-4 md:gap-8 lg:gap-12">
-                {/* Mobile: Hamburger & Search */}
-                <div className="flex items-center gap-3 lg:hidden">
-                    <button
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="p-1 hover:bg-card/10 rounded-md transition-colors"
-                    >
-                        {isMenuOpen ? (
-                            <X className="h-6 w-6" />
-                        ) : (
-                            <Menu className="h-6 w-6" />
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setIsSearchOpen(!isSearchOpen)}
-                        className="p-1 hover:bg-card/10 rounded-md transition-colors"
-                    >
-                        <Search className="h-6 w-6" />
-                    </button>
-                </div>
-
-                {/* Logo */}
+                {/* Logo - Now Leftmost */}
                 <Link
                     href="/"
                     className="flex items-center gap-2 group shrink-0"
@@ -326,7 +306,7 @@ export function ShopNavbar() {
                     </button>
                 </form>
 
-                {/* Actions */}
+                {/* Actions - Now contains Mobile Icons too */}
                 <div className="flex items-center gap-4 md:gap-6 shrink-0">
                     {/* Wishlist – guarded */}
                     <button
@@ -354,65 +334,87 @@ export function ShopNavbar() {
                         )}
                     </button>
 
+                    {/* Mobile Search Toggle */}
+                    <button
+                        onClick={() => setIsSearchOpen(!isSearchOpen)}
+                        className="lg:hidden p-1 hover:bg-card/10 rounded-md transition-colors"
+                    >
+                        <Search className="h-6 w-6" />
+                    </button>
+
+                    {/* Mobile Menu Toggle (HIDDEN on Mobile as requested) */}
+                    {/* <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="hidden lg:flex p-1 hover:bg-card/10 rounded-md transition-colors"
+                    >
+                        {isMenuOpen ? (
+                            <X className="h-6 w-6" />
+                        ) : (
+                            <Menu className="h-6 w-6" />
+                        )}
+                    </button> */}
+
                     {user && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className="flex items-center group focus:outline-none">
-                                    <Avatar className="h-9 w-9 border-2 border-white/20 group-hover:border-white/60 transition-colors cursor-pointer">
-                                        <AvatarFallback className="bg-card text-primary font-black text-xs">
-                                            {getInitials(user.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                align="end"
-                                className="w-56 rounded-2xl p-2 shadow-2xl border-border mt-2"
-                            >
-                                <DropdownMenuLabel className="font-black text-foreground px-3 py-2">
-                                    {user.name}
-                                    <p className="text-xs font-medium text-muted-foreground truncate">
-                                        {user.email || user.phone}
-                                    </p>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={() => router.visit("/my-account")}
-                                    className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-primary"
+                        <div className="hidden lg:block">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="flex items-center group focus:outline-none">
+                                        <Avatar className="h-9 w-9 border-2 border-white/20 group-hover:border-white/60 transition-colors cursor-pointer">
+                                            <AvatarFallback className="bg-card text-primary font-black text-xs">
+                                                {getInitials(user.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="w-56 rounded-2xl p-2 shadow-2xl border-border mt-2"
                                 >
-                                    <User className="h-4 w-4" /> My Account
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => router.visit("/wishlist")}
-                                    className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-primary"
-                                >
-                                    <Heart className="h-4 w-4" /> Wishlist
-                                </DropdownMenuItem>
-                                {isAdmin && (
+                                    <DropdownMenuLabel className="font-black text-foreground px-3 py-2">
+                                        {user.name}
+                                        <p className="text-xs font-medium text-muted-foreground truncate">
+                                            {user.email || user.phone}
+                                        </p>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                        onClick={() =>
-                                            router.visit("/dashboard")
-                                        }
+                                        onClick={() => router.visit("/my-account")}
                                         className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-primary"
                                     >
-                                        <Settings className="h-4 w-4" /> Admin
-                                        Panel
+                                        <User className="h-4 w-4" /> My Account
                                     </DropdownMenuItem>
-                                )}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={logout}
-                                    className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 hover:bg-red-50 hover:text-red-500 text-red-400"
-                                >
-                                    <LogOut className="h-4 w-4" /> Logout
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                    <DropdownMenuItem
+                                        onClick={() => router.visit("/wishlist")}
+                                        className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-primary"
+                                    >
+                                        <Heart className="h-4 w-4" /> Wishlist
+                                    </DropdownMenuItem>
+                                    {isAdmin && (
+                                        <DropdownMenuItem
+                                            onClick={() =>
+                                                router.visit("/dashboard")
+                                            }
+                                            className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 data-[highlighted]:bg-orange-50 data-[highlighted]:text-primary"
+                                        >
+                                            <Settings className="h-4 w-4" /> Admin
+                                            Panel
+                                        </DropdownMenuItem>
+                                    )}
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() => logout()}
+                                        className="flex items-center gap-2 cursor-pointer font-bold rounded-xl px-3 py-2 hover:bg-red-50 hover:text-red-500 text-red-400"
+                                    >
+                                        <LogOut className="h-4 w-4" /> Logout
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     )}
                     {!user && (
                         <button
                             onClick={() => router.visit(route("login"))}
-                            className="hover:scale-110 transition-transform"
+                            className="hidden lg:block hover:scale-110 transition-transform"
                         >
                             <User className="h-6 w-6 stroke-[2.5px]" />
                         </button>

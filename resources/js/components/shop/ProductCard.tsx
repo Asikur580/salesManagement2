@@ -103,11 +103,11 @@ export function ProductCard({ product }: ProductCardProps) {
         `https://placehold.co/400x400/f5f5f5/333333?text=${product.name}`;
 
     return (
-        <div className="bg-card rounded-lg border border-border overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col relative h-full">
+        <div className="bg-card rounded-2xl border border-border/50 overflow-hidden group hover:shadow-2xl hover:shadow-orange-100 transition-all duration-500 flex flex-col relative h-full">
             {/* Badges */}
-            <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+            <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
                 {product.old_price > product.price && (
-                    <Badge className="bg-primary text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
+                    <Badge className="bg-primary text-white border-none font-black text-[9px] px-2 py-0.5 rounded-full shadow-sm">
                         -
                         {Math.round(
                             ((product.old_price - product.price) /
@@ -115,16 +115,6 @@ export function ProductCard({ product }: ProductCardProps) {
                                 100,
                         )}
                         %
-                    </Badge>
-                )}
-                {product.stock < 5 && product.stock > 0 && (
-                    <Badge className="bg-amber-500 text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
-                        Low Stock
-                    </Badge>
-                )}
-                {product.stock <= 0 && (
-                    <Badge className="bg-gray-500 text-white border-none font-black text-[10px] px-2 py-0.5 rounded-sm">
-                        Out of Stock
                     </Badge>
                 )}
             </div>
@@ -136,16 +126,16 @@ export function ProductCard({ product }: ProductCardProps) {
                         ? route("shop.product.show", product.slug)
                         : "#"
                 }
-                className="relative aspect-square bg-[#F9F9F9] overflow-hidden block group/img"
+                className="relative aspect-[4/5] sm:aspect-square bg-[#F9F9F9] overflow-hidden block group/img"
             >
                 <img
                     src={displayImage}
                     alt={product.name}
-                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 p-4"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 p-0"
                 />
 
-                {/* Overlay Actions */}
-                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                {/* Overlay Actions (Hidden on small mobile for cleaner look) */}
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:flex items-center justify-center gap-3">
                     <Button
                         size="icon"
                         variant="secondary"
@@ -160,21 +150,16 @@ export function ProductCard({ product }: ProductCardProps) {
                             className={`h-4 w-4 ${product.is_wishlisted ? "fill-white text-white" : ""}`}
                         />
                     </Button>
-                    <Button
-                        size="icon"
-                        variant="secondary"
-                        className="rounded-full shadow-md scale-90 group-hover:scale-100 transition-transform duration-300"
-                    >
-                        <Eye className="h-4 w-4" />
-                    </Button>
                 </div>
             </Link>
 
             {/* Content */}
-            <div className="p-4 flex flex-col flex-1">
-                <span className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">
-                    {product.category?.name || "Uncategorized"}
-                </span>
+            <div className="p-3 md:p-4 flex flex-col flex-1">
+                <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] font-black text-primary uppercase tracking-[0.1em]">
+                        {product.category?.name || "OrenMart"}
+                    </span>
+                </div>
                 <Link
                     href={
                         product.slug
@@ -182,57 +167,43 @@ export function ProductCard({ product }: ProductCardProps) {
                             : "#"
                     }
                 >
-                    <h4 className="font-bold text-sm text-[#333] line-clamp-2 mb-2 min-h-[40px] group-hover:text-primary transition-colors">
+                    <h4 className="font-bold text-[13px] md:text-sm text-[#333] line-clamp-2 mb-2 min-h-[36px] md:min-h-[40px] group-hover:text-primary transition-colors leading-tight">
                         {product.name}
                     </h4>
                 </Link>
 
-                <div className="mt-auto pt-2">
-                    {/* Rating (Mock) */}
-                    <div className="flex items-center gap-1 mb-2">
-                        {[...Array(5)].map((_, i) => (
-                            <svg
-                                key={i}
-                                className={`w-3 h-3 ${i < 4 ? "text-yellow-400" : "text-muted-foreground"}`}
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        ))}
-                        <span className="text-[10px] text-muted-foreground ml-1">
-                            (24 reviews)
+                <div className="mt-auto">
+                    <div className="flex items-baseline gap-2 mb-2">
+                        <span className="text-base md:text-lg font-black text-primary">
+                            ৳
+                            {product.price
+                                ? parseFloat(product.price).toLocaleString()
+                                : "0"}
                         </span>
+                        {product.old_price > product.price && (
+                            <span className="text-[10px] text-muted-foreground line-through font-bold opacity-60">
+                                ৳
+                                {parseFloat(
+                                    product.old_price,
+                                ).toLocaleString()}
+                            </span>
+                        )}
                     </div>
 
-                    <div className="flex items-center justify-between gap-2">
-                        <div className="flex flex-col">
-                            <span className="text-lg font-black text-primary">
-                                ৳
-                                {product.price
-                                    ? parseFloat(product.price).toLocaleString()
-                                    : "0"}
-                            </span>
-                            {product.old_price > product.price && (
-                                <span className="text-[10px] text-muted-foreground line-through font-bold">
-                                    ৳
-                                    {parseFloat(
-                                        product.old_price,
-                                    ).toLocaleString()}
-                                </span>
-                            )}
-                        </div>
-                        <Button
-                            size="sm"
-                            disabled={product.stock <= 0 || isAdding}
-                            onClick={handleAddToCart}
-                            className={`bg-muted/80 hover:bg-primary text-[#333] hover:text-white rounded-md transition-all shadow-none h-8 w-8 px-0 ${isAdding ? "opacity-50" : ""}`}
-                        >
-                            <ShoppingCart
-                                className={`h-4 w-4 ${isAdding ? "animate-pulse" : ""}`}
-                            />
-                        </Button>
-                    </div>
+                    <Button
+                        disabled={product.stock <= 0 || isAdding}
+                        onClick={handleAddToCart}
+                        className={`w-full bg-orange-50 hover:bg-primary text-primary hover:text-white rounded-lg transition-all shadow-none h-9 text-xs font-black uppercase tracking-wider gap-2 ${isAdding ? "opacity-50" : ""}`}
+                    >
+                        {isAdding ? (
+                            "Adding..."
+                        ) : (
+                            <>
+                                <ShoppingCart className="h-3.5 w-3.5" />
+                                Add to Cart
+                            </>
+                        )}
+                    </Button>
                 </div>
             </div>
         </div>

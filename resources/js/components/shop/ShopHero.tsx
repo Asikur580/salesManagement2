@@ -194,9 +194,9 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
     };
 
     return (
-        <div className="w-full bg-[#F8F9FA] py-8">
+        <div className="w-full bg-[#F8F9FA] py-4 md:py-8">
             <div
-                className="w-full mx-auto px-4 flex flex-col lg:flex-row gap-6 lg:h-[500px]"
+                className="w-full mx-auto px-4 flex flex-col lg:flex-row gap-6 h-auto min-h-[320px] sm:min-h-[400px] lg:h-[500px]"
                 style={{ maxWidth: "100rem" }}
             >
                 {/* ── Column 1: Main Categories ── */}
@@ -342,53 +342,53 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                             <img
                                 src={s.image}
                                 alt={s.title}
-                                className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-&lsqb;8000ms&rsqb;"
+                                className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-[8000ms]"
                             />
                             <div
                                 className={`absolute inset-0 bg-gradient-to-r ${s.bg} to-transparent`}
                             />
-                            <div className="absolute inset-0 flex flex-col justify-center p-10 md:p-14 text-white z-10">
-                                <div className="inline-flex items-center gap-2 mb-5 bg-primary py-1 px-3 rounded-full self-start">
-                                    <Star className="h-3.5 w-3.5 fill-white" />
-                                    <span className="text-xs font-black uppercase tracking-widest">
+                            <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-14 text-white z-10">
+                                <div className="inline-flex items-center gap-2 mb-3 md:mb-5 bg-primary py-0.5 px-2.5 rounded-full self-start">
+                                    <Star className="h-3 w-3 fill-white" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">
                                         {s.badge}
                                     </span>
                                 </div>
-                                <h2 className="text-3xl md:text-5xl font-black mb-2 leading-tight uppercase italic drop-shadow-lg">
+                                <h2 className="text-2xl md:text-5xl font-black mb-1 md:mb-2 leading-tight uppercase italic drop-shadow-lg">
                                     {s.title} <br />
                                     <span className="text-primary">
                                         {s.highlight}
                                     </span>{" "}
-                                    <br />
-                                    <span className="text-2xl md:text-3xl font-black opacity-90">
+                                    <br className="hidden md:block" />
+                                    <span className="text-xl md:text-3xl font-black opacity-90 block md:inline">
                                         {s.subtitle}
                                     </span>
                                 </h2>
-                                <p className="text-gray-200 text-base mb-6 max-w-md font-medium mt-2">
+                                <p className="text-gray-200 text-xs md:text-base mb-4 md:mb-6 max-w-md font-medium mt-1 line-clamp-2 md:line-clamp-none">
                                     {s.desc}
                                 </p>
-                                <div className="flex flex-wrap gap-4">
-                                    <Button className="bg-primary hover:bg-card hover:text-primary text-white font-black px-7 py-5 rounded-lg text-base transition-all transform hover:-translate-y-1 shadow-lg border-2 border-primary">
+                                <div className="flex flex-wrap gap-3 md:gap-4">
+                                    <Button className="bg-primary hover:bg-card hover:text-primary text-white font-black px-5 md:px-7 py-4 md:py-5 rounded-lg text-sm md:text-base transition-all transform hover:-translate-y-1 shadow-lg border-2 border-primary">
                                         {s.cta}
                                     </Button>
                                     <Button
                                         variant="outline"
-                                        className="bg-transparent border-white text-white hover:bg-card hover:text-black font-black px-7 py-5 rounded-lg text-base transition-all"
+                                        className="bg-transparent border-white text-white hover:bg-card hover:text-black font-black px-5 md:px-7 py-4 md:py-5 rounded-lg text-sm md:text-base transition-all hidden sm:flex"
                                     >
                                         BROWSE ALL
                                     </Button>
                                 </div>
-                                <div className="flex gap-5 pt-5 border-t border-white/20 mt-6">
+                                <div className="flex gap-4 md:gap-5 pt-4 md:pt-5 border-t border-white/20 mt-4 md:mt-6 hidden xs:flex">
                                     <div className="flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4 text-primary" />
-                                        <span className="text-xs font-bold uppercase">
-                                            Genuine Parts
+                                        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                                        <span className="text-[10px] font-bold uppercase">
+                                            Genuine
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Truck className="h-4 w-4 text-primary" />
-                                        <span className="text-xs font-bold uppercase">
-                                            Free Delivery
+                                        <Truck className="h-3.5 w-3.5 text-primary" />
+                                        <span className="text-[10px] font-bold uppercase">
+                                            Delivery
                                         </span>
                                     </div>
                                 </div>
@@ -396,37 +396,37 @@ export function ShopHero({ categories = [] }: ShopHeroProps) {
                         </div>
                     ))}
 
-                    {/* Prev / Next Arrows */}
+                    {/* Prev / Next Arrows - Smaller on mobile */}
                     <button
                         onClick={prev}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
+                        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-primary text-white w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
                     >
-                        <ChevronLeft className="h-5 w-5" />
+                        <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
                     </button>
                     <button
                         onClick={next}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
+                        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-primary text-white w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shadow-lg"
                     >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
                     </button>
 
                     {/* Dot Indicators */}
-                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                    <div className="absolute bottom-3 md:bottom-5 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                         {BANNER_SLIDES.map((_, i) => (
                             <button
                                 key={i}
                                 onClick={() => setCurrent(i)}
                                 className={`transition-all rounded-full ${
                                     i === current
-                                        ? "bg-primary w-8 h-2.5"
-                                        : "bg-card/50 hover:bg-card w-2.5 h-2.5"
+                                        ? "bg-primary w-6 md:w-8 h-2 md:h-2.5"
+                                        : "bg-card/50 hover:bg-card w-2 md:w-2.5 h-2 md:h-2.5"
                                 }`}
                             />
                         ))}
                     </div>
 
                     {/* Slide counter */}
-                    <div className="absolute top-4 right-4 z-20 bg-black/40 text-white text-xs font-black px-3 py-1 rounded-full">
+                    <div className="absolute top-2 md:top-4 right-2 md:right-4 z-20 bg-black/40 text-white text-[10px] font-black px-2 md:px-3 py-0.5 md:py-1 rounded-full">
                         {current + 1} / {BANNER_SLIDES.length}
                     </div>
                 </div>
