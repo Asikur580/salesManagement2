@@ -45,6 +45,7 @@ class AccountController extends Controller
 
     public function updateProfile(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -62,6 +63,7 @@ class AccountController extends Controller
 
     public function updatePassword(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $hasPassword = (bool) $user->password;
 
@@ -100,7 +102,9 @@ class AccountController extends Controller
             UserAddress::where('user_id', Auth::id())->update(['is_default' => false]);
         }
 
-        Auth::user()->addresses()->create($data);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $user->addresses()->create($data);
 
         return back()->with('success', 'Address added successfully.');
     }
