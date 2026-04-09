@@ -125,8 +125,29 @@ const SearchPage = ({
         }
     }, [currentSort]);
 
-    const FilterContent = () => (
+    const clearFilters = () => {
+        setMinPrice("");
+        setMaxPrice("");
+        setSelectedBrands([]);
+        router.get(route("shop.search"), { q: searchTerm }, {
+            preserveState: false,
+            preserveScroll: true,
+        });
+    };
+
+    const filterContent = (
         <div className="space-y-8">
+            {/* Clear All Filters Button */}
+            {(filters?.min_price || filters?.max_price || filters?.brands || filters?.category) && (
+                <Button
+                    variant="ghost"
+                    onClick={clearFilters}
+                    className="w-full flex items-center justify-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50 font-bold border border-red-100 rounded-xl py-6"
+                >
+                    Clear All Filters
+                </Button>
+            )}
+
             {/* Category Filter */}
             <div>
                 <h3 className="text-lg font-black text-foreground uppercase tracking-tight mb-4 border-b pb-2">
@@ -340,7 +361,7 @@ const SearchPage = ({
                                     Refine your search results.
                                 </SheetDescription>
                             </SheetHeader>
-                            <FilterContent />
+                            {filterContent}
                         </SheetContent>
                     </Sheet>
                 </div>
@@ -351,7 +372,7 @@ const SearchPage = ({
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Sidebar Filters (Hidden on Mobile) */}
                         <aside className="hidden lg:block w-72 shrink-0">
-                            <FilterContent />
+                            {filterContent}
                         </aside>
 
                         {/* Main Content */}
