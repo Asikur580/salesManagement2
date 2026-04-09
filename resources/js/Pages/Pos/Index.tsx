@@ -359,7 +359,7 @@ export default function PosIndex({
 
     return (
         <TooltipProvider>
-            <div className="flex flex-col h-screen bg-[#f8fafc] overflow-hidden font-sans selection:bg-indigo-100 selection:text-indigo-700">
+            <div className="flex flex-col h-screen bg-muted/50 overflow-hidden font-sans selection:bg-primary/10 selection:text-primary">
                 <Head title="Point of Sale | Premium POS" />
                 
                 {/* Top Navigation Bar - Premium Glassmorphism */}
@@ -369,7 +369,7 @@ export default function PosIndex({
                             href="/dashboard"
                             className="group flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-card/5 hover:bg-card/10 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-sm"
                         >
-                            <LayoutDashboard className="h-4 w-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+                            <LayoutDashboard className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
                             <span className="text-sm font-medium tracking-wide">
                                 Dashboard
                             </span>
@@ -379,8 +379,8 @@ export default function PosIndex({
                             <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
                                 Smart POS System
                             </h1>
-                            <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-indigo-400 font-bold">
-                                <Zap className="h-2.5 w-2.5 fill-indigo-400" />
+                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                                <Zap className="h-2.5 w-2.5 fill-primary" />
                                 Live Transaction
                             </div>
                         </div>
@@ -389,7 +389,7 @@ export default function PosIndex({
                     <div className="flex items-center gap-6">
                         <div className="hidden md:flex flex-col items-end">
                             <div className="text-sm font-semibold flex items-center gap-2">
-                                <Clock className="h-3.5 w-3.5 text-indigo-400" />
+                                <Clock className="h-3.5 w-3.5 text-primary" />
                                 {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                             </div>
                             <div className="text-[11px] font-medium text-slate-400 tabular-nums">
@@ -419,10 +419,10 @@ export default function PosIndex({
                         {/* Filter Header - Modern & Clean */}
                         <div className="p-6 bg-card border-b border-border space-y-5 shrink-0 shadow-sm">
                             <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 <Input
                                     ref={searchInputRef}
-                                    className="pl-12 h-14 text-lg bg-muted border-border focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl transition-all duration-300 placeholder:text-muted-foreground shadow-sm"
+                                    className="pl-12 h-14 text-lg bg-muted border-border focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all duration-300 placeholder:text-muted-foreground shadow-sm"
                                     placeholder="Scan Barcode or Search Products..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -438,10 +438,10 @@ export default function PosIndex({
                                                 : "outline"
                                         }
                                         onClick={() => setSelectedCategoryId("all")}
-                                        className={`rounded-xl px-6 h-10 font-medium transition-all duration-300 ${
+                                        className={`rounded-xl px-6 h-10 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
                                             selectedCategoryId === "all"
-                                                ? "bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20"
-                                                : "bg-card hover:bg-indigo-50 hover:text-indigo-600 border-border"
+                                                ? "bg-primary hover:bg-black text-white shadow-xl shadow-primary/20"
+                                                : "bg-card hover:bg-primary/5 hover:text-primary border-border"
                                         }`}
                                     >
                                         All Items
@@ -499,7 +499,7 @@ export default function PosIndex({
                                                         className="w-full h-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-200">
+                                                    <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30">
                                                         <Box className="w-8 h-8" />
                                                     </div>
                                                 )}
@@ -513,7 +513,7 @@ export default function PosIndex({
 
                                                 {product.product_type === "variant" && (
                                                     <div className="absolute top-1.5 right-1.5">
-                                                        <div className="bg-indigo-600 h-2 w-2 rounded-full border border-white shadow-sm" />
+                                                        <div className="bg-primary h-2 w-2 rounded-full border border-white shadow-sm" />
                                                     </div>
                                                 )}
 
@@ -527,14 +527,14 @@ export default function PosIndex({
                                             </div>
                                             
                                             <div className="flex-1 flex flex-col justify-between min-w-0">
-                                                <h3 className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight group-hover:text-indigo-600">
+                                                <h3 className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
                                                     {product.name}
                                                 </h3>
                                                 <div className="flex items-center justify-between gap-1 mt-1">
                                                     <span className="text-[9px] text-muted-foreground truncate font-medium">
                                                         {product.category?.name || "Other"}
                                                     </span>
-                                                    <span className={`text-[9px] font-black shrink-0 ${product.stock < 5 ? 'text-orange-500' : 'text-emerald-500'}`}>
+                                                    <span className={`text-[9px] font-black shrink-0 ${product.stock < 5 ? 'text-primary' : 'text-emerald-500'}`}>
                                                         {product.stock}
                                                     </span>
                                                 </div>
@@ -573,7 +573,7 @@ export default function PosIndex({
                                 value={data.customer_id}
                                 onValueChange={(v) => setData("customer_id", v)}
                             >
-                                <SelectTrigger className="w-full h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-indigo-500/5 transition-all">
+                                <SelectTrigger className="w-full h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all">
                                     <SelectValue placeholder="Walk-in Customer" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-border shadow-xl">
@@ -596,10 +596,10 @@ export default function PosIndex({
                         {/* Cart Items - Clean & Scannable */}
                         <div className="flex-1 overflow-hidden flex flex-col">
                             <div className="px-6 py-4 flex items-center justify-between">
-                                <h2 className="text-sm font-black uppercase tracking-tighter text-foreground flex items-center gap-2">
-                                    <ShoppingCart className="h-4 w-4 text-indigo-500" />
+                                <h2 className="text-xs font-black uppercase tracking-widest text-foreground flex items-center gap-2">
+                                    <ShoppingCart className="h-4 w-4 text-primary" />
                                     Your Cart
-                                    <Badge className="bg-indigo-50 text-indigo-600 border-indigo-100 hover:bg-indigo-100 transition-colors">
+                                    <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors">
                                         {cart.length}
                                     </Badge>
                                 </h2>
@@ -631,7 +631,7 @@ export default function PosIndex({
                                         {cart.map((item) => (
                                             <div
                                                 key={item.id}
-                                                className="group flex flex-col bg-card border border-border p-4 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-100 transition-all duration-300"
+                                                className="group flex flex-col bg-card border border-border p-4 rounded-2xl shadow-sm hover:shadow-md hover:border-primary/10 transition-all duration-300"
                                             >
                                                 <div className="flex w-[20rem] justify-between items-start gap-3">
                                                     <div className="flex gap-4 min-w-0 flex-1">
@@ -653,7 +653,7 @@ export default function PosIndex({
                                                                 {item.name}
                                                             </h4>
                                                             {item.variant_name && (
-                                                                <p className="text-[10px] text-indigo-500 font-black uppercase tracking-tighter mt-0.5 truncate">
+                                                                <p className="text-[10px] text-primary font-black uppercase tracking-widest mt-0.5 truncate">
                                                                     {item.variant_name}
                                                                 </p>
                                                             )}
@@ -773,15 +773,15 @@ export default function PosIndex({
                                         </div>
                                     )}
                                     <div className="flex justify-between items-baseline pt-4 border-t border-dashed border-border mt-2">
-                                        <span className="text-sm font-black text-foreground uppercase">Total Payable</span>
-                                        <span className="text-4xl font-black text-indigo-600 tracking-tighter tabular-nums drop-shadow-sm">
+                                        <span className="text-sm font-black text-foreground uppercase tracking-widest">Total Payable</span>
+                                        <span className="text-4xl font-black text-primary tracking-tighter tabular-nums drop-shadow-sm">
                                             ৳{total.toLocaleString()}
                                         </span>
                                     </div>
                                 </div>
 
                                 <Button
-                                    className="w-full h-16 text-lg font-black uppercase tracking-widest shadow-2xl shadow-indigo-600/30 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 rounded-2xl transition-all duration-300 active:scale-[0.98] disabled:opacity-50 group"
+                                    className="w-full h-16 text-sm font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 bg-primary hover:bg-black text-white rounded-2xl transition-all duration-300 active:scale-[0.98] disabled:opacity-50 group"
                                     onClick={handleCheckout}
                                     disabled={processing || cart.length === 0}
                                 >
