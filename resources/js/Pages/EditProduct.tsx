@@ -79,6 +79,7 @@ export default function EditProduct({
         cost_price: product.cost_price?.toString() || "",
         sku: product.sku || "",
         barcode: product.barcode || "",
+        low_stock_alert: product.low_stock_alert?.toString() || "10",
         is_active: product.is_active === 1 || product.is_active === true,
         images: initialImages as any[],
         delete_images: [] as number[],
@@ -419,6 +420,19 @@ export default function EditProduct({
                                             setData("barcode", e.target.value)
                                         }
                                     />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Low Stock Alert</Label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        value={data.low_stock_alert}
+                                        onChange={(e) =>
+                                            setData("low_stock_alert", e.target.value)
+                                        }
+                                    />
+                                    <p className="text-[10px] text-muted-foreground mt-1">Notify when stock is at or below this level.</p>
                                 </div>
                             </div>
                         </div>

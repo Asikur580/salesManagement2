@@ -119,23 +119,21 @@ Route::middleware('auth')->group(function () {
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 
         // Inventory & Supplier Management
-        Route::resource('suppliers', SupplierController::class)->middleware([
-            'permission:supplier.view' => ['index'],
-            'permission:supplier.create' => ['store'],
-            'permission:supplier.update' => ['update'],
-            'permission:supplier.delete' => ['destroy'],
-        ]);
+        Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index')->middleware('permission:supplier.view');
+        Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store')->middleware('permission:supplier.create');
+        Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update')->middleware('permission:supplier.update');
+        Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy')->middleware('permission:supplier.delete');
 
         Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history')->middleware('permission:inventory.view_history');
         Route::get('/inventory/adjust', [InventoryController::class, 'adjust'])->name('inventory.adjust')->middleware('permission:inventory.adjust');
         Route::post('/inventory/adjust', [InventoryController::class, 'updateStock'])->name('inventory.update-stock')->middleware('permission:inventory.adjust');
 
         // Restock Orders
-        Route::resource('restock-orders', RestockOrderController::class)->middleware([
-            'permission:restock.view' => ['index', 'show'],
-            'permission:restock.create' => ['create', 'store'],
-            'permission:restock.delete' => ['destroy'],
-        ]);
+        Route::get('/restock-orders', [RestockOrderController::class, 'index'])->name('restock-orders.index')->middleware('permission:restock.view');
+        Route::get('/restock-orders/create', [RestockOrderController::class, 'create'])->name('restock-orders.create')->middleware('permission:restock.create');
+        Route::post('/restock-orders', [RestockOrderController::class, 'store'])->name('restock-orders.store')->middleware('permission:restock.create');
+        Route::get('/restock-orders/{restock_order}', [RestockOrderController::class, 'show'])->name('restock-orders.show')->middleware('permission:restock.view');
+        Route::delete('/restock-orders/{restock_order}', [RestockOrderController::class, 'destroy'])->name('restock-orders.destroy')->middleware('permission:restock.delete');
         Route::post('/restock-orders/{restock_order}/receive', [RestockOrderController::class, 'receive'])->name('restock-orders.receive')->middleware('permission:restock.receive');
 
         Route::resource('roles', RoleController::class);

@@ -45,6 +45,7 @@ export default function CreateProduct({
         cost_price: "",
         sku: "",
         barcode: "",
+        low_stock_alert: "10",
         is_active: true,
         images: [] as any[],
         variants: [] as any[],
@@ -353,6 +354,20 @@ export default function CreateProduct({
                                         }
                                         placeholder="Scan or type barcode"
                                     />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Low Stock Alert</Label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        value={data.low_stock_alert}
+                                        onChange={(e) =>
+                                            setData("low_stock_alert", e.target.value)
+                                        }
+                                        placeholder="e.g. 10"
+                                    />
+                                    <p className="text-[10px] text-muted-foreground mt-1">Notify when stock is at or below this level.</p>
                                 </div>
                             </div>
                             <p className="text-xs text-muted-foreground">

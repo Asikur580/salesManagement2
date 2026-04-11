@@ -27,6 +27,7 @@ class StoreProductRequest extends FormRequest
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'sku' => ['nullable', 'string', 'max:100', 'unique:products,sku'],
             'barcode' => ['nullable', 'string', 'max:100', 'unique:products,barcode'],
+            'low_stock_alert' => ['nullable', 'integer', 'min:0'],
 
             'is_active' => ['boolean'],
 
