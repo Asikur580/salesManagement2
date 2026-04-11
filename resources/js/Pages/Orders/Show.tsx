@@ -21,6 +21,8 @@ import {
     Info,
     Edit3,
     Download,
+    UserCog,
+    PenTool
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -67,6 +69,11 @@ interface Order {
     items: OrderItem[];
     user: any;
     creator: any;
+    // Service fields
+    type: string;
+    service_type: string | null;
+    service_charge: number;
+    technician: any | null;
 }
 
 interface OrdersShowProps {
@@ -266,6 +273,38 @@ export default function Show({ order }: OrdersShowProps) {
                                                 {order.canceller.name})
                                             </span>
                                         )}
+
+                {order.type === 'service' && (
+                    <Card className="border-indigo-200 bg-indigo-50/30 shadow-sm overflow-hidden">
+                        <div className="flex">
+                            <div className="bg-indigo-500 w-1.5 shrink-0" />
+                            <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="flex items-start gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-white border border-indigo-100 flex items-center justify-center shrink-0 shadow-sm">
+                                        <PenTool className="h-5 w-5 text-indigo-600" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-extrabold text-indigo-900 text-[10px] uppercase tracking-widest">Service Type</h3>
+                                        <p className="text-indigo-800 text-sm mt-0.5 font-bold uppercase">
+                                            {order.service_type || 'General Service'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-white border border-indigo-100 flex items-center justify-center shrink-0 shadow-sm">
+                                        <UserCog className="h-5 w-5 text-indigo-600" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-extrabold text-indigo-900 text-[10px] uppercase tracking-widest">Assign Technician</h3>
+                                        <p className="text-indigo-800 text-sm mt-0.5 font-bold">
+                                            {order.technician?.name || 'No Technician Assigned'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </div>
+                    </Card>
+                )}
                                     </h3>
                                     <p className="text-red-700 text-sm mt-1 font-medium leading-relaxed">
                                         "{order.cancel_reason}"
@@ -345,6 +384,16 @@ export default function Show({ order }: OrdersShowProps) {
                                                 ৳{Number(subtotal).toFixed(2)}
                                             </span>
                                         </div>
+                                        {Number(order.service_charge) > 0 && (
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-muted-foreground">
+                                                    Service Charge
+                                                </span>
+                                                <span className="font-medium">
+                                                    ৳{Number(order.service_charge).toFixed(2)}
+                                                </span>
+                                            </div>
+                                        )}
                                         {Number(order.tax_amount) > 0 && (
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-muted-foreground">

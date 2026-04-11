@@ -45,7 +45,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['items.product', 'items.variant', 'user', 'creator', 'canceller']);
+        $order->load(['items.product', 'items.variant', 'user', 'creator', 'canceller', 'technician']);
 
         return Inertia::render('Orders/Show', [
             'order' => $order,
@@ -66,6 +66,10 @@ class OrderController extends Controller
 
     public function downloadInvoice(Order $order)
     {
+        if ($order->type === 'service') {
+            return redirect()->route('services.invoice', $order->id);
+        }
+
         $order->load(['items.product', 'items.variant', 'user']);
 
         $pdf = Pdf::loadView('invoices.order-invoice', compact('order'));
