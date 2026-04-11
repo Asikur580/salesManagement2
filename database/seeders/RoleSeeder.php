@@ -66,6 +66,22 @@ class RoleSeeder extends Seeder
             'order.create',
             'order.update',
             'order.delete',
+
+            // Supplier Management
+            'supplier.view',
+            'supplier.create',
+            'supplier.update',
+            'supplier.delete',
+
+            // Inventory Management
+            'inventory.view_history',
+            'inventory.adjust',
+
+            // Restock Management
+            'restock.view',
+            'restock.create',
+            'restock.receive',
+            'restock.delete',
         ];
 
         // Create all permissions
@@ -112,6 +128,16 @@ class RoleSeeder extends Seeder
             'order.create',
             'order.update',
             'order.delete',
+            'supplier.view',
+            'supplier.create',
+            'supplier.update',
+            'supplier.delete',
+            'inventory.view_history',
+            'inventory.adjust',
+            'restock.view',
+            'restock.create',
+            'restock.receive',
+            'restock.delete',
         ]);
 
         // Sales permissions

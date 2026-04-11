@@ -145,6 +145,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                             ))}
 
                         {/* Inventory Management Section */}
+                        {(hasPermission("inventory.view_history") ||
+                            hasPermission("inventory.adjust") ||
+                            hasPermission("restock.view") ||
+                            hasPermission("supplier.view")) && (
                         <Collapsible
                             open={inventoryOpen}
                             onOpenChange={setInventoryOpen}
@@ -159,6 +163,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 )}
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-1 pl-8 pt-1">
+                                {hasPermission("inventory.view_history") && (
                                 <Link
                                     href="/inventory/history"
                                     onClick={onClose}
@@ -171,6 +176,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     Stock History
                                 </Link>
+                                )}
+                                {hasPermission("inventory.adjust") && (
                                 <Link
                                     href="/inventory/adjust"
                                     onClick={onClose}
@@ -183,6 +190,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     Manual Adjustment
                                 </Link>
+                                )}
+                                {hasPermission("restock.view") && (
                                 <Link
                                     href="/restock-orders"
                                     onClick={onClose}
@@ -195,6 +204,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     Restock Orders
                                 </Link>
+                                )}
+                                {hasPermission("supplier.view") && (
                                 <Link
                                     href="/suppliers"
                                     onClick={onClose}
@@ -207,8 +218,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 >
                                     Suppliers
                                 </Link>
+                                )}
                             </CollapsibleContent>
                         </Collapsible>
+                        )}
 
                         {(hasPermission("user.view") ||
                             hasPermission("role.view") ||

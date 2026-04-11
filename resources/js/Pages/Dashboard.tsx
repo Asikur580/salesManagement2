@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { Link } from "@inertiajs/react";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { TodayOrderCard } from "@/components/dashboard/TodayOrderCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { DollarSign, ShoppingCart, Users, CreditCard, ClipboardList, UserPlus, Package, AlertTriangle, TrendingUp, ArrowUpRight, ArrowDownRight, Target } from "lucide-react";
 import {
   AreaChart,
