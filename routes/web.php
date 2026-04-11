@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\PermissionController;
 use App\Http\Controllers\Web\PosController;
 use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\RestockOrderController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\ShopController;
@@ -171,6 +172,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index')->middleware('permission:hrm.payroll.view');
             Route::post('/payroll/generate', [PayrollController::class, 'generate'])->name('payroll.generate')->middleware('permission:hrm.payroll.manage');
             Route::patch('/payroll/{id}/status', [PayrollController::class, 'updateStatus'])->name('payroll.status')->middleware('permission:hrm.payroll.manage');
+        });
+
+        // Reports Routes
+        Route::prefix('reports')->name('reports.')->middleware('permission:report.view')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/export/pdf', [ReportController::class, 'exportPdf'])->name('export.pdf')->middleware('permission:report.export');
+            Route::get('/export/csv', [ReportController::class, 'exportCsv'])->name('export.csv')->middleware('permission:report.export');
         });
 
     });

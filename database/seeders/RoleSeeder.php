@@ -92,6 +92,10 @@ class RoleSeeder extends Seeder
             'hrm.payroll.manage',
             'hrm.leave.view',
             'hrm.leave.manage',
+
+            // Report Management
+            'report.view',
+            'report.export',
         ];
 
         // Create all permissions
@@ -156,6 +160,8 @@ class RoleSeeder extends Seeder
             'hrm.payroll.manage',
             'hrm.leave.view',
             'hrm.leave.manage',
+            'report.view',
+            'report.export',
         ]);
 
         // Sales permissions

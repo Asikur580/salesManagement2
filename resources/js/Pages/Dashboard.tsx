@@ -5,7 +5,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { TodayOrderCard } from "@/components/dashboard/TodayOrderCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DollarSign, ShoppingCart, Users, CreditCard, ClipboardList, UserPlus, Package, AlertTriangle, TrendingUp, ArrowUpRight, ArrowDownRight, Target } from "lucide-react";
+import { DollarSign, ShoppingCart, Users, CreditCard, ClipboardList, UserPlus, Package, AlertTriangle, TrendingUp, ArrowUpRight, ArrowDownRight, Target, Clock } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -118,11 +118,11 @@ const Dashboard = ({
             icon={Users}
           />
           <StatCard
-            title="Avg. Order Value"
-            value={`৳${(stats.revenue.value / (stats.orders.value || 1)).toFixed(2)}`}
-            change="Average value per order"
-            changeType="neutral"
-            icon={CreditCard}
+            title="Monthly Profit"
+            value={`৳${stats.profit.value.toLocaleString()}`}
+            change={`${stats.profit.change_percentage >= 0 ? '+' : ''}${stats.profit.change_percentage}% from last month`}
+            changeType={stats.profit.trend === "up" ? "positive" : "negative"}
+            icon={TrendingUp}
           />
         </div>
 
@@ -164,6 +164,13 @@ const Dashboard = ({
               icon={AlertTriangle}
               href="/products"
               color="warning"
+            />
+            <TodayOrderCard
+              title="Pending Orders"
+              value={stats.pending_orders_count}
+              icon={Clock}
+              href="/orders?status=pending"
+              color="indigo"
             />
           </div>
         </div>

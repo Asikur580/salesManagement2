@@ -45,6 +45,22 @@ class DashboardController extends Controller
         $lastCustomers = User::role('customer')->whereBetween('created_at', $lastMonth)->count();
         $totalCustomers = User::role('customer')->count();
 
+        $currentProfit = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->whereBetween('orders.order_date', $thisMonth)
+            ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * products.cost_price)) as profit'))
+            ->first()->profit ?? 0;
+        
+        $lastProfit = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->whereBetween('orders.order_date', $lastMonth)
+            ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * products.cost_price)) as profit'))
+            ->first()->profit ?? 0;
+
+        $pendingOrders = Order::where('order_status', 'pending')->count();
+
         return [
             'revenue' => $this->formatStat($currentRevenue, $lastRevenue),
             'orders' => $this->formatStat($currentOrders, $lastOrders),
@@ -53,6 +69,8 @@ class DashboardController extends Controller
                 'change_percentage' => $this->calculateChange($currentCustomers, $lastCustomers),
                 'trend' => $currentCustomers >= $lastCustomers ? 'up' : 'down'
             ],
+            'profit' => $this->formatStat($currentProfit, $lastProfit),
+            'pending_orders_count' => $pendingOrders,
             'today_stats' => [
                 'orders' => Order::whereDate('order_date', Carbon::today())->count(),
                 'sales' => (float) Order::whereDate('order_date', Carbon::today())->sum('total_amount'),

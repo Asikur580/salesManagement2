@@ -70,6 +70,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             pathname.startsWith("/roles") ||
             pathname.startsWith("/permissions"),
     );
+    const [reportsOpen, setReportsOpen] = useState(
+        pathname.startsWith("/reports")
+    );
     const { user, logout } = useAuth();
 
     // Permission helper function
@@ -301,6 +304,37 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     Payroll & Salaries
                                 </Link>
                                 )}
+                            </CollapsibleContent>
+                        </Collapsible>
+                        )}
+
+                        {hasPermission("report.view") && (
+                        <Collapsible
+                            open={reportsOpen}
+                            onOpenChange={setReportsOpen}
+                        >
+                            <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                                <BarChart3 className="h-5 w-5" />
+                                <span className="flex-1 text-left">Reports</span>
+                                {reportsOpen ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                )}
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="space-y-1 pl-8 pt-1">
+                                <Link
+                                    href="/reports"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/reports"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Sales Reports
+                                </Link>
                             </CollapsibleContent>
                         </Collapsible>
                         )}
