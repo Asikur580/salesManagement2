@@ -51,6 +51,7 @@ class PosController extends Controller
             'payment_method' => 'required|in:cash,credit,bank_transfer,card,mobile_banking',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'in:percentage,fixed',
+            'tax_percentage' => 'nullable|numeric|min:0',
             'note' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -97,7 +98,11 @@ class PosController extends Controller
                 ? ($subtotal * $discountValue) / 100
                 : $discountValue;
 
-            $totalAmount = $subtotal - $discountAmount;
+            $totalBeforeTax = $subtotal - $discountAmount;
+            $taxValue = $request->tax_percentage ?? 0;
+            $taxAmount = ($totalBeforeTax * $taxValue) / 100;
+
+            $totalAmount = $totalBeforeTax + $taxAmount;
 
             $lastOrder = Order::latest()->first();
             $orderNumber = 'POS-' . str_pad(($lastOrder ? $lastOrder->id : 0) + 1, 6, '0', STR_PAD_LEFT);
@@ -117,6 +122,8 @@ class PosController extends Controller
                 'discount' => $discountValue,
                 'discount_type' => $request->discount_type ?? 'percentage',
                 'discount_amount' => $discountAmount,
+                'tax_percentage' => $taxValue,
+                'tax_amount' => $taxAmount,
                 'service_charge' => 0,
                 'total_amount' => $totalAmount,
                 // POS transactions are immediately delivered

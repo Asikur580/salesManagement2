@@ -118,6 +118,7 @@ export default function PosIndex({
             payment_method: "cash",
             discount: 0,
             discount_type: "fixed",
+            tax_percentage: 0,
             note: "",
             items: [] as any[],
         });
@@ -288,7 +289,6 @@ export default function PosIndex({
         setCart((prev) => prev.filter((item) => item.id !== id));
     };
 
-    // Calculations
     const subtotal = cart.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0,
@@ -297,7 +297,10 @@ export default function PosIndex({
         data.discount_type === "percentage"
             ? (subtotal * Number(data.discount || 0)) / 100
             : Number(data.discount || 0);
-    const total = subtotal - discountAmount;
+
+    const totalBeforeTax = subtotal - discountAmount;
+    const taxAmount = (totalBeforeTax * Number(data.tax_percentage || 0)) / 100;
+    const total = totalBeforeTax + taxAmount;
 
     // Checkout
     const handleCheckout = () => {
@@ -739,6 +742,18 @@ export default function PosIndex({
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                                            Tax (%)
+                                        </label>
+                                        <Input
+                                            type="number"
+                                            className="h-10 bg-muted/50 border-border rounded-xl text-center font-bold"
+                                            placeholder="0"
+                                            value={data.tax_percentage || ""}
+                                            onChange={(e) => setData("tax_percentage", Number(e.target.value))}
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                                             Payment
                                         </label>
                                         <Select
@@ -770,6 +785,12 @@ export default function PosIndex({
                                         <div className="flex justify-between items-center text-xs font-bold text-red-500 uppercase tracking-wider">
                                             <span>Discount</span>
                                             <span>- ৳{discountAmount.toLocaleString()}</span>
+                                        </div>
+                                    )}
+                                    {taxAmount > 0 && (
+                                        <div className="flex justify-between items-center text-xs font-bold text-primary uppercase tracking-wider">
+                                            <span>Tax ({data.tax_percentage}%)</span>
+                                            <span>+ ৳{taxAmount.toLocaleString()}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between items-baseline pt-4 border-t border-dashed border-border mt-2">

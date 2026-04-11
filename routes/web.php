@@ -26,6 +26,7 @@ use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UnitController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\UserPermissionController;
+use App\Http\Controllers\Web\ServiceInvoiceController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -116,6 +117,12 @@ Route::middleware('auth')->group(function () {
         // Point of Sale (POS)
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
+
+        // Service Invoice Module
+        Route::get('/services', [ServiceInvoiceController::class, 'index'])->name('services.index');
+        Route::get('/services/create', [ServiceInvoiceController::class, 'create'])->name('services.create');
+        Route::post('/services', [ServiceInvoiceController::class, 'store'])->name('services.store');
+        Route::get('/services/{order}/invoice', [ServiceInvoiceController::class, 'downloadInvoice'])->name('services.invoice');
 
         // Order Management
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');

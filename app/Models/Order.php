@@ -52,4 +52,9 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'cancelled_by');
     }
+
+    public function technician()
+    {
+        return $this->belongsTo(User::class, 'technician_id');
+    }
 }
