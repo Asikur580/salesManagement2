@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -61,5 +62,14 @@ class OrderController extends Controller
         $order->update(array_filter($validated));
 
         return back()->with('success', 'Order status updated successfully.');
+    }
+
+    public function downloadInvoice(Order $order)
+    {
+        $order->load(['items.product', 'items.variant', 'user']);
+
+        $pdf = Pdf::loadView('invoices.order-invoice', compact('order'));
+
+        return $pdf->download('invoice-' . $order->order_number . '.pdf');
     }
 }

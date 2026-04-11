@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { router, Link } from "@inertiajs/react";
-import { Search, Eye, X, ClipboardList, Filter } from "lucide-react";
+import { Search, Eye, X, ClipboardList, Filter, Download } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -333,17 +333,33 @@ export default function Index({ orders, filters }: OrdersIndexProps) {
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Link
-                                                        href={`/orders/${order.id}`}
-                                                    >
+                                                    <div className="flex justify-end gap-1">
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-8 w-8"
+                                                            className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/5"
+                                                            onClick={() => {
+                                                                window.location.href = route(
+                                                                    "orders.invoice",
+                                                                    order.id,
+                                                                );
+                                                            }}
+                                                            title="Download Invoice"
                                                         >
-                                                            <Eye className="h-4 w-4" />
+                                                            <Download className="h-4 w-4" />
                                                         </Button>
-                                                    </Link>
+                                                        <Link
+                                                            href={`/orders/${order.id}`}
+                                                        >
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8"
+                                                            >
+                                                                <Eye className="h-4 w-4" />
+                                                            </Button>
+                                                        </Link>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))

@@ -9,6 +9,7 @@ use App\Models\UserAddress;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
 
 class AccountController extends Controller
@@ -146,6 +147,20 @@ class AccountController extends Controller
         $address->delete();
 
         return back()->with('success', 'Address deleted successfully.');
+    }
+
+    public function downloadInvoice(Order $order)
+    {
+        // Ensure user owns the order
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $order->load(['items.product', 'items.variant', 'user']);
+
+        $pdf = Pdf::loadView('invoices.order-invoice', compact('order'));
+
+        return $pdf->download('invoice-' . $order->order_number . '.pdf');
     }
 
     public function cancelOrder(Request $request, Order $order)

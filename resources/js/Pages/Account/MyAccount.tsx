@@ -15,6 +15,7 @@ import {
     Home,
     Phone,
     AlertCircle,
+    Download,
 } from "lucide-react";
 import { ShopLayout } from "@/Layouts/ShopLayout";
 import { Button } from "@/components/ui/button";
@@ -35,22 +36,33 @@ import { Textarea } from "@/components/ui/textarea";
 import { Trash2 } from "lucide-react";
 
 interface OrderItem {
-    // Define properties for an order item if needed, e.g.,
-    // id: number;
-    // product_name: string;
-    // quantity: number;
-    // price: number;
+    id: number;
+    product_name: string;
+    quantity: number;
+    unit_price: string | number;
+    subtotal: string | number;
+    image?: string;
+    product?: {
+        primary_image?: {
+            image_path: string;
+        };
+    };
+    variant?: {
+        name: string;
+    };
 }
 
 interface Order {
     id: number;
+    order_number: string;
     status: string;
     payment_status: string;
-    cancel_reason: string | null;
-    cancelled_by: number | null;
-    canceller: any | null;
+    total_amount: string | number;
+    created_at: string;
     items: OrderItem[];
-    // Add other order properties as they exist in your application
+    cancel_reason?: string | null;
+    cancelled_by?: number | null;
+    canceller?: any | null;
 }
 
 interface Props {
@@ -778,6 +790,7 @@ export default function MyAccount(props: Props) {
                                                             {order.order_number.slice(
                                                                 -4,
                                                             )}
+                                                            
                                                         </div>
                                                         <div>
                                                             <h4 className="font-black text-foreground text-sm uppercase tracking-tight">
@@ -812,7 +825,7 @@ export default function MyAccount(props: Props) {
                                                             </p>
                                                             <p className="text-lg font-black text-foreground">
                                                                 ৳
-                                                                {parseFloat(
+                                                                {Number(
                                                                     order.total_amount,
                                                                 ).toLocaleString()}
                                                             </p>
@@ -934,6 +947,20 @@ export default function MyAccount(props: Props) {
                                                                 VIEW DETAILS{" "}
                                                                 <ArrowRight className="h-3.5 w-3.5 ml-1 transition-transform group-hover/btn:translate-x-1" />
                                                             </Link>
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                window.location.href = route(
+                                                                    "account.orders.invoice",
+                                                                    order.id,
+                                                                );
+                                                            }}
+                                                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-50 text-primary hover:bg-primary hover:text-white transition-all font-black text-[10px] uppercase tracking-wider"
+                                                        >
+                                                            <Download className="h-3.5 w-3.5" />
+                                                            Download Invoice
                                                         </Button>
                                                     </div>
                                             </div>

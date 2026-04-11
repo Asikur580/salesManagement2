@@ -497,7 +497,15 @@ export default function OrderDetails({ order }: Props) {
                                         </p>
                                     </div>
                                 </div>
-                                <Button className="w-full mt-10 bg-black hover:bg-primary text-white py-6 rounded-2xl font-black transition-all group overflow-hidden relative">
+                                <Button
+                                    onClick={() => {
+                                        window.location.href = route(
+                                            "account.orders.invoice",
+                                            order.id,
+                                        );
+                                    }}
+                                    className="w-full mt-10 bg-black hover:bg-primary text-white py-6 rounded-2xl font-black transition-all group overflow-hidden relative"
+                                >
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                         DOWNLOAD INVOICE{" "}
                                         <Package className="h-4 w-4" />

@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/my-account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
     Route::put('/my-account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
     Route::get('/my-account/orders/{order}', [AccountController::class, 'showOrder'])->name('account.orders.show');
+    Route::get('/my-account/orders/{order}/invoice', [AccountController::class, 'downloadInvoice'])->name('account.orders.invoice');
     Route::post('/my-account/orders/{order}/cancel', [AccountController::class, 'cancelOrder'])->name('account.orders.cancel');
     Route::post('/my-account/addresses', [AccountController::class, 'storeAddress'])->name('account.addresses.store');
     Route::patch('/my-account/addresses/{address}', [AccountController::class, 'updateAddress'])->name('account.addresses.update');
@@ -111,6 +112,7 @@ Route::middleware('auth')->group(function () {
         // Order Management
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::get('/orders/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('orders.invoice');
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 
         Route::resource('roles', RoleController::class);

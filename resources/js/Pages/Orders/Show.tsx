@@ -20,6 +20,7 @@ import {
     AlertCircle,
     Info,
     Edit3,
+    Download,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -233,6 +234,19 @@ export default function Show({ order }: OrdersShowProps) {
                             </Select>
                         </div>
                     </div>
+
+                    <Button
+                        variant="default"
+                        className="bg-primary hover:bg-primary/90 text-white font-bold h-10 px-4 flex items-center gap-2 shadow-sm transition-all"
+                        onClick={() => {
+                            window.location.href = route(
+                                "orders.invoice",
+                                order.id,
+                            );
+                        }}
+                    >
+                        <Download className="h-4 w-4" /> Download Invoice
+                    </Button>
                 </div>
 
                 {order.order_status === "cancelled" && order.cancel_reason && (
