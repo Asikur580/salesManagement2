@@ -15,6 +15,9 @@ use App\Http\Controllers\Web\PosController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\ShopController;
+use App\Http\Controllers\Web\SupplierController;
+use App\Http\Controllers\Web\RestockOrderController;
+use App\Http\Controllers\Web\InventoryController;
 use App\Http\Controllers\Web\UnitController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\UserPermissionController;
@@ -114,6 +117,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::get('/orders/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('orders.invoice');
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+
+        // Inventory & Supplier Management
+        Route::resource('suppliers', SupplierController::class);
+        Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
+        Route::get('/inventory/adjust', [InventoryController::class, 'adjust'])->name('inventory.adjust');
+        Route::post('/inventory/adjust', [InventoryController::class, 'updateStock'])->name('inventory.update-stock');
+
+        // Restock Orders
+        Route::resource('restock-orders', RestockOrderController::class);
+        Route::post('/restock-orders/{restock_order}/receive', [RestockOrderController::class, 'receive'])->name('restock-orders.receive');
 
         Route::resource('roles', RoleController::class);
         Route::post('/roles/{id}/sync-permissions', [RoleController::class, 'syncPermissions']);

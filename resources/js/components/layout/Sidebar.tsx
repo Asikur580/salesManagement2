@@ -21,6 +21,8 @@ import {
     BarChart3,
     DollarSign,
     ClipboardList,
+    History,
+    Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -56,6 +58,10 @@ const rolePermissionItems = [
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const isMobile = useIsMobile();
     const { url: pathname } = usePage();
+    const [inventoryOpen, setInventoryOpen] = useState(
+        pathname.startsWith("/inventory") ||
+            pathname.startsWith("/suppliers")
+    );
     const [rolesOpen, setRolesOpen] = useState(
         pathname.startsWith("/users") ||
             pathname.startsWith("/roles") ||
@@ -137,6 +143,72 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     {item.name}
                                 </Link>
                             ))}
+
+                        {/* Inventory Management Section */}
+                        <Collapsible
+                            open={inventoryOpen}
+                            onOpenChange={setInventoryOpen}
+                        >
+                            <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                                <History className="h-5 w-5" />
+                                <span className="flex-1 text-left">Inventory</span>
+                                {inventoryOpen ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                )}
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="space-y-1 pl-8 pt-1">
+                                <Link
+                                    href="/inventory/history"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/inventory/history"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Stock History
+                                </Link>
+                                <Link
+                                    href="/inventory/adjust"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/inventory/adjust"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Manual Adjustment
+                                </Link>
+                                <Link
+                                    href="/restock-orders"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/restock-orders"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Restock Orders
+                                </Link>
+                                <Link
+                                    href="/suppliers"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/suppliers"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Suppliers
+                                </Link>
+                            </CollapsibleContent>
+                        </Collapsible>
 
                         {(hasPermission("user.view") ||
                             hasPermission("role.view") ||

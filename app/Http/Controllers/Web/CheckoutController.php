@@ -3,21 +3,22 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
+use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Cart;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Notifications\OrderCreatedNotification;
+use App\Services\StockService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 class CheckoutController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, StockService $stockService)
     {
         $request->validate([
             'first_name' => 'required|string',
@@ -97,15 +98,10 @@ class CheckoutController extends Controller
                     'unit_price' => $item['price'],
                     'total_price' => $item['price'] * $item['quantity'],
                 ]);
-
-                // Stock deduction
-                if ($item['variant_id']) {
-                    ProductVariant::where('id', $item['variant_id'])->decrement('stock', $item['quantity']);
-                    Product::where('id', $item['product_id'])->decrement('stock', $item['quantity']);
-                } else {
-                    Product::where('id', $item['product_id'])->decrement('stock', $item['quantity']);
-                }
             }
+
+            // --- Centralized Stock Deduction Logic ---
+            $stockService->recordSale($order);
 
             // Clear Cart
             if ($user) {
@@ -117,7 +113,7 @@ class CheckoutController extends Controller
             DB::commit();
 
             // Notify admin
-            $admins = \App\Models\User::role(['super-admin', 'admin'])->get();
+            $admins = User::role(['super-admin', 'admin'])->get();
             Notification::send($admins, new OrderCreatedNotification($order));
 
             return redirect()->route('shop.index')->with('success', 'Order placed successfully! Order #' . $order->order_number);

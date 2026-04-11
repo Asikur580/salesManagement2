@@ -6,13 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
-
+use App\Services\StockService;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
+    public function __construct(protected StockService $stockService)
+    {
+    }
+
     public function index()
     {
         return Inertia::render('Dashboard', [
@@ -20,6 +24,8 @@ class DashboardController extends Controller
             'charts' => $this->getChartsData(),
             'top_products' => $this->getTopProductsData(),
             'recent_orders' => $this->getRecentOrdersData(),
+            'low_stock_products' => $this->stockService->getLowStockItems(5),
+            'out_of_stock_products' => $this->stockService->getOutOfStockItems(5),
         ]);
     }
 
@@ -52,7 +58,7 @@ class DashboardController extends Controller
                 'sales' => (float) Order::whereDate('order_date', Carbon::today())->sum('total_amount'),
                 'new_customers' => User::role('customer')->whereDate('created_at', Carbon::today())->count(),
                 'out_of_stock' => Product::where('stock', '<=', 0)->count(),
-                'low_stock' => Product::where('stock', '>', 0)->where('stock', '<=', 5)->count(),
+                'low_stock' => Product::whereColumn('stock', '<=', 'low_stock_alert')->where('stock', '>', 0)->count(),
             ]
         ];
     }

@@ -24,6 +24,7 @@ class Product extends Model
         'barcode',
         'is_active',
         'stock',
+        'low_stock_alert',
     ];
 
     protected $casts = [
@@ -115,5 +116,18 @@ class Product extends Model
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function getIsLowStockAttribute()
+    {
+        if ($this->low_stock_alert === null) {
+            return false;
+        }
+        return $this->stock <= $this->low_stock_alert;
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(StockTransaction::class);
     }
 }

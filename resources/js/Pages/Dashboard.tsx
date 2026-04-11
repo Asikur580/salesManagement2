@@ -65,9 +65,18 @@ interface DashboardProps {
   charts: any;
   top_products: any;
   recent_orders: any;
+  low_stock_products: any[];
+  out_of_stock_products: any[];
 }
 
-const Dashboard = ({ stats, charts, top_products, recent_orders }: DashboardProps) => {
+const Dashboard = ({ 
+  stats, 
+  charts, 
+  top_products, 
+  recent_orders, 
+  low_stock_products, 
+  out_of_stock_products 
+}: DashboardProps) => {
   // Pie chart expects numeric values
   const pieData = charts.category_distribution.map((item: any, index: number) => ({
     name: item.name,
@@ -156,6 +165,69 @@ const Dashboard = ({ stats, charts, top_products, recent_orders }: DashboardProp
             />
           </div>
         </div>
+
+        {/* Critical Inventory Alerts */}
+        {(low_stock_products.length > 0 || out_of_stock_products.length > 0) && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2 text-destructive">
+                  <Package className="h-5 w-5" /> Out of Stock Items
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {out_of_stock_products.length === 0 ? (
+                    <p className="text-sm text-muted-foreground italic">No products currently out of stock.</p>
+                  ) : (
+                    out_of_stock_products.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between text-sm bg-background p-2 rounded border border-destructive/10">
+                        <span className="font-medium">{p.name}</span>
+                        <Link href={`/restock-orders/create?product_id=${p.id}`}>
+                          <Button variant="ghost" size="sm" className="h-7 text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10 uppercase font-bold">
+                            Restock Now
+                          </Button>
+                        </Link>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-warning/20 bg-warning/5">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2 text-orange-600">
+                    <AlertTriangle className="h-5 w-5" /> Low Stock Alerts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {low_stock_products.length === 0 ? (
+                      <p className="text-sm text-muted-foreground italic">All inventory levels are healthy.</p>
+                    ) : (
+                      low_stock_products.map((p) => (
+                        <div key={p.id} className="flex items-center justify-between text-sm bg-background p-2 rounded border border-orange-200">
+                          <div>
+                            <span className="font-medium">{p.name}</span>
+                            <div className="text-[10px] text-muted-foreground">Threshold: {p.low_stock_alert}</div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="font-bold text-orange-600 font-mono">{p.stock} left</span>
+                            <Link href={`/restock-orders/create?product_id=${p.id}`}>
+                              <Button variant="ghost" size="sm" className="h-7 text-[10px] uppercase font-bold text-orange-600 hover:bg-orange-100">
+                                Restock
+                              </Button>
+                            </Link>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Target Progress (Calculated as examples) */}
         <Card>

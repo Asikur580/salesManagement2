@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Throwable;
+use App\Services\StockService;
 
 class PosController extends Controller
 {
@@ -43,7 +44,7 @@ class PosController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, StockService $stockService)
     {
         $request->validate([
             'customer_id' => 'required|exists:users,id',
@@ -128,25 +129,10 @@ class PosController extends Controller
 
             foreach ($itemsData as $itemData) {
                 $order->items()->create($itemData);
-
-                // --- Stock Deduction Logic ---
-                // For a robust system, this should ideally call the existing StockRepository or StockService
-                // But we will decrement directly here for the immediate POS execution requirement.
-
-                if (isset($itemData['variant_id'])) {
-                    // Variant product
-                    ProductVariant::where('id', $itemData['variant_id'])
-                        ->decrement('stock', $itemData['quantity']);
-
-                    // Also decrement the parent product total stock wrapper
-                    Product::where('id', $itemData['product_id'])
-                        ->decrement('stock', $itemData['quantity']);
-                } else {
-                    // Simple product
-                    Product::where('id', $itemData['product_id'])
-                        ->decrement('stock', $itemData['quantity']);
-                }
             }
+
+            // --- Centralized Stock Deduction Logic ---
+            $stockService->recordSale($order);
 
             DB::commit();
 
