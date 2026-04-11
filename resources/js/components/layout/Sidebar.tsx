@@ -62,6 +62,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         pathname.startsWith("/inventory") ||
             pathname.startsWith("/suppliers")
     );
+    const [hrmOpen, setHrmOpen] = useState(
+        pathname.startsWith("/hrm")
+    );
     const [rolesOpen, setRolesOpen] = useState(
         pathname.startsWith("/users") ||
             pathname.startsWith("/roles") ||
@@ -217,6 +220,85 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     )}
                                 >
                                     Suppliers
+                                </Link>
+                                )}
+                            </CollapsibleContent>
+                        </Collapsible>
+                        )}
+
+                        {/* HRM Management Section */}
+                        {(hasPermission("hrm.employee.view") || 
+                          hasPermission("hrm.attendance.view") || 
+                          hasPermission("hrm.payroll.view") || 
+                          hasPermission("hrm.leave.view")) && (
+                        <Collapsible
+                            open={hrmOpen}
+                            onOpenChange={setHrmOpen}
+                        >
+                            <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                                <Users className="h-5 w-5" />
+                                <span className="flex-1 text-left">HRM</span>
+                                {hrmOpen ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                )}
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="space-y-1 pl-8 pt-1">
+                                {hasPermission("hrm.employee.view") && (
+                                <Link
+                                    href="/hrm/employees"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/hrm/employees"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Employees
+                                </Link>
+                                )}
+                                {hasPermission("hrm.attendance.view") && (
+                                <Link
+                                    href="/hrm/attendance"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/hrm/attendance"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Attendance
+                                </Link>
+                                )}
+                                {hasPermission("hrm.leave.view") && (
+                                <Link
+                                    href="/hrm/leaves"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/hrm/leaves"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Leave Requests
+                                </Link>
+                                )}
+                                {hasPermission("hrm.payroll.view") && (
+                                <Link
+                                    href="/hrm/payroll"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/hrm/payroll"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Payroll & Salaries
                                 </Link>
                                 )}
                             </CollapsibleContent>

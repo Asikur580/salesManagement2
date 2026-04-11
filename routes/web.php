@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\HRM\AttendanceController;
+use App\Http\Controllers\HRM\EmployeeController;
+use App\Http\Controllers\HRM\LeaveController;
+use App\Http\Controllers\HRM\PayrollController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\AttributeController;
 use App\Http\Controllers\Web\AuthController;
@@ -8,16 +12,16 @@ use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\InventoryController;
 use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\PermissionController;
 use App\Http\Controllers\Web\PosController;
 use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\RestockOrderController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\ShopController;
 use App\Http\Controllers\Web\SupplierController;
-use App\Http\Controllers\Web\RestockOrderController;
-use App\Http\Controllers\Web\InventoryController;
 use App\Http\Controllers\Web\UnitController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\UserPermissionController;
@@ -145,6 +149,29 @@ Route::middleware('auth')->group(function () {
         Route::get('/users', [UserController::class, 'index'])
             ->name('users.index')
             ->middleware('permission:user.view');
+
+        // HRM Routes
+        Route::prefix('hrm')->name('hrm.')->group(function () {
+            // Employees
+            Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index')->middleware('permission:hrm.employee.view');
+            Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store')->middleware('permission:hrm.employee.manage');
+            Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employees.update')->middleware('permission:hrm.employee.manage');
+            Route::patch('/employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus'])->name('employees.toggle-status')->middleware('permission:hrm.employee.manage');
+
+            // Attendance
+            Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index')->middleware('permission:hrm.attendance.view');
+            Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store')->middleware('permission:hrm.attendance.manage');
+
+            // Leaves
+            Route::get('/leaves', [LeaveController::class, 'index'])->name('leaves.index')->middleware('permission:hrm.leave.view');
+            Route::post('/leaves', [LeaveController::class, 'store'])->name('leaves.store')->middleware('permission:hrm.leave.view'); // Basic users can create
+            Route::patch('/leaves/{id}/status', [LeaveController::class, 'updateStatus'])->name('leaves.status')->middleware('permission:hrm.leave.manage');
+
+            // Payroll
+            Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index')->middleware('permission:hrm.payroll.view');
+            Route::post('/payroll/generate', [PayrollController::class, 'generate'])->name('payroll.generate')->middleware('permission:hrm.payroll.manage');
+            Route::patch('/payroll/{id}/status', [PayrollController::class, 'updateStatus'])->name('payroll.status')->middleware('permission:hrm.payroll.manage');
+        });
 
     });
 

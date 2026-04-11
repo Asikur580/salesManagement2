@@ -82,6 +82,16 @@ class RoleSeeder extends Seeder
             'restock.create',
             'restock.receive',
             'restock.delete',
+
+            // HRM Management
+            'hrm.employee.view',
+            'hrm.employee.manage',
+            'hrm.attendance.view',
+            'hrm.attendance.manage',
+            'hrm.payroll.view',
+            'hrm.payroll.manage',
+            'hrm.leave.view',
+            'hrm.leave.manage',
         ];
 
         // Create all permissions
@@ -138,6 +148,14 @@ class RoleSeeder extends Seeder
             'restock.create',
             'restock.receive',
             'restock.delete',
+            'hrm.employee.view',
+            'hrm.employee.manage',
+            'hrm.attendance.view',
+            'hrm.attendance.manage',
+            'hrm.payroll.view',
+            'hrm.payroll.manage',
+            'hrm.leave.view',
+            'hrm.leave.manage',
         ]);
 
         // Sales permissions

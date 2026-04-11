@@ -41,6 +41,15 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+
+            if ($user->employeeProfile && !$user->employeeProfile->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                return back()->withErrors([
+                    'login' => 'Your account has been deactivated. Please contact the administrator.',
+                ])->onlyInput('login');
+            }
+
             if ($user->hasAnyRole(['super-admin', 'admin', 'sales', 'accountant'])) {
                 return redirect()->intended('dashboard');
             }
@@ -72,6 +81,15 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+
+            if ($user->employeeProfile && !$user->employeeProfile->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                return back()->withErrors([
+                    'login' => 'Your account has been deactivated. Please contact the administrator.',
+                ])->onlyInput('login');
+            }
+
             if ($user->hasAnyRole(['super-admin', 'admin', 'sales', 'accountant'])) {
                 return redirect()->intended('dashboard');
             }
