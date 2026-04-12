@@ -110,11 +110,14 @@ export default function PosIndex({
         number | "all"
     >("all");
     const [cart, setCart] = useState<CartItem[]>([]);
+    const [isNewCustomer, setIsNewCustomer] = useState(false);
 
     // Checkout Form state
     const { data, setData, post, processing, reset, errors, transform } =
         useForm({
             customer_id: "",
+            customer_name: "",
+            customer_phone: "",
             payment_method: "cash",
             discount: 0,
             discount_type: "fixed",
@@ -313,10 +316,19 @@ export default function PosIndex({
             return;
         }
 
-        if (!data.customer_id) {
+        if (!data.customer_id && !isNewCustomer) {
             toast({
                 title: "Customer Required",
-                description: "Please select a customer for the receipt.",
+                description: "Please select a customer or enter new customer details.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (isNewCustomer && !data.customer_phone) {
+            toast({
+                title: "Phone Required",
+                description: "Phone number is required for new customers.",
                 variant: "destructive",
             });
             return;
@@ -341,6 +353,7 @@ export default function PosIndex({
                 if (!(page.props.flash as any)?.error) {
                     setCart([]);
                     reset();
+                    setIsNewCustomer(false); // Reset to selection mode
                     toast({
                         title: "Success",
                         description: "Transaction completed successfully.",
@@ -562,38 +575,76 @@ export default function PosIndex({
                     <div className="w-[380px] flex flex-col bg-card border-l border-border shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] z-10 shrink-0 overflow-hidden">
                         {/* Customer Selection - Refined */}
                         <div className="p-6 bg-muted/50 border-b border-border">
-                            <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center justify-between mb-4">
                                 <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                    <UserPlus className="h-3.5 w-3.5" /> Customer Details
+                                    <UserPlus className="h-4 w-4 text-primary" /> {isNewCustomer ? 'New Customer' : 'Customer Selection'}
                                 </label>
-                                {errors.customer_id && (
-                                    <Badge variant="destructive" className="h-5 px-1.5 text-[9px] font-black uppercase">
-                                        Required
-                                    </Badge>
-                                )}
+                                <Button 
+                                    type="button"
+                                    variant="outline" 
+                                    size="sm" 
+                                    className={`h-8 px-3 text-[10px] font-black uppercase rounded-lg transition-all shadow-sm ${isNewCustomer ? 'bg-primary text-white border-primary hover:bg-primary/90' : 'bg-card text-primary border-primary/20 hover:bg-primary/5'}`}
+                                    onClick={() => {
+                                        const nextValue = !isNewCustomer;
+                                        setIsNewCustomer(nextValue);
+                                        // Reset fields when switching
+                                        setData({
+                                            ...data,
+                                            customer_id: "",
+                                            customer_name: "",
+                                            customer_phone: ""
+                                        });
+                                    }}
+                                >
+                                    {isNewCustomer ? 'Select Existing' : 'Add New'}
+                                </Button>
                             </div>
-                            <Select
-                                value={data.customer_id}
-                                onValueChange={(v) => setData("customer_id", v)}
-                            >
-                                <SelectTrigger className="w-full h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all">
-                                    <SelectValue placeholder="Walk-in Customer" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-border shadow-xl">
-                                    {customers.map((c) => (
-                                        <SelectItem
-                                            key={c.id}
-                                            value={c.id.toString()}
-                                            className="rounded-lg py-2.5"
-                                        >
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-foreground">{c.name}</span>
-                                                {c.phone && <span className="text-[10px] text-muted-foreground font-medium">{c.phone}</span>}
-                                            </div>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+
+                            {isNewCustomer ? (
+                                <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-300">
+                                    <Input 
+                                        placeholder="Customer Name (Optional)" 
+                                        className="h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold"
+                                        value={data.customer_name}
+                                        onChange={(e) => setData("customer_name", e.target.value)}
+                                    />
+                                    <Input 
+                                        placeholder="Phone Number (Required)" 
+                                        className="h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold"
+                                        value={data.customer_phone}
+                                        onChange={(e) => setData("customer_phone", e.target.value)}
+                                        required
+                                    />
+                                    {errors.customer_phone && (
+                                        <p className="text-[10px] text-red-500 font-bold ml-1">
+                                            {errors.customer_phone}
+                                        </p>
+                                    )}
+                                </div>
+                            ) : (
+                                <Select
+                                    value={data.customer_id}
+                                    onValueChange={(v) => setData("customer_id", v)}
+                                >
+                                    <SelectTrigger className="w-full h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all">
+                                        <SelectValue placeholder="Walk-in Customer" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-border shadow-xl">
+                                        {customers.map((c) => (
+                                            <SelectItem
+                                                key={c.id}
+                                                value={c.id.toString()}
+                                                className="rounded-lg py-2.5"
+                                            >
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-foreground">{c.name}</span>
+                                                    {c.phone && <span className="text-[10px] text-muted-foreground font-medium">{c.phone}</span>}
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
                         </div>
 
                         {/* Cart Items - Clean & Scannable */}

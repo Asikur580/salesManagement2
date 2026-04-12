@@ -112,11 +112,14 @@ export default function ServiceCreate({
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | "all">("all");
     const [cart, setCart] = useState<CartItem[]>([]);
+    const [isNewCustomer, setIsNewCustomer] = useState(false);
 
     // Checkout Form state
     const { data, setData, post, processing, reset, errors, transform } =
         useForm({
             customer_id: "",
+            customer_name: "",
+            customer_phone: "",
             technician_id: "",
             service_type: "",
             service_charge: 0,
@@ -205,8 +208,13 @@ export default function ServiceCreate({
     const total = totalBeforeTax + taxAmount;
 
     const handleCheckout = () => {
-        if (!data.customer_id || !data.technician_id || !data.service_type) {
+        if ((!data.customer_id && !isNewCustomer) || !data.technician_id || !data.service_type) {
             toast({ title: "Validation Error", description: "Please fill customer, technician, and service type.", variant: "destructive" });
+            return;
+        }
+
+        if (isNewCustomer && !data.customer_phone) {
+            toast({ title: "Phone Required", description: "Phone number is required for new customers.", variant: "destructive" });
             return;
         }
 
@@ -224,6 +232,7 @@ export default function ServiceCreate({
             onSuccess: () => {
                 setCart([]);
                 reset();
+                setIsNewCustomer(false);
                 toast({ title: "Success", description: "Service Invoice created successfully." });
             },
         });
@@ -299,13 +308,44 @@ export default function ServiceCreate({
                         <div className="p-6 border-b border-border bg-muted/30 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer</label>
-                                    <Select value={data.customer_id} onValueChange={(v) => setData("customer_id", v)}>
-                                        <SelectTrigger className="rounded-xl h-11"><SelectValue placeholder="Select Customer" /></SelectTrigger>
-                                        <SelectContent className="rounded-xl">
-                                            {customers.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer</label>
+                                        <Button 
+                                            type="button"
+                                            variant="ghost" 
+                                            size="sm" 
+                                            className="h-6 px-2 text-[8px] font-black uppercase text-primary hover:bg-primary/5"
+                                            onClick={() => {
+                                                setIsNewCustomer(!isNewCustomer);
+                                                setData(d => ({ ...d, customer_id: "", customer_phone: "" }));
+                                            }}
+                                        >
+                                            {isNewCustomer ? "Select Existing" : "Add New"}
+                                        </Button>
+                                    </div>
+                                    {isNewCustomer ? (
+                                        <div className="space-y-3">
+                                            <Input 
+                                                placeholder="Customer Name (Optional)"
+                                                className="rounded-xl h-11 font-bold"
+                                                value={data.customer_name}
+                                                onChange={e => setData("customer_name", e.target.value)}
+                                            />
+                                            <Input 
+                                                placeholder="Phone Number (Required)"
+                                                className="rounded-xl h-11 font-bold"
+                                                value={data.customer_phone}
+                                                onChange={e => setData("customer_phone", e.target.value)}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Select value={data.customer_id} onValueChange={(v) => setData("customer_id", v)}>
+                                            <SelectTrigger className="rounded-xl h-11"><SelectValue placeholder="Select Customer" /></SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                {customers.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Technician</label>

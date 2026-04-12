@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Throwable;
 use App\Services\StockService;
+use Illuminate\Support\Str;
 
 class PosController extends Controller
 {
@@ -47,7 +48,9 @@ class PosController extends Controller
     public function store(Request $request, StockService $stockService)
     {
         $request->validate([
-            'customer_id' => 'required|exists:users,id',
+            'customer_id' => 'nullable|exists:users,id',
+            'customer_name' => 'nullable|string|max:255',
+            'customer_phone' => 'nullable|string|max:20',
             'payment_method' => 'required|in:cash,credit,bank_transfer,card,mobile_banking',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'in:percentage,fixed',
@@ -59,6 +62,10 @@ class PosController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
+
+        if (empty($request->customer_id) && empty($request->customer_phone)) {
+            return redirect()->back()->with('error', 'Customer selection or Phone number is required.');
+        }
 
         DB::beginTransaction();
 
@@ -107,10 +114,26 @@ class PosController extends Controller
             $lastOrder = Order::latest()->first();
             $orderNumber = 'POS-' . str_pad(($lastOrder ? $lastOrder->id : 0) + 1, 6, '0', STR_PAD_LEFT);
 
-            $customer = User::findOrFail($request->customer_id);
+            // Handle Customer (Select existing or Create new)
+            if ($request->customer_id) {
+                $customer = User::findOrFail($request->customer_id);
+            } else {
+                // Check if user exists by phone
+                $customer = User::where('phone', $request->customer_phone)->first();
+                if (!$customer) {
+                    $customer = User::create([
+                        'name' => $request->customer_name ?? $request->customer_phone,
+                        'phone' => $request->customer_phone,
+                        'email' => null, // Email is optional for POS customers
+                        'password' => null, // Password is null for instant accounts
+                    ]);
+                    $customer->assignRole('customer');
+                }
+            }
+
             $order = Order::create([
                 'order_number' => $orderNumber,
-                'user_id' => $request->customer_id,
+                'user_id' => $customer->id,
                 'customer_name' => $customer->name,
                 'customer_phone' => $customer->phone ?? 'N/A',
                 'customer_email' => $customer->email,

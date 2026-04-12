@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Throwable;
+use Illuminate\Support\Str;
 
 class ServiceInvoiceController extends Controller
 {
@@ -44,7 +45,9 @@ class ServiceInvoiceController extends Controller
     public function store(Request $request, StockService $stockService)
     {
         $request->validate([
-            'customer_id' => 'required|exists:users,id',
+            'customer_id' => 'nullable|exists:users,id',
+            'customer_name' => 'nullable|string|max:255',
+            'customer_phone' => 'nullable|string|max:20',
             'technician_id' => 'required|exists:users,id',
             'service_type' => 'required|string|max:255',
             'service_charge' => 'required|numeric|min:0',
@@ -103,10 +106,29 @@ class ServiceInvoiceController extends Controller
             $lastOrder = Order::latest()->first();
             $orderNumber = 'SRV-' . str_pad(($lastOrder ? $lastOrder->id : 0) + 1, 6, '0', STR_PAD_LEFT);
 
-            $customer = User::findOrFail($request->customer_id);
+            // Handle Customer (Select existing or Create new)
+            if ($request->customer_id) {
+                $customer = User::findOrFail($request->customer_id);
+            } else {
+                if (empty($request->customer_phone)) {
+                    return redirect()->back()->with('error', 'Customer selection or Phone number is required.');
+                }
+                // Check if user exists by phone
+                $customer = User::where('phone', $request->customer_phone)->first();
+                if (!$customer) {
+                    $customer = User::create([
+                        'name' => $request->customer_name ?? $request->customer_phone,
+                        'phone' => $request->customer_phone,
+                        'email' => null,
+                        'password' => null,
+                    ]);
+                    $customer->assignRole('customer');
+                }
+            }
+
             $order = Order::create([
                 'order_number' => $orderNumber,
-                'user_id' => $request->customer_id,
+                'user_id' => $customer->id,
                 'customer_name' => $customer->name,
                 'customer_phone' => $customer->phone ?? 'N/A',
                 'customer_email' => $customer->email,

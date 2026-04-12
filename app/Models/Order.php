@@ -9,6 +9,9 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'order_number',
+        'customer_name',
+        'customer_phone',
+        'customer_email',
         'total_amount',
         'paid_amount',
         'status',
@@ -23,6 +26,15 @@ class Order extends Model
         'cancel_reason',
         'technician_id',
         'source',
+        'type',
+        'service_type',
+        'subtotal',
+        'discount',
+        'discount_type',
+        'discount_amount',
+        'tax_percentage',
+        'tax_amount',
+        'service_charge',
     ];
 
     protected static function boot()

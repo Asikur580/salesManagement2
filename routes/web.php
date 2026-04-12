@@ -16,12 +16,6 @@ use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\InventoryController;
 use App\Http\Controllers\Web\NotificationController;
-use App\Http\Controllers\Web\OrderController;
-use App\Http\Controllers\Web\PermissionController;
-use App\Http\Controllers\Web\PosController;
-use App\Http\Controllers\Web\ProductController;
-use App\Http\Controllers\Web\ReportController;
-use App\Http\Controllers\Web\RestockOrderController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\ServiceInvoiceController;
 use App\Http\Controllers\Web\ShopController;
@@ -29,6 +23,8 @@ use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UnitController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\UserPermissionController;
+use App\Http\Controllers\Accounting\ReportController as AccountingReportController;
+use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -169,9 +165,9 @@ Route::middleware('auth')->group(function () {
             Route::get('payments/supplier-dues', [PaymentController::class, 'supplierDues'])->name('payments.supplier-dues');
             Route::resource('payments', PaymentController::class)->only(['index', 'store']);
             
-            Route::get('reports/daily-sales', [\App\Http\Controllers\Accounting\ReportController::class, 'daily'])->name('reports.daily');
-            Route::get('reports/profit-loss', [\App\Http\Controllers\Accounting\ReportController::class, 'profitLoss'])->name('reports.profit-loss');
-            Route::get('reports/cashbook', [\App\Http\Controllers\Accounting\ReportController::class, 'cashbook'])->name('reports.cashbook');
+            Route::get('reports/daily-sales', [AccountingReportController::class, 'daily'])->name('reports.daily');
+            Route::get('reports/profit-loss', [AccountingReportController::class, 'profitLoss'])->name('reports.profit-loss');
+            Route::get('reports/cashbook', [AccountingReportController::class, 'cashbook'])->name('reports.cashbook');
         });
 
         // HRM Routes
