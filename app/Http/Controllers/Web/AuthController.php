@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
+use App\Jobs\SendSmsJob;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class AuthController extends Controller
 {
@@ -48,10 +50,6 @@ class AuthController extends Controller
                 return back()->withErrors([
                     'login' => 'Your account has been deactivated. Please contact the administrator.',
                 ])->onlyInput('login');
-            }
-
-            if ($user->hasAnyRole(['super-admin', 'admin', 'sales', 'accountant'])) {
-                return redirect()->intended('dashboard');
             }
 
             return redirect()->intended(route('shop.index'));
@@ -123,6 +121,24 @@ class AuthController extends Controller
         ]);
 
         $phone = $request->phone;
+
+        // Rate Limiting: Prevent SMS / OTP Bombing (Max 3 SMS per 10 minutes per Phone Number)
+        $rateLimitKey = 'otp_requests_' . str_replace('+', '', $phone);
+        
+        if (Cache::has($rateLimitKey) && Cache::get($rateLimitKey) >= 3) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Too many OTP requests for this number. Please wait 10 minutes before trying again.',
+            ], 429);
+        }
+
+        if (Cache::has($rateLimitKey)) {
+            Cache::increment($rateLimitKey);
+        } else {
+            // Keep the block active for 10 minutes
+            Cache::put($rateLimitKey, 1, Carbon::now()->addMinutes(10));
+        }
+
         $otp = rand(100000, 999999);
         $expiresAt = Carbon::now()->addMinutes(5);
 
@@ -142,8 +158,8 @@ class AuthController extends Controller
             'otp_expires_at' => $expiresAt,
         ]);
 
-        // LOG OTP for development (since we don't have an SMS gateway integrated)
-        Log::info("OTP for {$phone}: {$otp}");
+        // Dispatch Background Job to send actual SMS
+        SendSmsJob::dispatch($phone, $otp);
 
         return response()->json([
             'success' => true,

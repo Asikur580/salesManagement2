@@ -193,7 +193,7 @@ export default function AttendanceGrid({
                     </div>
                     <div className="flex-1" />
                     <div className="flex items-center gap-2">
-                        <Button onClick={() => setIsApplyDialogOpen(true)} variant="default" onClick={() => setIsMarkDialogOpen(true)}>
+                        <Button onClick={() => setIsMarkDialogOpen(true)} variant="default">
                             <Plus className="h-4 w-4 mr-2" /> Mark Attendance
                         </Button>
                         <Button variant="outline" size="icon" title="Refresh">

@@ -11,10 +11,20 @@ use App\Models\Category;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:product.view', only: ['index', 'show', 'barcodeSearch']),
+            new Middleware('permission:product.create', only: ['create', 'store']),
+            new Middleware('permission:product.edit', only: ['edit', 'update']),
+            new Middleware('permission:product.delete', only: ['destroy']),
+        ];
+    }
     public function __construct(
         protected ProductRepositoryInterface $productRepository,
         protected UnitRepositoryInterface $unitRepository

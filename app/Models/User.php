@@ -30,8 +30,6 @@ class User extends Authenticatable
         'otp_expires_at',
     ];
 
-    protected $guarded = ['id'];
-
     protected $guard_name = 'web';
 
     /**
@@ -42,6 +40,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'otp',
+        'otp_expires_at',
     ];
 
     /**

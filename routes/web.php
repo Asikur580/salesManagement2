@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Accounting\ExpenseCategoryController;
+use App\Http\Controllers\Accounting\PaymentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HRM\AttendanceController;
 use App\Http\Controllers\HRM\EmployeeController;
@@ -21,12 +23,12 @@ use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\RestockOrderController;
 use App\Http\Controllers\Web\RoleController;
+use App\Http\Controllers\Web\ServiceInvoiceController;
 use App\Http\Controllers\Web\ShopController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UnitController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\UserPermissionController;
-use App\Http\Controllers\Web\ServiceInvoiceController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -44,10 +46,10 @@ Route::get('/search', [ShopController::class, 'search'])->name('shop.search');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
     Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
-    Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+    Route::post('/admin/login', [AuthController::class, 'adminLogin'])->middleware('throttle:5,1');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -105,30 +107,30 @@ Route::middleware('auth')->group(function () {
         })->name('register');
 
         // Product Management System
-        Route::resource('products', ProductController::class);
-        Route::get('/products/barcode/{barcode}', [ProductController::class, 'barcodeSearch'])->name('products.barcode.search');
-        Route::resource('units', UnitController::class)->except(['create', 'show', 'edit']);
-        Route::resource('attributes', AttributeController::class)->except(['create', 'show', 'edit']);
+        Route::resource('products', ProductController::class)->middleware('permission:product.view');
+        Route::get('/products/barcode/{barcode}', [ProductController::class, 'barcodeSearch'])->name('products.barcode.search')->middleware('permission:product.view');
+        Route::resource('units', UnitController::class)->except(['create', 'show', 'edit'])->middleware('permission:product.view');
+        Route::resource('attributes', AttributeController::class)->except(['create', 'show', 'edit'])->middleware('permission:product.view');
 
-        Route::resource('brands', BrandController::class);
+        Route::resource('brands', BrandController::class)->middleware('permission:brand.view');
 
-        Route::resource('categories', CategoryController::class);
+        Route::resource('categories', CategoryController::class)->middleware('permission:category.view');
 
         // Point of Sale (POS)
-        Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
-        Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
+        Route::get('/pos', [PosController::class, 'index'])->name('pos.index')->middleware('permission:pos.view');
+        Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store')->middleware('permission:pos.checkout');
 
         // Service Invoice Module
-        Route::get('/services', [ServiceInvoiceController::class, 'index'])->name('services.index');
-        Route::get('/services/create', [ServiceInvoiceController::class, 'create'])->name('services.create');
-        Route::post('/services', [ServiceInvoiceController::class, 'store'])->name('services.store');
-        Route::get('/services/{order}/invoice', [ServiceInvoiceController::class, 'downloadInvoice'])->name('services.invoice');
+        Route::get('/services', [ServiceInvoiceController::class, 'index'])->name('services.index')->middleware('permission:order.view');
+        Route::get('/services/create', [ServiceInvoiceController::class, 'create'])->name('services.create')->middleware('permission:order.manage');
+        Route::post('/services', [ServiceInvoiceController::class, 'store'])->name('services.store')->middleware('permission:order.manage');
+        Route::get('/services/{order}/invoice', [ServiceInvoiceController::class, 'downloadInvoice'])->name('services.invoice')->middleware('permission:order.view');
 
         // Order Management
-        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-        Route::get('/orders/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('orders.invoice');
-        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index')->middleware('permission:order.view');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show')->middleware('permission:order.view');
+        Route::get('/orders/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('orders.invoice')->middleware('permission:order.view');
+        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status')->middleware('permission:order.manage');
 
         // Inventory & Supplier Management
         Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index')->middleware('permission:supplier.view');
@@ -148,15 +150,29 @@ Route::middleware('auth')->group(function () {
         Route::delete('/restock-orders/{restock_order}', [RestockOrderController::class, 'destroy'])->name('restock-orders.destroy')->middleware('permission:restock.delete');
         Route::post('/restock-orders/{restock_order}/receive', [RestockOrderController::class, 'receive'])->name('restock-orders.receive')->middleware('permission:restock.receive');
 
-        Route::resource('roles', RoleController::class);
-        Route::post('/roles/{id}/sync-permissions', [RoleController::class, 'syncPermissions']);
+        Route::resource('roles', RoleController::class)->middleware('permission:role.view');
+        Route::post('/roles/{id}/sync-permissions', [RoleController::class, 'syncPermissions'])->middleware('permission:role.manage');
 
-        Route::resource('permissions', PermissionController::class);
-        Route::post('/users/{id}/sync-permissions', [UserPermissionController::class, 'syncPermissions']);
+        Route::resource('permissions', PermissionController::class)->middleware('permission:permission.view');
+        Route::post('/users/{id}/sync-permissions', [UserPermissionController::class, 'syncPermissions'])->middleware('permission:user.manage');
 
         Route::get('/users', [UserController::class, 'index'])
             ->name('users.index')
             ->middleware('permission:user.view');
+
+        // Accounting Module
+        Route::prefix('accounting')->name('accounting.')->middleware('permission:accounting.view')->group(function () {
+            Route::resource('expense-categories', ExpenseCategoryController::class);
+            Route::resource('expenses', \App\Http\Controllers\Accounting\ExpenseController::class);
+            
+            Route::get('payments/customer-dues', [PaymentController::class, 'customerDues'])->name('payments.customer-dues');
+            Route::get('payments/supplier-dues', [PaymentController::class, 'supplierDues'])->name('payments.supplier-dues');
+            Route::resource('payments', PaymentController::class)->only(['index', 'store']);
+            
+            Route::get('reports/daily-sales', [\App\Http\Controllers\Accounting\ReportController::class, 'daily'])->name('reports.daily');
+            Route::get('reports/profit-loss', [\App\Http\Controllers\Accounting\ReportController::class, 'profitLoss'])->name('reports.profit-loss');
+            Route::get('reports/cashbook', [\App\Http\Controllers\Accounting\ReportController::class, 'cashbook'])->name('reports.cashbook');
+        });
 
         // HRM Routes
         Route::prefix('hrm')->name('hrm.')->group(function () {

@@ -6,9 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:permission.view', only: ['index']),
+            new Middleware('permission:permission.manage', except: ['index']),
+        ];
+    }
     public function index(Request $request)
     {
         $query = Permission::query();

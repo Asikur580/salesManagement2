@@ -7,10 +7,20 @@ use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class CategoryController extends Controller
+class CategoryController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:category.view', only: ['index']),
+            new Middleware('permission:category.create', only: ['store']),
+            new Middleware('permission:category.edit', only: ['update']),
+            new Middleware('permission:category.delete', only: ['destroy']),
+        ];
+    }
     public function __construct(protected CategoryRepositoryInterface $categories)
     {
     }

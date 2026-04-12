@@ -74,6 +74,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const [reportsOpen, setReportsOpen] = useState(
         pathname.startsWith("/reports")
     );
+    const [accountingOpen, setAccountingOpen] = useState(
+        pathname.startsWith("/accounting")
+    );
     const { user, logout } = useAuth();
 
     // Permission helper function
@@ -229,6 +232,121 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                             </CollapsibleContent>
                         </Collapsible>
                         )}
+
+                        {/* Accounting Module Section */}
+                        <Collapsible
+                            open={accountingOpen}
+                            onOpenChange={setAccountingOpen}
+                        >
+                            <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                                <DollarSign className="h-5 w-5" />
+                                <span className="flex-1 text-left">Accounting</span>
+                                {accountingOpen ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                )}
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="space-y-1 pl-8 pt-1">
+                                <Link
+                                    href="/accounting/expenses"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/expenses"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Expenses
+                                </Link>
+                                <Link
+                                    href="/accounting/expense-categories"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/expense-categories"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Expense Categories
+                                </Link>
+                                <Link
+                                    href="/accounting/payments/customer-dues"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/payments/customer-dues"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Customer Dues
+                                </Link>
+                                <Link
+                                    href="/accounting/payments/supplier-dues"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/payments/supplier-dues"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Supplier Dues
+                                </Link>
+                                <Link
+                                    href="/accounting/payments"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/payments"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Payment Ledger
+                                </Link>
+                                <div className="my-2 border-t border-border/50 mx-2" />
+                                <Link
+                                    href="/accounting/reports/cashbook"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/reports/cashbook"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Cashbook
+                                </Link>
+                                <Link
+                                    href="/accounting/reports/profit-loss"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/reports/profit-loss"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Profit & Loss
+                                </Link>
+                                <Link
+                                    href="/accounting/reports/daily-sales"
+                                    onClick={onClose}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                        pathname === "/accounting/reports/daily-sales"
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    )}
+                                >
+                                    Daily Sales
+                                </Link>
+                            </CollapsibleContent>
+                        </Collapsible>
 
                         {/* HRM Management Section */}
                         {(hasPermission("hrm.employee.view") || 

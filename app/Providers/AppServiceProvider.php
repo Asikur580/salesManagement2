@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Validation\Rules\Password;
 use App\Repositories\BrandRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\Interfaces\BrandRepositoryInterface;
@@ -30,6 +31,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Password::defaults(function () {
+            return Password::min(10)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols();
+        });
     }
 }

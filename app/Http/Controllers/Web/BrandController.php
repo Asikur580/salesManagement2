@@ -7,10 +7,20 @@ use App\Http\Requests\Brand\StoreBrandRequest;
 use App\Http\Requests\Brand\UpdateBrandRequest;
 use App\Repositories\Interfaces\BrandRepositoryInterface;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class BrandController extends Controller
+class BrandController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:brand.view', only: ['index']),
+            new Middleware('permission:brand.create', only: ['store']),
+            new Middleware('permission:brand.edit', only: ['update']),
+            new Middleware('permission:brand.delete', only: ['destroy']),
+        ];
+    }
     public function __construct(protected BrandRepositoryInterface $brands)
     {
     }

@@ -25,6 +25,16 @@ class RestockOrder extends Model
         'total_amount' => 'decimal:2',
     ];
 
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function getDueAmountAttribute()
+    {
+        return $this->total_amount - $this->paid_amount;
+    }
+
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
