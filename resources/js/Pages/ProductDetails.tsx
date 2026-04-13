@@ -167,21 +167,10 @@ export default function ProductDetails({
 
     const handleAddToCart = (redirect: boolean = false) => {
         if (activeStock <= 0) {
-            toast({
-                title: "Out of Stock",
-                description: "This item is currently unavailable.",
-                variant: "destructive",
-            });
             return;
         }
 
         if (availableAttributes.length > 0 && !selectedVariant) {
-            toast({
-                title: "Select Options",
-                description:
-                    "Please select all required options before adding to cart.",
-                variant: "destructive",
-            });
             return;
         }
 
@@ -196,23 +185,11 @@ export default function ProductDetails({
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    toast({
-                        title: "Added to Cart",
-                        description: `${product.name} has been added to your cart.`,
-                    });
                     if (redirect) {
                         router.get(route("cart.index"));
                     }
                 },
-                onError: (errors) => {
-                    toast({
-                        title: "Error",
-                        description:
-                            Object.values(errors)[0] ||
-                            "Failed to add to cart.",
-                        variant: "destructive",
-                    });
-                },
+                onError: (errors) => {},
                 onFinish: () => setIsAdding(false),
             },
         );
@@ -226,14 +203,7 @@ export default function ProductDetails({
             },
             {
                 preserveScroll: true,
-                onSuccess: () => {
-                    toast({
-                        title: product.is_wishlisted
-                            ? "Removed from Wishlist"
-                            : "Added to Wishlist",
-                        description: `${product.name} has been ${product.is_wishlisted ? "removed from" : "added to"} your wishlist.`,
-                    });
-                },
+                onSuccess: () => {},
             },
         );
     };

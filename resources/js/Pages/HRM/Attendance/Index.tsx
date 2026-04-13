@@ -115,7 +115,6 @@ export default function AttendanceGrid({
         e.preventDefault();
         postMark(route("hrm.attendance.store"), {
             onSuccess: () => {
-                toast({ title: "Success", description: "Attendance marked successfully." });
                 setIsMarkDialogOpen(false);
                 resetMark();
             },

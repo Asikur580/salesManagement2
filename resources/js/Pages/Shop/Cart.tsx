@@ -48,7 +48,7 @@ export default function Cart({ cart }: CartProps) {
             { quantity: newQty },
             {
                 preserveScroll: true,
-                onSuccess: () => toast({ title: "Cart Updated" }),
+                onSuccess: () => {},
             },
         );
     };
@@ -56,8 +56,7 @@ export default function Cart({ cart }: CartProps) {
     const removeItem = (id: string) => {
         router.delete(route("cart.destroy", id), {
             preserveScroll: true,
-            onSuccess: () =>
-                toast({ title: "Item Removed", variant: "destructive" }),
+            onSuccess: () => {},
         });
     };
 
@@ -68,7 +67,7 @@ export default function Cart({ cart }: CartProps) {
                 {},
                 {
                     preserveScroll: true,
-                    onSuccess: () => toast({ title: "Cart Cleared" }),
+                    onSuccess: () => {},
                 },
             );
         }

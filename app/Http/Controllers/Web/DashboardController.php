@@ -49,14 +49,14 @@ class DashboardController extends Controller
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->whereBetween('orders.order_date', $thisMonth)
-            ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * products.cost_price)) as profit'))
+            ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * IF(order_items.cost_price > 0, order_items.cost_price, products.cost_price))) as profit'))
             ->first()->profit ?? 0;
         
         $lastProfit = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->whereBetween('orders.order_date', $lastMonth)
-            ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * products.cost_price)) as profit'))
+            ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * IF(order_items.cost_price > 0, order_items.cost_price, products.cost_price))) as profit'))
             ->first()->profit ?? 0;
 
         $pendingOrders = Order::where('order_status', 'pending')->count();
@@ -95,7 +95,7 @@ class DashboardController extends Controller
                 ->join('orders', 'order_items.order_id', '=', 'orders.id')
                 ->join('products', 'order_items.product_id', '=', 'products.id')
                 ->whereBetween('orders.order_date', [$start, $end])
-                ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * products.cost_price)) as profit'))
+                ->select(DB::raw('SUM(order_items.total_price - (order_items.quantity * IF(order_items.cost_price > 0, order_items.cost_price, products.cost_price))) as profit'))
                 ->first()->profit ?? 0;
 
             $revenueTrend[] = [

@@ -43,7 +43,6 @@ export default function PayrollIndex({ salaries, selectedMonth }: any) {
         e.preventDefault();
         post(route('hrm.payroll.generate'), {
             onSuccess: () => {
-                toast({ title: "Payroll Generated", description: `Payroll for ${month} has been calculated.` });
                 setIsGenerateDialogOpen(false);
             }
         });
@@ -52,7 +51,7 @@ export default function PayrollIndex({ salaries, selectedMonth }: any) {
     const markAsPaid = (id: number) => {
         router.patch(route('hrm.payroll.status', id), { status: 'paid' }, {
             preserveScroll: true,
-            onSuccess: () => toast({ title: "Status Updated", description: "Salary marked as paid." })
+            onSuccess: () => {}
         });
     };
 

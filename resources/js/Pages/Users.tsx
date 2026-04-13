@@ -179,20 +179,10 @@ export default function Users() {
             },
             {
                 onSuccess: () => {
-                    toast({
-                        title: "Success",
-                        description: `Permissions updated successfully for ${selectedUser.name}`,
-                    });
                     setIsPermissionDialogOpen(false);
                 },
                 onError: (errors: any) => {
-                    toast({
-                        title: "Error",
-                        description:
-                            (Object.values(errors)[0] as string) ||
-                            "Failed to update permissions",
-                        variant: "destructive",
-                    });
+                    // Handled by global flash but kept block for finish
                 },
                 onFinish: () => setIsPermissionsLoading(false),
             },

@@ -203,20 +203,10 @@ export default function Permissions({
             ? "permission.update"
             : "permission.create";
         if (!hasPermission(requiredPermission)) {
-            toast({
-                title: "Access Denied",
-                description: `You don't have permission to ${selectedPermission ? "update" : "create"} permissions.`,
-                variant: "destructive",
-            });
             return;
         }
 
         if (!formData.name.trim()) {
-            toast({
-                title: "Error",
-                description: "Permission name is required",
-                variant: "destructive",
-            });
             return;
         }
 
@@ -230,21 +220,9 @@ export default function Permissions({
                 },
                 {
                     onSuccess: () => {
-                        toast({
-                            title: "Success",
-                            description: "Permission updated successfully",
-                        });
                         handleCloseDialog();
                     },
-                    onError: (errors: any) => {
-                        toast({
-                            title: "Error",
-                            description:
-                                (Object.values(errors)[0] as string) ||
-                                "Failed to update permission",
-                            variant: "destructive",
-                        });
-                    },
+                    onError: (errors: any) => {},
                     onFinish: () => setIsLoading(false),
                 },
             );
@@ -256,21 +234,9 @@ export default function Permissions({
                 },
                 {
                     onSuccess: () => {
-                        toast({
-                            title: "Success",
-                            description: "Permission created successfully",
-                        });
                         handleCloseDialog();
                     },
-                    onError: (errors: any) => {
-                        toast({
-                            title: "Error",
-                            description:
-                                (Object.values(errors)[0] as string) ||
-                                "Failed to create permission",
-                            variant: "destructive",
-                        });
-                    },
+                    onError: (errors: any) => {},
                     onFinish: () => setIsLoading(false),
                 },
             );
@@ -284,11 +250,6 @@ export default function Permissions({
 
     const handleDelete = async () => {
         if (!hasPermission("permission.delete")) {
-            toast({
-                title: "Access Denied",
-                description: "You don't have permission to delete permissions.",
-                variant: "destructive",
-            });
             setIsDeleteDialogOpen(false);
             return;
         }
@@ -298,22 +259,10 @@ export default function Permissions({
         setIsLoading(true);
         router.delete(`/permissions/${selectedPermission.id}`, {
             onSuccess: () => {
-                toast({
-                    title: "Success",
-                    description: "Permission deleted successfully",
-                });
                 setIsDeleteDialogOpen(false);
                 setSelectedPermission(null);
             },
-            onError: (errors: any) => {
-                toast({
-                    title: "Error",
-                    description:
-                        (Object.values(errors)[0] as string) ||
-                        "Failed to delete permission",
-                    variant: "destructive",
-                });
-            },
+            onError: (errors: any) => {},
             onFinish: () => setIsLoading(false),
         });
     };

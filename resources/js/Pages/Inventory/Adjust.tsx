@@ -60,7 +60,6 @@ export default function StockAdjustment({ products }: AdjustProps) {
             onSuccess: () => {
                 reset();
                 setSelectedProductId("");
-                toast({ title: "Success", description: "Stock adjusted successfully" });
             },
         });
     };

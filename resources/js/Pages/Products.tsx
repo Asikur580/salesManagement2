@@ -129,18 +129,9 @@ export default function Products({
         if (!deletingId) return;
         router.delete(`/products/${deletingId}`, {
             onSuccess: () => {
-                toast({
-                    title: "Success",
-                    description: "Product deleted successfully",
-                });
                 setDeletingId(null);
             },
             onError: () => {
-                toast({
-                    title: "Error",
-                    description: "Failed to delete product",
-                    variant: "destructive",
-                });
                 setDeletingId(null);
             },
         });

@@ -101,34 +101,18 @@ export default function Units({ units }: PageProps) {
             put(`/units/${editingId}`, {
                 onSuccess: () => {
                     handleCloseDialog();
-                    toast({
-                        title: "Success",
-                        description: "Unit updated successfully",
-                    });
                 },
                 onError: (err) => {
-                    toast({
-                        title: "Error",
-                        description: Object.values(err)[0] as string,
-                        variant: "destructive",
-                    });
+                    // Handled by global flash
                 },
             });
         } else {
             post("/units", {
                 onSuccess: () => {
                     handleCloseDialog();
-                    toast({
-                        title: "Success",
-                        description: "Unit created successfully",
-                    });
                 },
                 onError: (err) => {
-                    toast({
-                        title: "Error",
-                        description: Object.values(err)[0] as string,
-                        variant: "destructive",
-                    });
+                    // Handled by global flash
                 },
             });
         }
@@ -140,19 +124,10 @@ export default function Units({ units }: PageProps) {
             onSuccess: () => {
                 setIsDeleteDialogOpen(false);
                 setDeletingId(null);
-                toast({
-                    title: "Success",
-                    description: "Unit deleted successfully",
-                });
             },
             onError: () => {
                 setIsDeleteDialogOpen(false);
                 setDeletingId(null);
-                toast({
-                    title: "Error",
-                    description: "Failed to delete unit",
-                    variant: "destructive",
-                });
             },
         });
     };

@@ -54,12 +54,20 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, Order $order)
     {
-        $validated = $request->validate([
+        $request->validate([
             'order_status' => 'nullable|string|in:pending,processing,shipped,delivered,cancelled',
             'payment_status' => 'nullable|string|in:pending,paid,failed,partially_paid',
         ]);
 
-        $order->update(array_filter($validated));
+        if ($request->filled('order_status')) {
+            $order->order_status = $request->order_status;
+        }
+
+        if ($request->filled('payment_status')) {
+            $order->payment_status = $request->payment_status;
+        }
+
+        $order->save();
 
         return back()->with('success', 'Order status updated successfully.');
     }

@@ -26,7 +26,10 @@ class StockService
     {
         return DB::transaction(function () use ($model, $quantity, $type, $reason, $reference) {
             $isVariant = $model instanceof ProductVariant;
-            $product = $isVariant ? $model->product : $model;
+            
+            // Re-fetch the models with a lock to prevent race conditions
+            $lockedModel = get_class($model)::lockForUpdate()->find($model->id);
+            $lockedProduct = $isVariant ? Product::lockForUpdate()->find($lockedModel->product_id) : $lockedModel;
 
             // Calculate change direction
             // 'in', 'return' usually increase stock
@@ -35,28 +38,32 @@ class StockService
             $isDecrement = in_array($type, ['out']);
             
             if ($isDecrement) {
-                $model->decrement('stock', $quantity);
+                if ($lockedModel->stock < $quantity) {
+                    throw new Exception("Insufficient stock. Available: {$lockedModel->stock}, Requested: {$quantity}");
+                }
+
+                $lockedModel->decrement('stock', $quantity);
                 if ($isVariant) {
-                    $product->decrement('stock', $quantity);
+                    $lockedProduct->decrement('stock', $quantity);
                 }
             } else {
-                $model->increment('stock', $quantity);
+                $lockedModel->increment('stock', $quantity);
                 if ($isVariant) {
-                    $product->increment('stock', $quantity);
+                    $lockedProduct->increment('stock', $quantity);
                 }
             }
 
             // Fresh load to get the latest balance
-            $model->refresh();
+            $lockedModel->refresh();
 
             // Record transaction
             return StockTransaction::create([
-                'product_id' => $product->id,
-                'product_variant_id' => $isVariant ? $model->id : null,
+                'product_id' => $lockedProduct->id,
+                'product_variant_id' => $isVariant ? $lockedModel->id : null,
                 'user_id' => Auth::id(),
                 'type' => $type,
                 'quantity' => $quantity,
-                'balance_after' => $model->stock,
+                'balance_after' => $lockedModel->stock,
                 'reference_type' => $reference['type'] ?? null,
                 'reference_id' => $reference['id'] ?? null,
                 'reason' => $reason,
@@ -80,6 +87,31 @@ class StockService
                     $item->quantity,
                     'out',
                     "Sale: Order #{$order->order_number}",
+                    ['type' => 'App\Models\Order', 'id' => $order->id]
+                );
+            }
+        }
+    }
+
+    /**
+     * Record stock in for a cancelled sale (from Order).
+     */
+    public function returnStock($order)
+    {
+        // Don't return stock if order type is service because services might not deduct stock the same way,
+        // although recordSale checks items. If service parts are deducted, we should return them too.
+        foreach ($order->items as $item) {
+            $model = $item->product_variant_id 
+                ? ProductVariant::find($item->product_variant_id)
+                : Product::find($item->product_id);
+
+            if ($model) {
+                // Determine direction based on order type? Order cancel -> stock IN.
+                $this->adjustStock(
+                    $model,
+                    $item->quantity,
+                    'in',
+                    "Restored: Order #{$order->order_number} Cancelled",
                     ['type' => 'App\Models\Order', 'id' => $order->id]
                 );
             }

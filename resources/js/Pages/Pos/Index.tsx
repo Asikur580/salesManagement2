@@ -202,11 +202,6 @@ export default function PosIndex({
             if (product.variants.length > 0) {
                 variant = product.variants[0];
             } else {
-                toast({
-                    title: "Error",
-                    description: "This product has no configured variants.",
-                    variant: "destructive",
-                });
                 return;
             }
         }
@@ -216,11 +211,6 @@ export default function PosIndex({
         const maxStock = variant ? variant.stock : product.stock;
 
         if (maxStock <= 0) {
-            toast({
-                title: "Out of Stock",
-                description: `${product.name} ${variant ? "variant" : ""} is currently unavailable.`,
-                variant: "destructive",
-            });
             return;
         }
 
@@ -238,11 +228,6 @@ export default function PosIndex({
             const existing = prev.find((item) => item.id === cartItemId);
             if (existing) {
                 if (existing.quantity >= maxStock) {
-                    toast({
-                        title: "Stock Limit Reached",
-                        description: `Only ${maxStock} items available.`,
-                        variant: "destructive",
-                    });
                     return prev;
                 }
                 return prev.map((item) =>
@@ -275,10 +260,6 @@ export default function PosIndex({
                 if (item.id === id) {
                     const newQty = item.quantity + delta;
                     if (newQty > item.max_stock) {
-                        toast({
-                            title: "Limit Reached",
-                            description: `Max stock is ${item.max_stock}`,
-                        });
                         return item;
                     }
                     return { ...item, quantity: Math.max(1, newQty) };
@@ -307,33 +288,6 @@ export default function PosIndex({
 
     // Checkout
     const handleCheckout = () => {
-        if (cart.length === 0) {
-            toast({
-                title: "Empty Cart",
-                description: "Add items to the cart before checking out.",
-                variant: "destructive",
-            });
-            return;
-        }
-
-        if (!data.customer_id && !isNewCustomer) {
-            toast({
-                title: "Customer Required",
-                description: "Please select a customer or enter new customer details.",
-                variant: "destructive",
-            });
-            return;
-        }
-
-        if (isNewCustomer && !data.customer_phone) {
-            toast({
-                title: "Phone Required",
-                description: "Phone number is required for new customers.",
-                variant: "destructive",
-            });
-            return;
-        }
-
         const payloadItems = cart.map((c) => ({
             product_id: c.product_id,
             variant_id: c.variant_id,
@@ -354,21 +308,11 @@ export default function PosIndex({
                     setCart([]);
                     reset();
                     setIsNewCustomer(false); // Reset to selection mode
-                    toast({
-                        title: "Success",
-                        description: "Transaction completed successfully.",
-                    });
                     searchInputRef.current?.focus();
                 }
             },
             onError: (err) => {
-                const message = Object.values(err).flat().join(", ");
-                toast({
-                    title: "Checkout Failed",
-                    description:
-                        message || "Something went wrong during checkout.",
-                    variant: "destructive",
-                });
+                // Handled by global flash
             },
         });
     };
@@ -610,7 +554,7 @@ export default function PosIndex({
                                     />
                                     <Input 
                                         placeholder="Phone Number (Required)" 
-                                        className="h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold"
+                                        className={`h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold ${errors.customer_phone ? "border-red-500" : ""}`}
                                         value={data.customer_phone}
                                         onChange={(e) => setData("customer_phone", e.target.value)}
                                         required
@@ -622,28 +566,35 @@ export default function PosIndex({
                                     )}
                                 </div>
                             ) : (
-                                <Select
-                                    value={data.customer_id}
-                                    onValueChange={(v) => setData("customer_id", v)}
-                                >
-                                    <SelectTrigger className="w-full h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all">
-                                        <SelectValue placeholder="Walk-in Customer" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-border shadow-xl">
-                                        {customers.map((c) => (
-                                            <SelectItem
-                                                key={c.id}
-                                                value={c.id.toString()}
-                                                className="rounded-lg py-2.5"
-                                            >
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-foreground">{c.name}</span>
-                                                    {c.phone && <span className="text-[10px] text-muted-foreground font-medium">{c.phone}</span>}
-                                                </div>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <>
+                                    <Select
+                                        value={data.customer_id}
+                                        onValueChange={(v) => setData("customer_id", v)}
+                                    >
+                                        <SelectTrigger className={`w-full h-11 bg-card border-border rounded-xl focus:ring-4 focus:ring-primary/5 transition-all ${errors.customer_id ? "border-red-500" : ""}`}>
+                                            <SelectValue placeholder="Walk-in Customer" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-border shadow-xl">
+                                            {customers.map((c) => (
+                                                <SelectItem
+                                                    key={c.id}
+                                                    value={c.id.toString()}
+                                                    className="rounded-lg py-2.5"
+                                                >
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-foreground">{c.name}</span>
+                                                        {c.phone && <span className="text-[10px] text-muted-foreground font-medium">{c.phone}</span>}
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.customer_id && (
+                                        <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">
+                                            {errors.customer_id}
+                                        </p>
+                                    )}
+                                </>
                             )}
                         </div>
 

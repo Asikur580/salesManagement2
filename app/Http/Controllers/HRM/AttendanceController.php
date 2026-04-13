@@ -94,6 +94,9 @@ class AttendanceController extends Controller
         ]);
 
         $date = $request->date;
+        if ($date > now()->toDateString()) {
+            return redirect()->back()->with('error', 'Cannot mark attendance for future dates.');
+        }
 
         DB::beginTransaction();
         try {

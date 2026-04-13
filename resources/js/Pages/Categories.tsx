@@ -302,22 +302,10 @@ const Categories = ({
             onSuccess: () => {
                 setProcessing(false);
                 handleCloseDialog();
-                toast({
-                    title: "Success",
-                    description: editingCategory
-                        ? "Category updated successfully"
-                        : "Category created successfully",
-                });
             },
             onError: (err: Record<string, string>) => {
                 setProcessing(false);
                 setErrors(err);
-                toast({
-                    title: "Error",
-                    description:
-                        Object.values(err)[0] || "Failed to save category",
-                    variant: "destructive",
-                });
             },
         };
 
@@ -342,17 +330,9 @@ const Categories = ({
                 onSuccess: () => {
                     setIsDeleteDialogOpen(false);
                     setDeleteCategoryId(null);
-                    toast({
-                        title: "Success",
-                        description: "Category deleted successfully",
-                    });
                 },
                 onError: () => {
-                    toast({
-                        title: "Error",
-                        description: "Failed to delete category",
-                        variant: "destructive",
-                    });
+                    // Handled by global flash
                 },
             });
         }

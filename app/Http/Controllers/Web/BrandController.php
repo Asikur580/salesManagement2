@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\BrandRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Inertia\Inertia;
 
 class BrandController extends Controller implements HasMiddleware
 {
@@ -110,6 +111,11 @@ class BrandController extends Controller implements HasMiddleware
     public function destroy(int $id)
     {
         $brand = $this->brands->findById($id);
+
+        if ($brand->products()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete brand with assigned products.');
+        }
+
         $this->brands->delete($brand);
 
         return redirect()->back()->with('success', 'Brand deleted successfully.');

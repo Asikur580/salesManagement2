@@ -47,7 +47,6 @@ export default function LeaveRequests({ leaves, filters, canManage }: any) {
         e.preventDefault();
         post(route('hrm.leaves.store'), {
             onSuccess: () => {
-                toast({ title: "Leave Requested", description: "Your leave application has been submitted." });
                 setIsApplyDialogOpen(false);
                 reset();
             }
@@ -57,7 +56,7 @@ export default function LeaveRequests({ leaves, filters, canManage }: any) {
     const updateStatus = (id: number, status: string) => {
         router.patch(route('hrm.leaves.status', id), { status }, {
             preserveScroll: true,
-            onSuccess: () => toast({ title: "Status Updated", description: `Leave request marked as ${status}.` })
+            onSuccess: () => {}
         });
     };
 

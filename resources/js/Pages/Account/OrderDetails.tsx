@@ -115,11 +115,6 @@ export default function OrderDetails({ order }: Props) {
 
     const submitCancellation = () => {
         if (!cancelReason.trim()) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Please provide a reason for cancellation.",
-            });
             return;
         }
 
@@ -132,18 +127,8 @@ export default function OrderDetails({ order }: Props) {
                 onSuccess: () => {
                     setCancelModalOpen(false);
                     setCancelReason("");
-                    toast({
-                        title: "Success",
-                        description: "Order cancelled successfully.",
-                    });
                 },
-                onError: (errors) => {
-                    toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: errors.reason || "Could not cancel order.",
-                    });
-                },
+                onError: (errors) => {},
             },
         );
     };

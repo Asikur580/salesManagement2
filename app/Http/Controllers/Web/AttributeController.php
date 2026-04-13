@@ -86,7 +86,12 @@ class AttributeController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $attribute = Attribute::findOrFail($id);
-        $attribute->delete(); // Values should be deleted if there is a DB cascade, or handle explicitly
+
+        if ($attribute->values()->whereHas('variants')->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete attribute whose values are assigned to product variants.');
+        }
+
+        $attribute->delete();
         return redirect()->back()->with('success', 'Attribute deleted successfully.');
     }
 }

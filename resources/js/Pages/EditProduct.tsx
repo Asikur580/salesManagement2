@@ -138,11 +138,6 @@ export default function EditProduct({
         e.preventDefault();
 
         if (data.product_type === "variant" && data.variants.length === 0) {
-            toast({
-                title: "Error",
-                description: "Variant product must have at least one variant.",
-                variant: "destructive",
-            });
             return;
         }
 
@@ -166,11 +161,7 @@ export default function EditProduct({
             forceFormData: true,
             preserveScroll: true,
             onError: (errs) => {
-                toast({
-                    title: "Validation Error",
-                    description: Object.values(errs).join("\n"),
-                    variant: "destructive",
-                });
+                // Handled by global flash
             },
         });
     };

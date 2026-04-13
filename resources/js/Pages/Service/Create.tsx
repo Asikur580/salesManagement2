@@ -162,7 +162,6 @@ export default function ServiceCreate({
         const maxStock = variant ? variant.stock : product.stock;
 
         if (maxStock <= 0) {
-            toast({ title: "Out of Stock", description: "This part is unavailable.", variant: "destructive" });
             return;
         }
 
@@ -208,16 +207,6 @@ export default function ServiceCreate({
     const total = totalBeforeTax + taxAmount;
 
     const handleCheckout = () => {
-        if ((!data.customer_id && !isNewCustomer) || !data.technician_id || !data.service_type) {
-            toast({ title: "Validation Error", description: "Please fill customer, technician, and service type.", variant: "destructive" });
-            return;
-        }
-
-        if (isNewCustomer && !data.customer_phone) {
-            toast({ title: "Phone Required", description: "Phone number is required for new customers.", variant: "destructive" });
-            return;
-        }
-
         transform((oldData) => ({
             ...oldData,
             parts: cart.map(c => ({
@@ -233,7 +222,6 @@ export default function ServiceCreate({
                 setCart([]);
                 reset();
                 setIsNewCustomer(false);
-                toast({ title: "Success", description: "Service Invoice created successfully." });
             },
         });
     };
@@ -333,33 +321,42 @@ export default function ServiceCreate({
                                             />
                                             <Input 
                                                 placeholder="Phone Number (Required)"
-                                                className="rounded-xl h-11 font-bold"
+                                                className={`rounded-xl h-11 font-bold ${errors.customer_phone ? "border-destructive" : ""}`}
                                                 value={data.customer_phone}
                                                 onChange={e => setData("customer_phone", e.target.value)}
                                             />
+                                            {errors.customer_phone && <p className="text-[10px] text-destructive font-bold px-1">{errors.customer_phone}</p>}
                                         </div>
                                     ) : (
                                         <Select value={data.customer_id} onValueChange={(v) => setData("customer_id", v)}>
-                                            <SelectTrigger className="rounded-xl h-11"><SelectValue placeholder="Select Customer" /></SelectTrigger>
+                                            <SelectTrigger className={`rounded-xl h-11 ${errors.customer_id ? "border-destructive" : ""}`}><SelectValue placeholder="Select Customer" /></SelectTrigger>
                                             <SelectContent className="rounded-xl">
                                                 {customers.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
                                     )}
+                                    {errors.customer_id && <p className="text-[10px] text-destructive font-bold px-1">{errors.customer_id}</p>}
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Technician</label>
                                     <Select value={data.technician_id} onValueChange={(v) => setData("technician_id", v)}>
-                                        <SelectTrigger className="rounded-xl h-11"><SelectValue placeholder="Select Staff" /></SelectTrigger>
+                                        <SelectTrigger className={`rounded-xl h-11 ${errors.technician_id ? "border-destructive" : ""}`}><SelectValue placeholder="Select Staff" /></SelectTrigger>
                                         <SelectContent className="rounded-xl">
                                             {technicians.map(t => <SelectItem key={t.id} value={t.id.toString()}>{t.name}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
+                                    {errors.technician_id && <p className="text-[10px] text-destructive font-bold px-1">{errors.technician_id}</p>}
                                 </div>
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Service Type</label>
-                                <Input placeholder="e.g. Engine Repair, General Maintenance" className="h-11 rounded-xl" value={data.service_type} onChange={e => setData("service_type", e.target.value)} />
+                                <Input 
+                                    placeholder="e.g. Engine Repair, General Maintenance" 
+                                    className={`h-11 rounded-xl ${errors.service_type ? "border-destructive" : ""}`} 
+                                    value={data.service_type} 
+                                    onChange={e => setData("service_type", e.target.value)} 
+                                />
+                                {errors.service_type && <p className="text-[10px] text-destructive font-bold px-1">{errors.service_type}</p>}
                             </div>
                         </div>
 

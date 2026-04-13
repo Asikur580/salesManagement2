@@ -51,7 +51,31 @@ class CheckoutController extends Controller
             }
         } else {
             $sessionCart = session()->get('cart', []);
-            $cartItems = array_values($sessionCart);
+            $cartItems = [];
+            foreach ($sessionCart as $item) {
+                // Fetch fresh models to prevent price tampering / outdated prices
+                $product = Product::find($item['product_id']);
+                if (!$product) continue;
+
+                $variant = null;
+                $variantName = null;
+                if (!empty($item['variant_id'])) {
+                    $variant = ProductVariant::with('attributeValues')->find($item['variant_id']);
+                    if ($variant) {
+                        $variantName = $variant->attributeValues->pluck('value')->implode(' - ');
+                    }
+                }
+
+                $cartItems[] = [
+                    'product_id' => $item['product_id'],
+                    'variant_id' => $item['variant_id'] ?? null,
+                    'quantity' => $item['quantity'],
+                    'price' => $variant ? $variant->price : $product->base_price,
+                    'cost_price' => $product->cost_price ?? 0,
+                    'name' => $product->name,
+                    'variant_name' => $variantName ?? ($item['variant_name'] ?? null),
+                ];
+            }
         }
 
         if (empty($cartItems)) {
@@ -96,6 +120,7 @@ class CheckoutController extends Controller
                     'variant_name' => $item['variant_name'] ?? null,
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['price'],
+                    'cost_price' => $item['cost_price'] ?? 0,
                     'total_price' => $item['price'] * $item['quantity'],
                 ]);
             }

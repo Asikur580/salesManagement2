@@ -62,22 +62,11 @@ const Login = () => {
             if (response.data.success) {
                 setOtpSent(true);
                 startTimer();
-                toast({
-                    title: "OTP Sent",
-                    description:
-                        "Please check your phone for the 6-digit code.",
-                });
                 if (response.data.otp_preview) {
                     console.log("OTP Preview:", response.data.otp_preview);
                 }
             }
         } catch (error: any) {
-            toast({
-                title: "Failed to send OTP",
-                description:
-                    error.response?.data?.message || "Something went wrong.",
-                variant: "destructive",
-            });
         } finally {
             setIsLoading(false);
         }
@@ -95,12 +84,6 @@ const Login = () => {
                 window.location.href = response.data.redirect || "/";
             }
         } catch (error: any) {
-            toast({
-                title: "Invalid OTP",
-                description:
-                    error.response?.data?.message || "Please try again.",
-                variant: "destructive",
-            });
         } finally {
             setIsLoading(false);
         }
@@ -110,17 +93,8 @@ const Login = () => {
         e.preventDefault();
         passwordForm.post(route("login"), {
             onSuccess: () => {
-                toast({
-                    title: "Welcome back!",
-                    description: "Login successful.",
-                });
             },
             onError: (errors) => {
-                toast({
-                    title: "Login Failed",
-                    description: Object.values(errors)[0] as string,
-                    variant: "destructive",
-                });
             },
         });
     };
@@ -314,9 +288,10 @@ const Login = () => {
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="pl-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black"
+                                                className={`pl-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black ${passwordForm.errors.login ? "border-red-500" : ""}`}
                                                 required
                                             />
+                                            {passwordForm.errors.login && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1 uppercase">{passwordForm.errors.login}</p>}
                                         </div>
                                     </div>
                                     <div className="space-y-3">
@@ -349,9 +324,10 @@ const Login = () => {
                                                         e.target.value,
                                                     )
                                                 }
-                                                className="pl-12 pr-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black"
+                                                className={`pl-12 pr-12 h-14 bg-muted/50 border-border focus:border-primary focus:ring-primary/10 rounded-2xl text-sm font-black ${passwordForm.errors.password ? "border-red-500" : ""}`}
                                                 required
                                             />
+                                            {passwordForm.errors.password && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1 uppercase">{passwordForm.errors.password}</p>}
                                             <button
                                                 type="button"
                                                 onClick={() =>

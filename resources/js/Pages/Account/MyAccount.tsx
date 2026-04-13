@@ -156,7 +156,6 @@ export default function MyAccount(props: Props) {
                         setIsAddressModalOpen(false);
                         setEditingAddress(null);
                         addressForm.reset();
-                        toast({ title: "Address updated!" });
                     },
                 },
             );
@@ -165,7 +164,6 @@ export default function MyAccount(props: Props) {
                 onSuccess: () => {
                     setIsAddressModalOpen(false);
                     addressForm.reset();
-                    toast({ title: "Address added!" });
                 },
             });
         }
@@ -174,7 +172,7 @@ export default function MyAccount(props: Props) {
     const handleDeleteAddress = (id: number) => {
         if (confirm("Are you sure you want to delete this address?")) {
             router.delete(route("account.addresses.delete", id), {
-                onSuccess: () => toast({ title: "Address deleted!" }),
+                onSuccess: () => {},
             });
         }
     };
@@ -199,17 +197,8 @@ export default function MyAccount(props: Props) {
     const handleProfileUpdate = (e: React.FormEvent) => {
         e.preventDefault();
         profileForm.patch(route("account.profile.update"), {
-            onSuccess: () =>
-                toast({
-                    title: "Profile updated!",
-                    description: "Your information has been saved.",
-                }),
-            onError: () =>
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: "Could not update profile.",
-                }),
+            onSuccess: () => {},
+            onError: () => {},
         });
     };
 
@@ -217,18 +206,9 @@ export default function MyAccount(props: Props) {
         e.preventDefault();
         passwordForm.put(route("account.password.update"), {
             onSuccess: () => {
-                toast({
-                    title: "Password changed!",
-                    description: "Your password has been updated.",
-                });
                 passwordForm.reset();
             },
-            onError: () =>
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: "Could not update password.",
-                }),
+            onError: () => {},
         });
     };
 
@@ -249,11 +229,6 @@ export default function MyAccount(props: Props) {
 
     const submitCancellation = () => {
         if (!cancelReason.trim()) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Please provide a reason for cancellation.",
-            });
             return;
         }
 
@@ -266,18 +241,8 @@ export default function MyAccount(props: Props) {
                 onSuccess: () => {
                     setCancelModalOpen(false);
                     setCancelReason("");
-                    toast({
-                        title: "Success",
-                        description: "Order cancelled successfully.",
-                    });
                 },
-                onError: (errors) => {
-                    toast({
-                        variant: "destructive",
-                        title: "Error",
-                        description: errors.reason || "Could not cancel order.",
-                    });
-                },
+                onError: (errors) => {},
             },
         );
     };
@@ -285,9 +250,9 @@ export default function MyAccount(props: Props) {
     return (
         <ShopLayout>
             <Head title="My Account | CarMart" />
-            <div className="min-h-screen bg-muted py-8 px-4 md:px-8">
+            <div className="min-h-screen bg-muted py-6 px-3 sm:px-4 md:px-8">
                 {/* Breadcrumb */}
-                <div className="max-w-7xl mx-auto mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="max-w-7xl mx-auto mb-4 flex items-center gap-2 text-sm text-muted-foreground">
                     <Link
                         href="/"
                         className="hover:text-primary transition-colors"
@@ -300,9 +265,72 @@ export default function MyAccount(props: Props) {
                     </span>
                 </div>
 
+                {/* ── Mobile-only: User Card + Horizontal Tab Navigation ── */}
+                <div className="lg:hidden max-w-7xl mx-auto mb-4">
+                    {/* Mobile User Card */}
+                    <div className="bg-card rounded-2xl p-4 shadow-sm border border-border flex items-center gap-4 mb-3">
+                        <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground text-xl font-black shrink-0">
+                            {getInitials(user.name)}
+                        </div>
+                        <div className="min-w-0">
+                            <h2 className="font-black text-base text-foreground truncate">{user.name}</h2>
+                            <p className="text-xs text-muted-foreground truncate">{user.email || user.phone}</p>
+                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 border border-green-100">
+                                <ShieldCheck className="h-3 w-3 text-green-500" />
+                                <span className="text-[10px] font-bold text-green-600">Verified</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mobile Horizontal Tab Bar */}
+                    <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide -mx-1 px-1">
+                        {MENU_ITEMS.map((item) => {
+                            const Icon = item.icon;
+                            const isActive = activeSection === item.id;
+                            if (item.href) {
+                                return (
+                                    <Link
+                                        key={item.id}
+                                        href={item.href}
+                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap border transition-all shrink-0 ${
+                                            isActive
+                                                ? "bg-primary text-white border-primary"
+                                                : "bg-card text-muted-foreground border-border hover:text-primary hover:border-primary"
+                                        }`}
+                                    >
+                                        <Icon className="h-3.5 w-3.5" />
+                                        {item.label}
+                                    </Link>
+                                );
+                            }
+                            return (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setActiveSection(item.id)}
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap border transition-all shrink-0 ${
+                                        isActive
+                                            ? "bg-primary text-white border-primary"
+                                            : "bg-card text-muted-foreground border-border hover:text-primary hover:border-primary"
+                                    }`}
+                                >
+                                    <Icon className="h-3.5 w-3.5" />
+                                    {item.label}
+                                </button>
+                            );
+                        })}
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap border border-border bg-card text-muted-foreground hover:text-red-500 hover:border-red-200 transition-all shrink-0"
+                        >
+                            <LogOut className="h-3.5 w-3.5" />
+                            Logout
+                        </button>
+                    </div>
+                </div>
+
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[300px,1fr] gap-6">
-                    {/* ── Sidebar ── */}
-                    <aside className="space-y-4">
+                    {/* ── Sidebar (Desktop only) ── */}
+                    <aside className="hidden lg:block space-y-4">
                         {/* Profile Card */}
                         <div className="bg-card rounded-3xl p-6 shadow-sm border border-border text-center">
                             <Avatar className="h-20 w-20 mx-auto mb-4 border-4 border-primary/20">
@@ -418,7 +446,7 @@ export default function MyAccount(props: Props) {
                     <main>
                         {/* Profile Information */}
                         {activeSection === "profile" && (
-                            <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-4 md:p-8">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
                                         <h3 className="text-xl font-black text-foreground uppercase italic">
@@ -520,7 +548,7 @@ export default function MyAccount(props: Props) {
 
                         {/* Password Section */}
                         {activeSection === "password" && (
-                            <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-4 md:p-8">
                                 <div className="mb-8">
                                     <h3 className="text-xl font-black text-foreground uppercase italic">
                                         {has_password
@@ -623,8 +651,8 @@ export default function MyAccount(props: Props) {
 
                         {/* Address Book */}
                         {activeSection === "address" && (
-                            <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
-                                <div className="flex items-center justify-between mb-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-4 md:p-8">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 md:mb-8">
                                     <div>
                                         <h3 className="text-xl font-black text-foreground uppercase italic">
                                             Address Book
@@ -737,7 +765,7 @@ export default function MyAccount(props: Props) {
 
                         {/* My Orders */}
                         {activeSection === "orders" && (
-                            <div className="bg-card rounded-3xl shadow-sm border border-border p-6 md:p-8">
+                            <div className="bg-card rounded-3xl shadow-sm border border-border p-4 md:p-8">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
                                         <h3 className="text-xl font-black text-foreground uppercase italic">
@@ -775,7 +803,7 @@ export default function MyAccount(props: Props) {
                                         {orders.map((order) => (
                                             <div
                                                 key={order.id}
-                                                className="group border border-border rounded-[2rem] p-5 md:p-6 hover:border-primary/30 hover:shadow-xl hover:shadow-orange-50/50 transition-all duration-300"
+                                                className="group border border-border rounded-2xl sm:rounded-[2rem] p-4 md:p-6 hover:border-primary/30 hover:shadow-xl hover:shadow-orange-50/50 transition-all duration-300"
                                             >
                                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                                                     <Link
@@ -916,7 +944,7 @@ export default function MyAccount(props: Props) {
                                                             : ""}
                                                     </p>
                                                 </Link>
-                                                <div className="ml-auto flex items-center gap-3">
+                                                <div className="flex flex-wrap items-center gap-2 mt-2">
                                                         {order.status.toLowerCase() ===
                                                             "pending" && (
                                                             <Button
@@ -935,7 +963,7 @@ export default function MyAccount(props: Props) {
                                                         <Button
                                                             asChild
                                                             variant="ghost"
-                                                            className="text-xs font-black text-primary hover:text-black hover:bg-transparent group/btn p-0"
+                                                            className="text-xs font-black text-primary hover:text-black hover:bg-transparent group/btn p-0 h-auto"
                                                         >
                                                             <Link
                                                                 href={route(
@@ -957,10 +985,10 @@ export default function MyAccount(props: Props) {
                                                                     order.id,
                                                                 );
                                                             }}
-                                                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-50 text-primary hover:bg-primary hover:text-white transition-all font-black text-[10px] uppercase tracking-wider"
+                                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 text-primary hover:bg-primary hover:text-white transition-all font-black text-[10px] uppercase tracking-wider h-auto"
                                                         >
                                                             <Download className="h-3.5 w-3.5" />
-                                                            Download Invoice
+                                                            <span className="hidden xs:inline">Download </span>Invoice
                                                         </Button>
                                                     </div>
                                             </div>

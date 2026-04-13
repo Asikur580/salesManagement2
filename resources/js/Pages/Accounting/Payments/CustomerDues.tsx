@@ -39,7 +39,6 @@ export default function CustomerDues({ orders }: { orders: any }) {
             onSuccess: () => {
                 setIsPaymentOpen(false);
                 reset();
-                toast({ title: "Payment Recorded", description: "Customer payment has been successfully recorded." });
             }
         });
     };

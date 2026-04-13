@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Inertia\Inertia;
 
 class CategoryController extends Controller implements HasMiddleware
 {
@@ -112,6 +113,15 @@ class CategoryController extends Controller implements HasMiddleware
     public function destroy(int $id)
     {
         $category = $this->categories->findById($id);
+
+        if ($category->products()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete category containing products.');
+        }
+
+        if ($category->children()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete category containing sub-categories.');
+        }
+
         $this->categories->delete($category);
 
         return redirect()->back()->with('success', 'Category deleted successfully.');

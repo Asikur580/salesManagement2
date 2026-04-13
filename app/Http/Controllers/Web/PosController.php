@@ -48,9 +48,9 @@ class PosController extends Controller
     public function store(Request $request, StockService $stockService)
     {
         $request->validate([
-            'customer_id' => 'nullable|exists:users,id',
+            'customer_id' => 'required_without:customer_phone|nullable|exists:users,id',
             'customer_name' => 'nullable|string|max:255',
-            'customer_phone' => 'nullable|string|max:20',
+            'customer_phone' => 'required_without:customer_id|nullable|string|max:20',
             'payment_method' => 'required|in:cash,credit,bank_transfer,card,mobile_banking',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'in:percentage,fixed',
@@ -63,9 +63,6 @@ class PosController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        if (empty($request->customer_id) && empty($request->customer_phone)) {
-            return redirect()->back()->with('error', 'Customer selection or Phone number is required.');
-        }
 
         DB::beginTransaction();
 
@@ -83,7 +80,8 @@ class PosController extends Controller
                     }
                 }
 
-                $totalPrice = $item['quantity'] * $item['unit_price'];
+                $actualPrice = isset($variant) && $variant ? $variant->price : $product->base_price;
+                $totalPrice = $item['quantity'] * $actualPrice;
                 $subtotal += $totalPrice;
 
                 $itemsData[] = [
@@ -91,7 +89,8 @@ class PosController extends Controller
                     'variant_id' => $item['variant_id'] ?? null,
                     'product_name' => $product->name,
                     'variant_name' => $variantName,
-                    'unit_price' => $item['unit_price'],
+                    'unit_price' => $actualPrice,
+                    'cost_price' => $product->cost_price ?? 0,
                     'quantity' => $item['quantity'],
                     'total_price' => $totalPrice,
                     // Default values for standard pos

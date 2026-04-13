@@ -116,7 +116,6 @@ export default function Employees({ initialEmployees, roles, filters }: any) {
             // Edit
             put(route('hrm.employees.update', editingEmployee.id), {
                 onSuccess: () => {
-                    toast({ title: "Success", description: "Employee updated successfully." });
                     setIsDialogOpen(false);
                 },
             });
@@ -124,7 +123,6 @@ export default function Employees({ initialEmployees, roles, filters }: any) {
             // Create
             post(route('hrm.employees.store'), {
                 onSuccess: () => {
-                    toast({ title: "Success", description: "Employee created successfully." });
                     setIsDialogOpen(false);
                     reset();
                 },
@@ -135,7 +133,7 @@ export default function Employees({ initialEmployees, roles, filters }: any) {
     const toggleStatus = (id: number) => {
         router.patch(route('hrm.employees.toggle-status', id), {}, {
             preserveScroll: true,
-            onSuccess: () => toast({ title: "Status Updated", description: "Employee status has been toggled." }),
+            onSuccess: () => {},
         });
     };
 

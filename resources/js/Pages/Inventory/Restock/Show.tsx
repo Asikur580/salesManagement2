@@ -67,13 +67,13 @@ export default function RestockShow({ order }: ShowProps) {
 
     const handleReceive = () => {
         router.post(`/restock-orders/${order.id}/receive`, {}, {
-            onSuccess: () => toast({ title: "Success", description: "Stock updated successfully" }),
+            onSuccess: () => {},
         });
     };
 
     const handleDelete = () => {
         router.delete(`/restock-orders/${order.id}`, {
-            onSuccess: () => toast({ title: "Success", description: "Order deleted" }),
+            onSuccess: () => {},
         });
     };
 

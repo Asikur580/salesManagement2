@@ -112,18 +112,22 @@ class RestockOrderController extends Controller
 
     public function receive(RestockOrder $restockOrder)
     {
-        if ($restockOrder->status !== 'pending') {
-            return back()->with('error', 'Only pending orders can be received.');
-        }
-
         DB::beginTransaction();
         try {
-            $restockOrder->update([
+            // Securely lock the order to prevent double receiving via concurrent requests
+            $lockedOrder = RestockOrder::lockForUpdate()->findOrFail($restockOrder->id);
+
+            if ($lockedOrder->status !== 'pending') {
+                DB::rollBack();
+                return back()->with('error', 'Only pending orders can be received.');
+            }
+
+            $lockedOrder->update([
                 'status' => 'received',
                 'received_at' => now(),
             ]);
 
-            $this->stockService->recordRestock($restockOrder);
+            $this->stockService->recordRestock($lockedOrder);
 
             DB::commit();
             return back()->with('success', 'Order received and stock updated successfully.');

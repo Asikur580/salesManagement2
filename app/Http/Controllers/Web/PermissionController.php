@@ -65,6 +65,11 @@ class PermissionController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $permission = Permission::findOrFail($id);
+
+        if ($permission->roles()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete permission that is currently assigned to roles.');
+        }
+
         $permission->delete();
 
         return redirect()->back()->with('message', 'Permission deleted successfully');

@@ -64,15 +64,21 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //    'name' => 'required|string|max:255',
-        //    'email' => 'required|email|unique:users,email',
-        //    'phone' => 'nullable|string',
-        //    'password' => 'required|string|min:6',
-        //    'role' => 'required|string',
-        //    'base_salary' => 'nullable|numeric|min:0',
-        //    'join_date' => 'nullable|date',
-        // ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string',
+            'password' => 'required|string|min:6',
+            'role' => 'required|string|exists:roles,name',
+            'base_salary' => 'nullable|numeric|min:0',
+            'join_date' => 'nullable|date',
+        ]);
+
+        // Security: Prevent privilege escalation
+        // Only super-admins can assign the super-admin role
+        if ($request->role === 'super-admin' && !auth()->user()->hasRole('super-admin')) {
+            return redirect()->back()->with('error', 'Unauthorized: Only super-admins can assign the super-admin role.');
+        }
 
         DB::beginTransaction();
         try {
@@ -103,6 +109,29 @@ class EmployeeController extends Controller
     {
         $user = User::findOrFail($id);
 
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string',
+            'password' => 'nullable|string|min:6',
+            'role' => 'sometimes|required|string|exists:roles,name',
+            'base_salary' => 'nullable|numeric|min:0',
+            'join_date' => 'nullable|date',
+        ]);
+
+        // Security: Prevent account takeover
+        // Non-super-admins cannot update passwords or roles of admins/super-admins
+        if ($user->hasAnyRole(['super-admin', 'admin']) && !auth()->user()->hasRole('super-admin')) {
+            if ($request->filled('password') || $request->filled('role')) {
+                return redirect()->back()->with('error', 'Unauthorized: You cannot modify credentials or roles for administrative accounts.');
+            }
+        }
+
+        // Security: Only super-admins can assign the super-admin role
+        if ($request->role === 'super-admin' && !auth()->user()->hasRole('super-admin')) {
+            return redirect()->back()->with('error', 'Unauthorized: Only super-admins can assign the super-admin role.');
+        }
+
         DB::beginTransaction();
         try {
             $userData = [
@@ -111,7 +140,7 @@ class EmployeeController extends Controller
                 'phone' => $request->phone,
             ];
 
-            if ($request->password) {
+            if ($request->filled('password')) {
                 $userData['password'] = Hash::make($request->password);
             }
 

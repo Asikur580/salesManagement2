@@ -13,6 +13,7 @@ use App\Repositories\Interfaces\UnitRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Inertia\Inertia;
 
 class ProductController extends Controller implements HasMiddleware
 {
@@ -136,6 +137,15 @@ class ProductController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $product = $this->productRepository->findById($id);
+
+        if ($product->orderItems()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete product with existing sales history. Please deactivate it instead.');
+        }
+
+        if ($product->restockOrderItems()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete product with existing restock history.');
+        }
+
         $this->productRepository->delete($product);
         return redirect()->back()->with('success', 'Product deleted successfully.');
     }

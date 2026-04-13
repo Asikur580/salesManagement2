@@ -11,6 +11,9 @@ export default {
             },
         },
         extend: {
+            screens: {
+                xs: "475px",
+            },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
@@ -131,5 +134,18 @@ export default {
             },
         },
     },
-    plugins: [require("tailwindcss-animate")],
+    plugins: [
+        require("tailwindcss-animate"),
+        function ({ addUtilities }) {
+            addUtilities({
+                ".scrollbar-hide": {
+                    "-ms-overflow-style": "none",
+                    "scrollbar-width": "none",
+                    "&::-webkit-scrollbar": {
+                        display: "none",
+                    },
+                },
+            });
+        },
+    ],
 };

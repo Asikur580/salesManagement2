@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { FlashHandler } from "@/Components/FlashHandler";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -11,6 +12,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
     return (
         <div className="flex min-h-screen w-full">
+            <FlashHandler />
             <Sidebar
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}

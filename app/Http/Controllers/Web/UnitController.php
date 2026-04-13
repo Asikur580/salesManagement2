@@ -52,6 +52,11 @@ class UnitController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $unit = $this->unitRepository->findById($id);
+        
+        if ($unit->products()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete unit that is assigned to products.');
+        }
+
         $this->unitRepository->delete($unit);
         return redirect()->back()->with('success', 'Unit deleted successfully.');
     }

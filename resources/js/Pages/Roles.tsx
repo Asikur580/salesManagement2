@@ -70,7 +70,7 @@ interface Permission {
     name: string;
 }
 
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, useForm } from "@inertiajs/react";
 
 interface RolesProps {
     initialRoles: Role[];
@@ -97,7 +97,7 @@ export default function Roles({
     const [rolePermissions, setRolePermissions] = useState<string[]>([]);
     const [isPermissionsLoading, setIsPermissionsLoading] = useState(false);
     const [selectedRole, setSelectedRole] = useState<Role | null>(null);
-    const [formData, setFormData] = useState({
+    const { data: formData, setData: setFormData, post, put, processing: isFormLoading, errors, reset, clearErrors } = useForm({
         name: "",
         description: "",
     });
@@ -192,6 +192,7 @@ export default function Roles({
                 description: "",
             });
         }
+        clearErrors();
         setIsDialogOpen(true);
     };
 
@@ -205,76 +206,22 @@ export default function Roles({
     };
 
     const handleSubmit = async () => {
-        // Check permissions
-        const requiredPermission = selectedRole ? "role.update" : "role.create";
-        if (!hasPermission(requiredPermission)) {
-            toast({
-                title: "Access Denied",
-                description: `You don't have permission to ${selectedRole ? "update" : "create"} roles.`,
-                variant: "destructive",
-            });
-            return;
-        }
-
-        if (!formData.name.trim()) {
-            toast({
-                title: "Error",
-                description: "Role name is required",
-                variant: "destructive",
-            });
-            return;
-        }
-
-        setIsLoading(true);
-
         if (selectedRole) {
-            router.put(
-                `/roles/${selectedRole.id}`,
-                { name: formData.name },
-                {
-                    onSuccess: () => {
-                        toast({
-                            title: "Success",
-                            description: "Role updated successfully",
-                        });
-                        handleCloseDialog();
-                    },
-                    onError: (errors: any) => {
-                        toast({
-                            title: "Error",
-                            description:
-                                (Object.values(errors)[0] as string) ||
-                                "Failed to update role",
-                            variant: "destructive",
-                        });
-                    },
-                    onFinish: () => setIsLoading(false),
+            put(`/roles/${selectedRole.id}`, {
+                onSuccess: () => {
+                    handleCloseDialog();
+                    reset();
                 },
-            );
+                onFinish: () => setIsLoading(false),
+            });
         } else {
-            router.post(
-                "/roles",
-                { name: formData.name },
-                {
-                    onSuccess: () => {
-                        toast({
-                            title: "Success",
-                            description: "Role created successfully",
-                        });
-                        handleCloseDialog();
-                    },
-                    onError: (errors: any) => {
-                        toast({
-                            title: "Error",
-                            description:
-                                (Object.values(errors)[0] as string) ||
-                                "Failed to create role",
-                            variant: "destructive",
-                        });
-                    },
-                    onFinish: () => setIsLoading(false),
+            post("/roles", {
+                onSuccess: () => {
+                    handleCloseDialog();
+                    reset();
                 },
-            );
+                onFinish: () => setIsLoading(false),
+            });
         }
     };
 
@@ -284,11 +231,6 @@ export default function Roles({
             role.name.toLowerCase() === "admin" ||
             role.name.toLowerCase() === "customer"
         ) {
-            toast({
-                title: "Action Not Allowed",
-                description: "System and customer roles cannot be deleted.",
-                variant: "destructive",
-            });
             return;
         }
         setSelectedRole(role);
@@ -297,11 +239,6 @@ export default function Roles({
 
     const handleDelete = async () => {
         if (!hasPermission("role.delete")) {
-            toast({
-                title: "Access Denied",
-                description: "You don't have permission to delete roles.",
-                variant: "destructive",
-            });
             setIsDeleteDialogOpen(false);
             return;
         }
@@ -311,21 +248,11 @@ export default function Roles({
         setIsLoading(true);
         router.delete(`/roles/${selectedRole.id}`, {
             onSuccess: () => {
-                toast({
-                    title: "Success",
-                    description: "Role deleted successfully",
-                });
                 setIsDeleteDialogOpen(false);
                 setSelectedRole(null);
             },
             onError: (errors: any) => {
-                toast({
-                    title: "Error",
-                    description:
-                        (Object.values(errors)[0] as string) ||
-                        "Failed to delete role",
-                    variant: "destructive",
-                });
+                // Handled by global flash
             },
             onFinish: () => setIsLoading(false),
         });
@@ -365,20 +292,10 @@ export default function Roles({
             },
             {
                 onSuccess: () => {
-                    toast({
-                        title: "Success",
-                        description: "Role permissions updated successfully",
-                    });
                     setIsPermissionDialogOpen(false);
                 },
                 onError: (errors: any) => {
-                    toast({
-                        title: "Error",
-                        description:
-                            (Object.values(errors)[0] as string) ||
-                            "Failed to update permissions",
-                        variant: "destructive",
-                    });
+                    // Handled by global flash
                 },
                 onFinish: () => setIsPermissionsLoading(false),
             },
@@ -690,14 +607,13 @@ export default function Roles({
                             <Input
                                 id="name"
                                 placeholder="Enter role name"
+                                className={errors.name ? "border-destructive italic" : ""}
                                 value={formData.name}
                                 onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        name: e.target.value,
-                                    })
+                                    setFormData("name", e.target.value)
                                 }
                             />
+                            {errors.name && <p className="text-xs text-destructive font-bold">{errors.name}</p>}
                         </div>
                         {/* Description not in API yet, kept for future usage or can be hidden */}
                         <div className="space-y-2">
@@ -709,10 +625,7 @@ export default function Roles({
                                 placeholder="Enter role description"
                                 value={formData.description}
                                 onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        description: e.target.value,
-                                    })
+                                    setFormData("description", e.target.value)
                                 }
                                 rows={4}
                             />

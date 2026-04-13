@@ -30,7 +30,6 @@ export default function ExpensesIndex({ expenses, categories }: { expenses: any,
             onSuccess: () => {
                 setIsCreateOpen(false);
                 reset();
-                toast({ title: "Success", description: "Expense recorded successfully" });
             },
         });
     };

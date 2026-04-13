@@ -116,18 +116,9 @@ export default function Checkout({
         router.post(route("checkout.process"), formData, {
             onSuccess: () => {
                 setIsSubmitting(false);
-                toast({
-                    title: "Order Placed Successfully",
-                    description: "Thank you for your purchase!",
-                });
             },
             onError: (errors) => {
                 setIsSubmitting(false);
-                toast({
-                    title: "Order Failed",
-                    description: "Please check your information and try again.",
-                    variant: "destructive",
-                });
             },
         });
     };

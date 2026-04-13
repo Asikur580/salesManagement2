@@ -81,9 +81,7 @@ export default function RestockCreate({ suppliers, products }: CreateProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post("/restock-orders", {
-            onSuccess: () => {
-                toast({ title: "Success", description: "Restock order created successfully" });
-            },
+            onSuccess: () => {},
         });
     };
 

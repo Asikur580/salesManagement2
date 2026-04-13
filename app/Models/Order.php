@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\StockService;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
@@ -58,6 +59,12 @@ class Order extends Model
                 $order->status = $order->order_status;
             } elseif ($order->isDirty('status')) {
                 $order->order_status = $order->status;
+            }
+        });
+
+        static::updated(function ($order) {
+            if ($order->isDirty('status') && $order->status === 'cancelled') {
+                app(StockService::class)->returnStock($order);
             }
         });
     }

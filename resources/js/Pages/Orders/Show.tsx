@@ -93,12 +93,7 @@ export default function Show({ order }: OrdersShowProps) {
             `/orders/${order.id}/status`,
             { [field]: value },
             {
-                onSuccess: () => {
-                    toast({
-                        title: "Success",
-                        description: "Status updated successfully",
-                    });
-                },
+                onSuccess: () => {},
                 onFinish: () => setUpdatingStatus(false),
             },
         );

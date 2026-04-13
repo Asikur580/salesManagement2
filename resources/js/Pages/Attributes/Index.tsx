@@ -63,6 +63,7 @@ export default function Attributes({ attributes }: PageProps) {
         { id?: number; value: string }[]
     >([]);
     const [newValueText, setNewValueText] = useState("");
+    const [localError, setLocalError] = useState<string | null>(null);
 
     const { data, setData, post, put, processing, errors, reset, clearErrors } =
         useForm({
@@ -110,13 +111,11 @@ export default function Attributes({ attributes }: PageProps) {
                     v.value.toLowerCase() === newValueText.trim().toLowerCase(),
             )
         ) {
-            toast({
-                title: "Warning",
-                description: "Value already exists.",
-                variant: "destructive",
-            });
+            setLocalError("This value already exists in the list.");
             return;
         }
+
+        setLocalError(null);
 
         const newValues = [...attributeValues, { value: newValueText.trim() }];
         setAttributeValues(newValues);
@@ -135,6 +134,8 @@ export default function Attributes({ attributes }: PageProps) {
         if (e.key === "Enter") {
             e.preventDefault();
             handleAddValue();
+        } else if (localError) {
+            setLocalError(null);
         }
     };
 
@@ -155,17 +156,9 @@ export default function Attributes({ attributes }: PageProps) {
                 preserveState: true,
                 onSuccess: () => {
                     handleCloseDialog();
-                    toast({
-                        title: "Success",
-                        description: "Attribute updated successfully",
-                    });
                 },
                 onError: (err) => {
-                    toast({
-                        title: "Error",
-                        description: Object.values(err)[0] as string,
-                        variant: "destructive",
-                    });
+                    // Handled by global flash
                 },
             });
         } else {
@@ -174,17 +167,9 @@ export default function Attributes({ attributes }: PageProps) {
                 preserveState: true,
                 onSuccess: () => {
                     handleCloseDialog();
-                    toast({
-                        title: "Success",
-                        description: "Attribute created successfully",
-                    });
                 },
                 onError: (err) => {
-                    toast({
-                        title: "Error",
-                        description: Object.values(err)[0] as string,
-                        variant: "destructive",
-                    });
+                    // Handled by global flash
                 },
             });
         }
@@ -201,19 +186,10 @@ export default function Attributes({ attributes }: PageProps) {
             onSuccess: () => {
                 setIsDeleteDialogOpen(false);
                 setDeletingId(null);
-                toast({
-                    title: "Success",
-                    description: "Attribute deleted successfully",
-                });
             },
             onError: () => {
                 setIsDeleteDialogOpen(false);
                 setDeletingId(null);
-                toast({
-                    title: "Error",
-                    description: "Failed to delete attribute",
-                    variant: "destructive",
-                });
             },
         });
     };
@@ -370,16 +346,16 @@ export default function Attributes({ attributes }: PageProps) {
                                     Add the predefined values (e.g. Small,
                                     Medium, Large, Red, Blue).
                                 </p>
-
-                                <div className="flex gap-2 mb-4">
+                                <div className="flex gap-2">
                                     <Input
                                         placeholder="Type a value and press Enter..."
                                         value={newValueText}
-                                        onChange={(e) =>
-                                            setNewValueText(e.target.value)
-                                        }
+                                        onChange={(e) => {
+                                            setNewValueText(e.target.value);
+                                            if (localError) setLocalError(null);
+                                        }}
                                         onKeyDown={handleValueKeyDown}
-                                        className="bg-card"
+                                        className={`bg-card ${localError ? "border-red-500 ring-red-500/10 focus:ring-red-500/20" : ""}`}
                                     />
                                     <Button
                                         type="button"
@@ -389,6 +365,8 @@ export default function Attributes({ attributes }: PageProps) {
                                         Add
                                     </Button>
                                 </div>
+                                {localError && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{localError}</p>}
+                            </div>
 
                                 {/* Error checking from server array validation */}
                                 {Object.keys(errors).some((k) =>
@@ -427,7 +405,6 @@ export default function Attributes({ attributes }: PageProps) {
                                     )}
                                 </div>
                             </div>
-                        </div>
 
                         <DialogFooter className="pt-2">
                             <Button

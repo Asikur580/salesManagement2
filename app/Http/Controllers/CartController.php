@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class CartController extends Controller
     {
         $hasItems = false;
         if (auth()->check()) {
-            $hasItems = \App\Models\Cart::where('user_id', auth()->id())->exists();
+            $hasItems = Cart::where('user_id', auth()->id())->exists();
         } else {
             $hasItems = !empty(session()->get('cart', []));
         }
@@ -44,16 +45,26 @@ class CartController extends Controller
         $variantId = $request->variant_id;
         $quantity = $request->quantity;
 
+        // Verify requested inventory exists
+        $product = Product::with(['images', 'category'])->findOrFail($productId);
+        $variant = $variantId ? ProductVariant::with(['images', 'attributeValues'])->findOrFail($variantId) : null;
+        $availableStock = $variant ? $variant->stock : $product->stock;
+
         if (auth()->check()) {
-            $cartItem = \App\Models\Cart::where('user_id', auth()->id())
+            $cartItem = Cart::where('user_id', auth()->id())
                 ->where('product_id', $productId)
                 ->where('variant_id', $variantId)
                 ->first();
 
+            $currentQuantity = $cartItem ? $cartItem->quantity : 0;
+            if (($currentQuantity + $quantity) > $availableStock) {
+                return back()->with('error', "Only {$availableStock} items available in stock.");
+            }
+
             if ($cartItem) {
                 $cartItem->increment('quantity', $quantity);
             } else {
-                \App\Models\Cart::create([
+                Cart::create([
                     'user_id' => auth()->id(),
                     'product_id' => $productId,
                     'variant_id' => $variantId,
@@ -61,10 +72,14 @@ class CartController extends Controller
                 ]);
             }
         } else {
-            $product = Product::with(['images', 'category'])->findOrFail($productId);
-            $variant = $variantId ? ProductVariant::with(['images', 'attributeValues'])->findOrFail($variantId) : null;
-
             $cartItemId = $variantId ? "v_{$variantId}" : "p_{$productId}";
+            $cart = session()->get('cart', []);
+            $currentQuantity = isset($cart[$cartItemId]) ? $cart[$cartItemId]['quantity'] : 0;
+
+            if (($currentQuantity + $quantity) > $availableStock) {
+                return back()->with('error', "Only {$availableStock} items available in stock.");
+            }
+
             $price = $variant ? $variant->price : $product->base_price;
 
             // Handle image
@@ -75,8 +90,6 @@ class CartController extends Controller
                 $primaryImage = $product->images->where('is_primary', true)->first();
                 $imagePath = $primaryImage ? $primaryImage->image_path : ($product->images->first() ? $product->images->first()->image_path : null);
             }
-
-            $cart = session()->get('cart', []);
 
             if (isset($cart[$cartItemId])) {
                 $cart[$cartItemId]['quantity'] += $quantity;
@@ -107,14 +120,31 @@ class CartController extends Controller
         ]);
 
         if (auth()->check()) {
-            $cartItem = \App\Models\Cart::where('user_id', auth()->id())->where('id', $id)->first();
+            $cartItem = Cart::where('user_id', auth()->id())->where('id', $id)->first();
             if ($cartItem) {
+                $product = Product::find($cartItem->product_id);
+                $variant = $cartItem->variant_id ? ProductVariant::find($cartItem->variant_id) : null;
+                $availableStock = $variant ? $variant->stock : ($product ? $product->stock : 0);
+
+                if ($request->quantity > $availableStock) {
+                    return back()->with('error', "Only {$availableStock} items available in stock.");
+                }
+
                 $cartItem->update(['quantity' => $request->quantity]);
                 return back()->with('success', 'Cart updated!');
             }
         } else {
             $cart = session()->get('cart', []);
             if (isset($cart[$id])) {
+                $cartItemData = $cart[$id];
+                $product = Product::find($cartItemData['product_id']);
+                $variant = $cartItemData['variant_id'] ? ProductVariant::find($cartItemData['variant_id']) : null;
+                $availableStock = $variant ? $variant->stock : ($product ? $product->stock : 0);
+
+                if ($request->quantity > $availableStock) {
+                    return back()->with('error', "Only {$availableStock} items available in stock.");
+                }
+
                 $cart[$id]['quantity'] = $request->quantity;
                 session()->put('cart', $cart);
                 return back()->with('success', 'Cart updated!');
@@ -127,7 +157,7 @@ class CartController extends Controller
     public function destroy($id)
     {
         if (auth()->check()) {
-            $cartItem = \App\Models\Cart::where('user_id', auth()->id())->where('id', $id)->first();
+            $cartItem = Cart::where('user_id', auth()->id())->where('id', $id)->first();
             if ($cartItem) {
                 $cartItem->delete();
                 return back()->with('success', 'Item removed from cart.');
@@ -147,7 +177,7 @@ class CartController extends Controller
     public function clear()
     {
         if (auth()->check()) {
-            \App\Models\Cart::where('user_id', auth()->id())->delete();
+            Cart::where('user_id', auth()->id())->delete();
         } else {
             session()->forget('cart');
         }

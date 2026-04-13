@@ -12,11 +12,6 @@ export default function RoleAssignment() {
 
   useEffect(() => {
     if (user && !user.permissions?.includes('role.view')) {
-      toast({
-        title: "Access Denied",
-        description: "You do not have permission to view role assignments.",
-        variant: "destructive",
-      });
       router.visit("/");
     } else if (user) {
         setAuthorized(true);

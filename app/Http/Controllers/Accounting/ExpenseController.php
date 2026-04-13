@@ -50,7 +50,12 @@ class ExpenseController extends Controller
 
     public function destroy(Expense $expense)
     {
+        // Strict Block: Financial records cannot be deleted after 24 hours to preserve audit trail
+        if ($expense->created_at->diffInHours(now()) > 24 && !auth()->user()->hasRole('super-admin')) {
+            return back()->with('error', 'Financial records older than 24 hours cannot be deleted for auditing purposes. Please contact a super-admin.');
+        }
+
         $expense->delete();
-        return back()->with('success', 'Expense deleted');
+        return back()->with('success', 'Expense deleted successfully');
     }
 }

@@ -39,7 +39,6 @@ export default function SupplierDues({ restockOrders }: { restockOrders: any }) 
             onSuccess: () => {
                 setIsPaymentOpen(false);
                 reset();
-                toast({ title: "Payment Recorded", description: "Supplier payment has been sent/recorded." });
             }
         });
     };

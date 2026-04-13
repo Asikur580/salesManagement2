@@ -130,7 +130,6 @@ export default function SuppliersIndex({ initialSuppliers, filters }: IndexProps
             onSuccess: () => {
                 setIsDialogOpen(false);
                 reset();
-                toast({ title: "Success", description: editingSupplier ? "Supplier updated" : "Supplier created" });
             },
         };
 
@@ -146,7 +145,6 @@ export default function SuppliersIndex({ initialSuppliers, filters }: IndexProps
             router.delete(`/suppliers/${deleteId}`, {
                 onSuccess: () => {
                     setIsDeleteDialogOpen(false);
-                    toast({ title: "Success", description: "Supplier deleted" });
                 },
             });
         }

@@ -46,10 +46,19 @@ class PaymentController extends Controller
 
         $amount = $validated['amount'];
         $modelClass = $validated['payable_type'];
-        $payable = $modelClass::findOrFail($validated['payable_id']);
 
         DB::beginTransaction();
         try {
+            // Lock the payable model to prevent race conditions during payment processing
+            $payable = $modelClass::lockForUpdate()->findOrFail($validated['payable_id']);
+
+            // Prevent overpayment vulnerabilities
+            $dueAmount = $payable->total_amount - $payable->paid_amount;
+            if ($amount > $dueAmount) {
+                // If the user tries to pay more than due, cap it. Or throw an error. Capping is safest for accounting consistency.
+                return back()->with('error', 'Payment amount cannot exceed the due amount (' . number_format($dueAmount, 2) . ').');
+            }
+
             $payment = new Payment($validated);
             $payment->created_by = auth()->id();
             $payment->save();

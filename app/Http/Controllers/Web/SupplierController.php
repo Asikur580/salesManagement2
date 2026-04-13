@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Supplier\StoreSupplierRequest;
 use App\Http\Requests\Supplier\UpdateSupplierRequest;
+use App\Models\Supplier;
 use App\Repositories\Interfaces\SupplierRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -55,6 +56,12 @@ class SupplierController extends Controller
 
     public function destroy(int $id)
     {
+        $supplier = Supplier::findOrFail($id);
+
+        if ($supplier->restockOrders()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete supplier with existing restock orders. Please deactivate them instead.');
+        }
+
         $this->suppliers->delete($id);
 
         return redirect()->back()->with('success', 'Supplier deleted successfully.');

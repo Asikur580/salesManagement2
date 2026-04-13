@@ -268,23 +268,9 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
             forceFormData: true,
             onSuccess: () => {
                 handleCloseDialog();
-                toast({
-                    title: "Success",
-                    description: editingBrand
-                        ? "Brand updated successfully"
-                        : "Brand created successfully",
-                });
             },
             onError: (err: Record<string, string>) => {
-                toast({
-                    title: "Error",
-                    description:
-                        Object.values(err)[0] ||
-                        (editingBrand
-                            ? "Failed to update brand"
-                            : "Failed to create brand"),
-                    variant: "destructive",
-                });
+                // Handled by global flash
             },
         };
 
@@ -309,17 +295,9 @@ const Brands = ({ initialBrands, filters }: BrandsProps) => {
                 onSuccess: () => {
                     setIsDeleteDialogOpen(false);
                     setDeleteBrandId(null);
-                    toast({
-                        title: "Success",
-                        description: "Brand deleted successfully",
-                    });
                 },
                 onError: () => {
-                    toast({
-                        title: "Error",
-                        description: "Failed to delete brand",
-                        variant: "destructive",
-                    });
+                    // Handled by global flash
                 },
             });
         }

@@ -45,9 +45,9 @@ class ServiceInvoiceController extends Controller
     public function store(Request $request, StockService $stockService)
     {
         $request->validate([
-            'customer_id' => 'nullable|exists:users,id',
+            'customer_id' => 'required_without:customer_phone|nullable|exists:users,id',
             'customer_name' => 'nullable|string|max:255',
-            'customer_phone' => 'nullable|string|max:20',
+            'customer_phone' => 'required_without:customer_id|nullable|string|max:20',
             'technician_id' => 'required|exists:users,id',
             'service_type' => 'required|string|max:255',
             'service_charge' => 'required|numeric|min:0',
@@ -79,7 +79,8 @@ class ServiceInvoiceController extends Controller
                         }
                     }
 
-                    $totalPrice = $item['quantity'] * $item['unit_price'];
+                    $actualPrice = isset($variant) && $variant ? $variant->price : $product->base_price;
+                    $totalPrice = $item['quantity'] * $actualPrice;
                     $subtotalParts += $totalPrice;
 
                     $itemsData[] = [
@@ -87,7 +88,8 @@ class ServiceInvoiceController extends Controller
                         'variant_id' => $item['variant_id'] ?? null,
                         'product_name' => $product->name,
                         'variant_name' => $variantName,
-                        'unit_price' => $item['unit_price'],
+                        'unit_price' => $actualPrice,
+                        'cost_price' => $product->cost_price ?? 0,
                         'quantity' => $item['quantity'],
                         'total_price' => $totalPrice,
                         'item_type' => 'service_part',
@@ -110,9 +112,6 @@ class ServiceInvoiceController extends Controller
             if ($request->customer_id) {
                 $customer = User::findOrFail($request->customer_id);
             } else {
-                if (empty($request->customer_phone)) {
-                    return redirect()->back()->with('error', 'Customer selection or Phone number is required.');
-                }
                 // Check if user exists by phone
                 $customer = User::where('phone', $request->customer_phone)->first();
                 if (!$customer) {

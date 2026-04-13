@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\HRM;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Attendance;
 use App\Models\Salary;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -57,15 +58,22 @@ class PayrollController extends Controller
             foreach ($employees as $emp) {
                 $baseSalary = $emp->employeeProfile->base_salary ?? 0;
                 
-                // Calculate absences in this month
-                $absences = \App\Models\Attendance::where('user_id', $emp->id)
+                // Calculate absences and half-days in this month
+                $absences = Attendance::where('user_id', $emp->id)
                     ->whereYear('date', $date->year)
                     ->whereMonth('date', $date->month)
                     ->where('status', 'absent')
                     ->count();
 
-                // Basic deduction logic
-                $deduction = $baseSalary > 0 ? ($baseSalary / $daysInMonth) * $absences : 0;
+                $halfDays = Attendance::where('user_id', $emp->id)
+                    ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
+                    ->where('status', 'half-day')
+                    ->count();
+
+                // Basic deduction logic: Absent = 1 day, Half-day = 0.5 day
+                $totalDeductionDays = $absences + ($halfDays * 0.5);
+                $deduction = $baseSalary > 0 ? ($baseSalary / $daysInMonth) * $totalDeductionDays : 0;
                 
                 $bonus = 0; // Configurable later
                 

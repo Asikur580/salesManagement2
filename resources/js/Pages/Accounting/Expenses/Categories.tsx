@@ -26,7 +26,6 @@ export default function Categories({ categories }: { categories: any[] }) {
             onSuccess: () => {
                 setIsCreateOpen(false);
                 reset();
-                toast({ title: "Success", description: "Category created successfully" });
             },
         });
     };
