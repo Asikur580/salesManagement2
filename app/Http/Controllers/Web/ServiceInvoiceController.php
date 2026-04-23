@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\ServiceType;
 use App\Models\User;
 use App\Services\StockService;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ class ServiceInvoiceController extends Controller
                 ->with(['images', 'variants.attributeValues.attribute'])
                 ->get(),
             'categories' => Category::select('id', 'name')->get(),
+            'serviceTypes' => ServiceType::orderBy('name')->get(),
         ]);
     }
 

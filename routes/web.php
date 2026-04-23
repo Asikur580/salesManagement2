@@ -25,6 +25,7 @@ use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\RestockOrderController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\ServiceInvoiceController;
+use App\Http\Controllers\Web\ServiceTypeController;
 use App\Http\Controllers\Web\ShopController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\UnitController;
@@ -126,6 +127,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/services/create', [ServiceInvoiceController::class, 'create'])->name('services.create')->middleware('permission:order.manage');
         Route::post('/services', [ServiceInvoiceController::class, 'store'])->name('services.store')->middleware('permission:order.manage');
         Route::get('/services/{order}/invoice', [ServiceInvoiceController::class, 'downloadInvoice'])->name('services.invoice')->middleware('permission:order.view');
+
+        // Service Types CRUD
+        Route::get('/service-types', [ServiceTypeController::class, 'index'])->name('service-types.index')->middleware('permission:order.manage');
+        Route::post('/service-types', [ServiceTypeController::class, 'store'])->name('service-types.store')->middleware('permission:order.manage');
+        Route::put('/service-types/{serviceType}', [ServiceTypeController::class, 'update'])->name('service-types.update')->middleware('permission:order.manage');
+        Route::delete('/service-types/{serviceType}', [ServiceTypeController::class, 'destroy'])->name('service-types.destroy')->middleware('permission:order.manage');
 
         // Order Management
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index')->middleware('permission:order.view');
