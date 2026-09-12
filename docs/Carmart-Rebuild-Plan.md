@@ -256,7 +256,7 @@ This is the most important table in Part A. It is the input to every phase in Pa
 | R-31 | API surface | `routes/api.php` returns Inertia responses; a route points at a non-existent method; no token issuing | Versioned JSON API with resources and a token endpoint |
 | R-32 | Missing DB constraints | Validation-only uniqueness on 5 relationships | Real unique indexes |
 | R-33 | Test coverage | Two Laravel skeleton tests only | Test strategy in Section 18 |
-| R-34 | Registration | `Register.tsx` calls `useAuth().register`, which does not exist; no `POST /register` route | Decide and implement (see `[VERIFY]` list) |
+| R-34 | Registration | `Register.tsx` calls `useAuth().register`, which does not exist; no `POST /register` route | **Build it** (Appendix B decision 1): `POST /register`, a `RegisterAction`, and a working `useAuth().register`, sharing one customer Party with the OTP path |
 | R-35 | Config via `env()` at runtime | `SmsService` breaks under `config:cache` | All config through `config/*.php` |
 | R-36 | Repository contents | Repositories exist for 6 entities; 14 modules bypass the pattern entirely | Consistent layering (Section 2) |
 
@@ -277,18 +277,20 @@ This is the most important table in Part A. It is the input to every phase in Pa
 | `useAuth().login` / `useAuth().register` | Wrong field name / missing function |
 | `app.zip`, `public.zip`, `gldqpoea_radian_agrovet.sql`, `build_output.log`, `debug_variants.json`, committed `.env` | Repository hygiene |
 
-#### 1.15.4 `[VERIFY]` — business decisions required before the rebuild starts
+#### 1.15.4 Business decisions — status
 
-| Question | Why it matters |
+All fifteen open decisions are now closed — thirteen answered by the business, two resolved by the technical team. The full decision register, including the reasoning and the impact of each answer on the plan, is **Appendix B**.
+
+| Question | Answer |
 |---|---|
-| Is email/password self-registration wanted, or is OTP the only customer entry? | Determines whether `Register` is built or removed (R-34) |
-| Should `admin` reach POS and Accounting out of the box? | Determines the default role matrix (R-9) |
-| Which profit definition is authoritative — cash basis or margin basis? | Determines the canonical P&L (R-12) |
-| Single currency (BDT) or multi-currency? | `BDT` is hard-coded in `OrderCreatedNotification`; views use `TK` |
-| Is the domain automotive, general retail + repair, or both? | The folder is `carMart`; seeded service types include IT, AC, and CCTV work |
-| Single branch/warehouse or multi-location? | Drives the entire inventory schema (Section 10) |
-| Is POS receipt printing required? | No print handler exists in `Pos/Index.tsx` |
-| Does the SRS in the repository root add requirements not present in code? | `Software Requirements Specification (SRS).pdf` and `Detailed_Implementation_Plan.md` were **not** analysed for this document |
+| Is email/password self-registration wanted, or is OTP the only customer entry? | **Build it** (R-34) |
+| Should `admin` reach POS and Accounting out of the box? | **Yes** |
+| Which profit definition is authoritative — cash basis or margin basis? | **Accrual / margin basis** (R-12) — cash view retained separately as Cash Flow |
+| Single currency (BDT) or multi-currency? | **Single currency** |
+| Is the domain automotive, general retail + repair, or both? | **General retail + repair**, with a typed serviced-asset register covering Vehicle as one asset type |
+| Single branch/warehouse or multi-location? | **Single location** |
+| Is POS receipt printing required? | **Yes** |
+| Does the SRS in the repository root add requirements not present in code? | **Not applicable** — code is the sole source of truth for this plan |
 
 ---
 
@@ -443,7 +445,7 @@ Modules/<Name>/
 | Customer order cancellation (pending only) | `[EXISTS]` | Preserve; extend to a cancellation-request workflow after fulfilment starts `[NEW]` |
 | PDF invoice | `[EXISTS]` | Preserve |
 | Payment method (free text) | `[IMPROVE]` | Becomes a tender/payment-method master with a gateway abstraction |
-| Online payment gateway | `[NEW]` | None in the codebase. Recommended: an abstract `PaymentGateway` contract with per-provider drivers |
+| Online payment gateway | `[NEW — deferred]` | **Decision 13: future.** None in the codebase. Build the abstract `PaymentGateway` contract and an offline/COD driver in Phase 7 so the seam exists; no live provider integration in this rebuild |
 | Shipping / delivery | `[NEW]` | `orders.shipping_amount` exists but is never written. Recommended: shipping zones, methods, rates, and a shipment entity with tracking |
 | Discount rules | `[IMPROVE]` | Only a manual per-document discount exists. Recommended: a discount engine (percentage / fixed / tiered / category- and product-scoped) |
 | Coupon | `[NEW]` | Not present. Recommended: coupon codes with validity window, usage limits, minimum spend, and per-customer limits |
@@ -451,8 +453,8 @@ Modules/<Name>/
 | Refund | `[NEW]` | Not present. Recommended: full and partial refunds against the original tender |
 | Product reviews / ratings | `[NEW]` | Not present |
 | Flash sale / campaign engine | `[IMPROVE]` | `/flash-sales` returns random active products and `old_price` is a synthetic `price × 1.15`. Recommended: a real campaign entity with a schedule and a compare-at price |
-| Tax rules | `[NEW]` | Tax is a manual per-document percentage today. Recommended: a tax master with rules per product class and jurisdiction |
-| Multi-currency | `[VERIFY]` | Currently single-currency by implication |
+| Tax rules | `[NEW — deferred]` | **Decision 14: manual.** Tax stays a manual per-document percentage, as today. Build it as a single `TaxCalculator` seam with a manual-rate strategy so a tax master can replace it later without touching the pricing engine. The `tax_rules` table is **not** built in this rebuild |
+| Multi-currency | Out of scope | **Decision 4: single currency.** Money is still modelled as a value object with a currency field fixed to one configured currency, so multi-currency is a later change, not a rewrite |
 
 ### 3.2 Order state machine (replaces the free-for-all in R-4)
 
@@ -501,7 +503,7 @@ Rules: transitions are declared in one place; every transition writes an `order_
 | Capability | Status | Notes |
 |---|---|---|
 | POS terminal screen | `[EXISTS]` | Preserve the layout; rebuild the data loading (R-26) |
-| Product search | `[IMPROVE]` | Currently the full catalog is shipped to the browser. Replace with a debounced server-side search endpoint plus an offline-capable local index `[NEW]` |
+| Product search | `[IMPROVE]` | Currently the full catalog is shipped to the browser. Replace with a debounced server-side search endpoint (no local index — see Offline mode) |
 | Barcode scanning | `[EXISTS]` | Preserve; auto-focused input + product/variant fallthrough already work |
 | Cart | `[EXISTS]` | Preserve |
 | Customer selection / quick create | `[EXISTS]` | Preserve; route through the shared Party service |
@@ -510,19 +512,19 @@ Rules: transitions are declared in one place; every transition writes an `order_
 | Split tender (multiple payment methods on one sale) | `[NEW]` | Recommended: a `sale_tenders` table |
 | Change / cash tendered calculation | `[NEW]` | `paid_amount` is submitted by the UI but never validated or stored |
 | Discount | `[IMPROVE]` | Client/server mismatch (R-6). Rebuild with one pricing engine; support both line-level and document-level discount |
-| Tax | `[IMPROVE]` | Manual percentage today; move to the tax master |
+| Tax | `[EXISTS]` | **Decision 14: manual.** Manual percentage preserved; routed through the shared `TaxCalculator` seam |
 | Hold / Resume sale | `[NEW]` | Not present. Recommended: parked sales per terminal per operator |
 | Sales return | `[NEW]` | Not present |
 | Refund | `[NEW]` | Not present |
 | Invoice / receipt (data) | `[EXISTS]` | Order is created and an invoice view exists |
-| Receipt printing (thermal / 80 mm) | `[NEW]` | No print handler in `Pos/Index.tsx`. `[VERIFY]` whether required |
+| Receipt printing (thermal / 80 mm) | `[NEW — in scope]` | **Decision 7: yes.** No print handler exists in `Pos/Index.tsx` today. Build an 80 mm receipt template plus browser print and ESC/POS output. Printer hardware model is a deployment detail, not a design blocker |
 | Cash drawer | `[NEW]` | Not present |
 | Opening / closing balance | `[NEW]` | Not present |
 | Shift (open, close, reconcile, variance) | `[NEW]` | Not present |
 | Terminal / register master | `[NEW]` | Not present |
 | Daily sales summary | `[IMPROVE]` | Exists only as an accounting report with no filters |
 | POS-specific reports (Z-report, X-report, tender summary, operator summary) | `[NEW]` | Not present |
-| Offline mode | `[NEW]` | Not present. Recommended if counter connectivity is unreliable — `[VERIFY]` |
+| Offline mode | Out of scope | **Decision 8: no.** POS assumes connectivity. Product search is a server endpoint, not a local index |
 
 ### 4.2 POS shift lifecycle `[NEW]`
 
@@ -573,7 +575,7 @@ Z-REPORT (immutable) → variance posted to Accounting as cash over/short
 | Service quotation / estimate | `[NEW]` | Not present. Recommended: quotation → customer approval → job |
 | Service job status tracking | `[NEW]` | Not present — service invoices are created directly at `delivered` |
 | Service history per customer / per asset | `[IMPROVE]` | Reachable only by filtering orders; no dedicated view |
-| Serviced asset / device register (serial, model) | `[NEW]` | Not present |
+| Serviced asset register | `[NEW — typed]` | **Decision 5.** Not present today. Built as `asset_types` + per-type attribute definitions + `serviced_assets`, seeded with a **Device** type (serial, model, brand, purchase date) and a **Vehicle** type (registration, chassis, engine number, odometer). Domain-specific logic — parts/vehicle fitment matching, odometer-based service intervals — is explicitly **out of scope** and listed as a Future Improvement |
 | Warranty tracking | `[NEW]` | Not present |
 | After-sales / follow-up scheduling | `[NEW]` | Not present |
 | Labour vs. parts revenue split | `[IMPROVE]` | `service_charge` and part lines exist; reporting does not separate them |
@@ -644,7 +646,7 @@ The existing behaviour (create → immediately `delivered`) becomes the **expres
 | Cash flow statement | `[NEW]` |
 | AR / AP sub-ledgers with ageing | `[IMPROVE]` — dues listings exist, ageing does not |
 | Bank accounts and bank reconciliation | `[NEW]` — `bank_transfer` is a payment method with no bank entity |
-| Tax accounts and tax reporting | `[NEW]` |
+| Tax accounts and tax reporting | `[NEW]` — input/output tax accounts and the tax report are built; the **rate stays manual per document** (Decision 14) |
 | Refund / credit note accounting | `[NEW]` |
 | Inventory valuation and COGS posting | `[NEW]` |
 | Fiscal periods with open/close | `[NEW]` |
@@ -724,17 +726,17 @@ The existing behaviour (create → immediately `delivered`) becomes the **expres
 | Base salary, join date | `[EXISTS]` | Preserve; extend to a salary-structure history `[NEW]` |
 | Role-escalation guards | `[EXISTS]` | Preserve |
 | Employee search + pagination | `[EXISTS]` | Preserve |
-| Department | `[NEW]` | Not present |
-| Designation | `[IMPROVE]` | A `designations` table exists but is **orphaned** — no model, controller, or route. Role name is currently displayed as the designation. Build it properly and stop overloading roles |
+| Department | `[NEW — in scope]` | **Decision 10: yes.** Not present today |
+| Designation | `[IMPROVE — in scope]` | **Decision 10: yes.** A `designations` table exists but is **orphaned** — no model, controller, or route. Role name is currently displayed as the designation. Build it properly and stop overloading roles |
 | Attendance (month grid, one per day, no future dates) | `[EXISTS]` | Preserve; fix R-17 (enum status) |
 | Check-in / check-out times | `[EXISTS]` | Stored as nullable free-form strings; type them properly |
 | Leave request with an overlap guard | `[EXISTS]` | Preserve |
 | Leave approval | `[EXISTS]` | Preserve; add approver identity and timestamp `[NEW]` |
-| Leave balance / entitlement / accrual | `[NEW]` | Not present — only overlap is checked |
+| Leave balance / entitlement / accrual | `[NEW — in scope]` | **Decision 11: yes.** Not present — only overlap is checked today. Entitlement is configured per leave type, with accrual, carry-forward, and balance deduction on approval |
 | Leave types beyond `casual|sick|annual` | `[IMPROVE]` | Make configurable |
 | Shift management | `[NEW]` | Not present |
-| Holiday calendar | `[NEW]` | Not present |
-| Weekend configuration | `[NEW]` | Not present — payroll divides by calendar days, not working days |
+| Holiday calendar | `[NEW — in scope]` | **Decision 12: yes.** Not present today |
+| Weekend configuration | `[NEW — in scope]` | **Decision 12: yes.** Not present — payroll currently divides by **calendar** days. The new payroll divides by **working** days derived from the weekend configuration and the holiday calendar. This changes the deduction result for every month; finance must sign off on the new figure during migration |
 | Late Apply (regularisation of a late mark) | `[NEW]` | Not present |
 | Attendance Apply (missed-punch request) | `[NEW]` | Not present |
 | Payroll generation from attendance | `[EXISTS]` | Preserve the formula as the baseline; fix R-16 (immutable runs) |
@@ -960,7 +962,7 @@ E-comm     POS     Service    Procurement               HRM
 | **Stock moves only on SKUs.** Product-level stock becomes a derived sum | Single source of truth | Fixes R-1 |
 | **Stock ledger is append-only.** Current level is a projection, kept in a `stock_levels` table updated in the same transaction | Auditability + fast reads | The current `stock_transactions` ledger already does this well — extend it |
 | **Reserved vs. available.** `available = on_hand − reserved` | Prevents overselling between add-to-cart and fulfilment | `[NEW]` — no reservation concept exists today |
-| **Location dimension on every movement** | Multi-warehouse readiness without a schema rewrite. Ships with a single default location | `[NEW]` — `[VERIFY]` whether multi-location is required now |
+| **Location dimension on every movement** | Multi-warehouse readiness without a schema rewrite | `[NEW]` — **Decision 6: single location.** The `location_id` column and the `locations` table are still built and every movement carries the dimension, but exactly one default location row ships and no location-selection UI, transfer screen, or per-location permission is built in this rebuild |
 | **Party unification.** One `parties` table; Customer, Supplier, and Employee are roles on a party | A supplier who is also a customer is one record; a technician is an employee party | Today `users` holds customers **and** staff, `suppliers` is separate, and `employee_profiles` extends `users` |
 | **User ≠ Employee.** A login is optional on any party | An employee with no system access is still an employee | Today an employee **must** be a `User` |
 | **Documents share one numbering service** with per-series sequences | Fixes R-7 | Today three different generation strategies coexist |
@@ -1042,6 +1044,8 @@ Legend: **V** view · **C** create · **E** edit · **D** delete · **A** approv
 
 This matrix is the **default seed**, not a hard limit — every cell is a permission that can be granted or revoked per role or per user.
 
+**Decision 2 applied.** `admin` (mapped to **Manager** plus the POS and Accounting columns above) receives POS and Accounting access out of the box. Concretely, the seeded `admin` role gets `pos.*`, `sales.order.manage`, `accounting.*.view`, `accounting.*.create`, and `accounting.*.update` — but **not** `accounting.journal.post`, `accounting.period.close`, or `settings.*`, which stay with Accounts Manager and System Admin. This closes the R-9/I-5 gap where a freshly seeded `admin` could not open POS or Accounting at all.
+
 ### 11.4 Enforcement approach
 
 | Layer | Mechanism |
@@ -1093,7 +1097,7 @@ This matrix is the **default seed**, not a hard limit — every cell is a permis
 | `audit_logs` | Immutable audit trail | `actor_id`, `action`, `auditable_type/id`, `before`, `after`, `ip` | `[NEW]` |
 | `roles`, `permissions`, pivots | Spatie RBAC | — | `[EXISTS]` |
 | `notifications` | Database notifications | — | `[EXISTS]` |
-| `tax_rules` | Tax master | `code`, `rate`, `type`, `account_id`, validity | `[NEW]` |
+| `tax_rules` | Tax master | `code`, `rate`, `type`, `account_id`, validity | **Not built** — Decision 14: manual per-document tax rate |
 | `payment_methods` | Tender master | `code`, `name`, `ledger_account_id`, `is_active` | `[NEW]` |
 
 ### 13.2 Catalog
@@ -1119,7 +1123,7 @@ This matrix is the **default seed**, not a hard limit — every cell is a permis
 | `stock_levels` | `[NEW]` | `(sku_id, location_id)` unique; `on_hand`, `reserved`, `available` |
 | `stock_reservations` | `[NEW]` | Cart/order holds with expiry |
 | `stock_counts`, `stock_count_lines` | `[NEW]` | Physical stock take |
-| `stock_transfers` | `[NEW]` | Location-to-location |
+| `stock_transfers` | `[NEW — deferred]` | Location-to-location. Table created, UI deferred (Decision 6: single location) |
 | `inventory_valuations` | `[NEW]` | Period-end cost snapshot |
 
 ### 13.4 Sales core (shared by all three channels)
@@ -1157,7 +1161,8 @@ This matrix is the **default seed**, not a hard limit — every cell is a permis
 | `service_jobs` | `[NEW]` — currently a service sale is only an `orders` row |
 | `service_job_lines` (labour + parts) | `[IMPROVE]` — parts exist as `order_items.item_type = 'service_part'` |
 | `service_job_status_history` | `[NEW]` |
-| `serviced_assets` (serial, model, customer) | `[NEW]` |
+| `asset_types`, `asset_type_attributes` | `[NEW]` — Decision 5: typed register, seeded with Device and Vehicle |
+| `serviced_assets`, `serviced_asset_attribute_values` | `[NEW]` — linked to a customer party and an asset type |
 | `warranties`, `warranty_claims` | `[NEW]` |
 | `quotations`, `quotation_lines` | `[NEW]` |
 
@@ -1442,10 +1447,10 @@ Employee (department, designation, shift, salary structure)
 | **3** | **CRM + Procurement** | Customer and supplier as party roles, purchase order with approval, goods receipt, supplier bill | Supplies the cost side that Accounting needs, and the customer side that all three channels need |
 | **4** | **Sales Core** | Order aggregate, state machine, status history, pricing engine (discount + tax), tender model, returns and refunds, numbering, invoice documents | The shared spine for all three channels — build once |
 | **5** | **Accounting** | Chart of accounts, fiscal periods, journal, ledger, AR/AP, bank, tax, posting listeners for every event emitted in phases 2–4, financial statements | **Moved ahead of the channels.** Posting rules must exist before channel cutover, otherwise every channel is migrated twice |
-| **6** | **POS** | Terminal, shift, cash drawer, hold/resume, split tender, returns, receipt, X/Z reports, offline-capable product search | Highest daily transaction volume; needs Sales core + Accounting in place |
-| **7** | **E-commerce** | Storefront on the new catalog, guest cart token, checkout with discount/tax/shipping, coupon, campaign, RMA, payment gateway | Largest surface area; benefits from POS having proved the Sales core |
+| **6** | **POS** | Terminal, shift, cash drawer, hold/resume, split tender, returns, **80 mm receipt printing (Decision 7)**, X/Z reports, server-side product search (no offline mode — Decision 8) | Highest daily transaction volume; needs Sales core + Accounting in place |
+| **7** | **E-commerce** | Storefront on the new catalog, guest cart token, **email/password registration (Decision 1)**, checkout with discount/manual tax/shipping, coupon, campaign, RMA, `PaymentGateway` contract with a COD/offline driver only (Decision 13 — no live provider) | Largest surface area; benefits from POS having proved the Sales core |
 | **8** | **Service Sale** | Service job entity and lifecycle, quotation, serviced asset, warranty, technician assignment, labour vs. parts split | Depends on Sales core, Inventory, and HRM technicians |
-| **9** | **HRM** | Department, designation, shift, holiday, attendance apply, late apply, leave balance, salary structure, immutable payroll runs, payslips, payroll → Accounting posting | Independent of sales; can run in parallel with 6–8 if staffing allows |
+| **9** | **HRM** | **Department, designation (Decision 10)**, shift, **holiday calendar + weekend configuration (Decision 12)**, attendance apply, late apply, **leave types with entitlement and balance (Decision 11)**, salary structure, immutable payroll runs, payslips, payroll → Accounting posting | Independent of sales; can run in parallel with 6–8 if staffing allows |
 | **10** | **Reporting** | Read models, projectors, report registry, all reports in §8.2, export pipeline, scheduling, saved views | Needs every source module to emit events |
 | **11** | **Analytics** | Fact tables, aggregators, KPI definitions, management dashboard, trends and forecasting | Needs Reporting read models |
 | **12** | **Integration, Optimisation & QA** | End-to-end integration tests, permission matrix tests, load testing, index tuning, consistency jobs, security review, documentation, training | Final hardening |
@@ -1532,11 +1537,13 @@ Every phase is complete only when all of the following hold:
 | `expense_categories` | `accounts` under 6100 + `expense_categories` retained as an analytic dimension | **Requires a mapping decision per category** | Medium |
 | `expenses` | `expenses` + a journal entry per row | Post to the mapped account with the original date | Medium |
 | `payments` | `payments` + a journal entry per row | Map `payment_method` to a cash/bank account; direction from `type` | Medium |
-| **Opening balances** | `journals` (opening entry) | **A single opening journal as of the cutover date**: inventory value, AR (from open dues), AP (from open supplier dues), cash/bank (`[VERIFY]` — actual balances are not in the system), equity as the balancing figure | **High** — needs finance sign-off |
-| `employee_profiles` | `employees` | Direct; add department and designation (`[VERIFY]` — not in the system) | Medium |
+| **Opening balances** | `journals` (opening entry) | **Decision 9: adopt the recommended approach.** A single opening journal as of the cutover date: inventory value (from migrated `stock_levels` × unit cost), AR (from open customer dues), AP (from open supplier dues), cash and bank balances **supplied by finance as a signed worksheet** (they do not exist in the current system), equity as the balancing figure | **High** — blocked until finance supplies the cash/bank worksheet; see Appendix B decision 9 |
+| `employee_profiles` | `employees` | Direct. **Department and designation are now in scope (Decision 10) but do not exist in the current data** — HR must supply a per-employee mapping sheet before cutover; unmapped employees land in an `Unassigned` department and designation | Medium |
 | `attendances` | `attendances` | Map free-text status onto the enum; **unmapped values require a decision list** | Medium |
 | `leave_requests` | `leave_requests` | Direct; approver unknown for historical rows | Low |
-| `salaries` | `payroll_runs` + `payroll_run_lines` | One migrated run per distinct `month_year` | Low |
+| `salaries` | `payroll_runs` + `payroll_run_lines` | One migrated run per distinct `month_year`, imported **as-is and locked**. Historical rows are not recalculated — the new working-day deduction basis (Decision 12) applies only to runs generated after cutover, so historical and new figures use different bases by design | Medium |
+| Leave entitlement opening balances | `leave_balances` | **Decision 11 in scope but no source data** — HR supplies opening entitlement and consumed days per employee per leave type; unmapped employees start at the configured default | Medium |
+| Holiday calendar + weekend configuration | `holidays`, settings | **Decision 12 in scope but no source data** — HR supplies the calendar for the current and next year | Low |
 | `roles`, `permissions` | Regenerated from the manifest | **Not migrated** — re-granted from the new matrix, with a report of any custom grants in the old system | Medium |
 | `notifications` | Same | Direct, or archived | Low |
 
@@ -1694,29 +1701,96 @@ Every phase is complete only when all of the following hold:
 | R-31 | API surface | 1 → 12 |
 | R-32 | Missing DB constraints | 1, 2 |
 | R-33 | Test coverage | 0 → all |
-| R-34 | Registration flow | `[VERIFY]` → 7 |
+| R-34 | Registration flow | 7 — **build** (Decision 1) |
 | R-35 | `env()` at runtime | 1 |
 | R-36 | Inconsistent repository layering | 1 → all |
 
-## Appendix B — Open decisions blocking the plan
+## Appendix B — Decision register
 
-These must be answered before Phase 1 begins. Each is `[VERIFY]` — the codebase does not contain the answer.
+Fifteen decisions were raised. **All fifteen are now closed** — thirteen answered by the business (B.1), two delegated to and resolved by the technical team (B.3). Four carry a data dependency that blocks cutover but not development (B.2).
 
-1. Email/password self-registration: build or drop? (R-34)
-2. Should `admin` reach POS and Accounting by default? (Section 11.3 seed)
-3. Authoritative profit definition: cash basis or accrual/margin? (R-12, Section 6)
-4. Single currency (BDT) or multi-currency?
-5. Business domain: automotive, general retail + repair, or both? (Affects the catalog and service taxonomy)
-6. Single location or multi-warehouse from day one? (Section 10.2)
-7. Is POS receipt printing required, and on what hardware?
-8. Is POS offline mode required?
-9. Opening balances for cash and bank accounts as of the cutover date — not present in the system (Section 17.2)
-10. Department and designation structure — not present in the system (Section 13.9)
-11. Leave entitlement policy per leave type — not present in the system
-12. Working-week and holiday calendar — not present in the system (payroll currently divides by calendar days)
-13. Which payment gateway(s), if any?
-14. Tax regime and rates — currently a manual per-document percentage
-15. Do `Software Requirements Specification (SRS).pdf` and `Detailed_Implementation_Plan.md` in the repository root add requirements not present in the code? **These were not analysed for this document.**
+**No decision blocks the start of any phase.**
+
+Legend: **RESOLVED** · **RESOLVED, DATA PENDING** — the decision is made but the business must still supply source data that does not exist in the current system.
+
+### B.1 Resolved decisions
+
+| # | Decision | Answer | Impact on the plan | Sections updated |
+|---|---|---|---|---|
+| 1 | Email/password self-registration | **Build** | `Register.tsx` is repaired rather than retired. Requires a real `POST /register` route, a `RegisterAction`, validation under the 10-character password policy, and a `useAuth().register` implementation. Both entry paths (OTP and password) create the same customer Party. R-34 moves from `[VERIFY]` to **Phase 7** | §1.15.4, §16.2 Phase 7, Appendix A |
+| 2 | `admin` reaches POS and Accounting by default | **Yes** | The seeded `admin` role gets `pos.*`, `sales.order.manage`, and accounting view/create/update — but not `accounting.journal.post`, `accounting.period.close`, or `settings.*`. Directly closes the R-9 / I-5 defect where a freshly seeded `admin` could open neither POS nor Accounting | §11.3 |
+| 4 | Currency | **Single currency** | No multi-currency tables, no exchange-rate service, no revaluation. Money stays a value object carrying a currency field fixed to one configured value, so a later move to multi-currency is an extension, not a rewrite. Removes the inconsistency where `BDT` is hard-coded in `OrderCreatedNotification` while views print `TK` | §3.1 |
+| 6 | Locations | **Single location** | The `locations` table and the `location_id` dimension on every stock movement are still built — the cost is one column and one seeded row, and omitting it would force a stock-ledger rewrite later. **Not** built: location selection UI, the transfer screen, per-location permissions, and location filters on reports. `stock_transfers` ships as a table with no UI | §10.2, §13.3 |
+| 7 | POS receipt printing | **Yes** | An 80 mm receipt template plus browser print and ESC/POS output land in Phase 6. Printer hardware selection is a deployment detail, not a design blocker. Note: no print handler exists in `Pos/Index.tsx` today, so this is entirely new work | §4.1, §16.2 Phase 6 |
+| 8 | POS offline mode | **No** | POS assumes connectivity. Product search is a debounced **server** endpoint — this still fixes R-26 (the current page ships the entire catalog to the browser) without the complexity of a local index, sync queue, or conflict resolution | §4.1, §16.2 Phase 6 |
+| 10 | Department and designation | **Yes — build** | The orphaned `designations` table is implemented properly and `departments` is added. Role stops being overloaded as the designation (today `UserController` and `EmployeeController` display the first role name as the designation) | §7.1, §13.9 |
+| 11 | Leave entitlement per leave type | **Yes — build** | Leave types become configurable with entitlement, accrual, carry-forward, and balance deduction on approval. Today only the overlap guard exists and the types are a hard-coded enum `casual|sick|annual` | §7.1, §13.9 |
+| 12 | Working week and holiday calendar | **Yes — build** | Holiday calendar and weekend configuration are built, and payroll switches from dividing by **calendar** days to dividing by **working** days. **This changes the deduction figure for every employee in every month.** Finance and HR must sign off on the new basis; historical payroll runs are migrated as-is and locked, so old and new runs use different bases by design | §7.1, §13.9, §17.2 |
+| 13 | Payment gateway | **Future** | The `PaymentGateway` contract and a COD/offline driver are built in Phase 7 so the seam exists, but no live provider is integrated in this rebuild. Checkout keeps the current behaviour of recording a payment method without capturing funds online | §3.1, §16.2 Phase 7 |
+| 14 | Tax regime | **Manual** | Tax stays a manual per-document percentage, exactly as POS and Service Invoice work today. The `tax_rules` master table is **not** built. Tax is routed through a single `TaxCalculator` seam with a manual-rate strategy, so a rules engine can replace it later without touching the pricing engine. Output tax still posts to the ledger account 2100 | §3.1, §4.1, §13.1 |
+| 15 | SRS and implementation-plan documents | **Not applicable** | `Software Requirements Specification (SRS).pdf` and `Detailed_Implementation_Plan.md` are not treated as inputs. **The code remains the sole source of truth for this plan.** Any requirement present only in those documents is therefore absent from this roadmap | §1.15.4 |
+
+### B.2 Resolved, data pending
+
+| # | Decision | Answer | What is still needed | Blocks |
+|---|---|---|---|---|
+| 9 | Opening balances for cash and bank | **Adopt the recommended approach** — a single opening journal as of the cutover date | Inventory, AR, and AP are derivable from migrated data. **Cash and bank balances are not present anywhere in the current system** and must be supplied by finance as a signed worksheet, with equity as the balancing figure | Phase 5 cutover (not Phase 5 development) |
+| 10a | Department and designation source data | — | The structures are in scope, but **no per-employee department or designation exists in the current data**. HR must supply a mapping sheet; unmapped employees land in an `Unassigned` department and designation | Phase 9 cutover |
+| 11a | Leave entitlement opening balances | — | HR must supply opening entitlement and consumed days per employee per leave type; unmapped employees start at the configured default | Phase 9 cutover |
+| 12a | Holiday calendar content | — | HR must supply the calendar for the current and next year, plus the weekend definition | Phase 9 cutover |
+
+### B.3 Decisions resolved by the technical team
+
+Decisions 3 and 5 were delegated to the technical team. Both are now closed. The reasoning is recorded in full because both are expensive to reverse later.
+
+#### Decision 3 — Authoritative profit definition
+
+**Resolved: accrual / margin basis is authoritative. Cash basis is retained only as a separate cash-flow view, never as "profit".**
+
+| Aspect | Detail |
+|---|---|
+| **What was chosen** | Revenue is recognised when the **invoice is issued** (or the POS sale completes). COGS is posted when **stock is issued**. Gross profit = revenue − COGS, taken from the general ledger. The income statement is the single authority for profit at every level: dashboard KPI, P&L report, per-channel and per-product margin |
+| **What cash basis becomes** | The existing cash view is not discarded — it is renamed and repositioned as the **Cash Flow statement** and the **Cashbook**, both fed by the same ledger. It answers "how much money moved", never "how much did we earn" |
+| **Why** | 1. Matching principle — the current cash P&L books revenue in one month and its cost in another, so monthly profit is meaningless for a business that sells on credit (`payment_status` already supports `partially_paid`, so credit sales exist today). 2. Inventory reconciliation — only accrual lets `1200 Inventory` in the ledger agree with `stock_levels × unit cost`; under cash basis the two permanently diverge and the nightly consistency job in §14.6 cannot be written. 3. Per-product and per-channel margin — the whole Analytics section (§9: ABC analysis, contribution margin, product performance) requires cost matched to the sale line, which only accrual gives. 4. The existing margin formula in `Web\ReportController` and `DashboardController` is already accrual-shaped, so this preserves the figure management currently looks at rather than replacing it |
+| **What this costs** | COGS must be posted on every stock issue, which requires a unit cost on every order line. That is **R-2**, already on the critical path in Phase 0 and Phase 4. No additional work is created by this decision |
+| **Effect on the plan** | **None.** §6.3 posting rules were already written on the accrual assumption and stand unchanged. §8.2 gains an explicit rule: the Income Statement is accrual, the Cash Flow and Cashbook are cash, and the two are never presented as alternative "profit" figures |
+| **Migration consequence** | Historical profit reported by the old cash P&L will **not** match the new income statement for the same period. This is expected and must be communicated: the old figure was cash movement, the new figure is earned profit. §17.4 already requires a documented profit variance at migration |
+| **Reversibility** | Low cost to add a cash-basis *report* later; high cost to switch the *authority* later, because posting rules and read models both follow from it. Deciding now is correct |
+
+#### Decision 5 — Business domain
+
+**Resolved: general retail + repair is the primary domain, implemented with a typed serviced-asset register that covers automotive as one configured asset type.**
+
+| Aspect | Detail |
+|---|---|
+| **What was chosen** | The catalog stays **generic** — the existing category tree, attribute/attribute-value matrix, and units already model any product domain and need no domain-specific fields. The serviced-asset register is built as `asset_types` + per-type attribute definitions + `serviced_assets`, seeded with a **Device** type (serial, model, brand, purchase date) and a **Vehicle** type (registration, chassis, engine number, odometer). Service categories are configurable data, not code |
+| **Why** | 1. The code evidence points away from a pure automotive build: `ServiceTypeSeeder` seeds 15 service types of which only `Engine Repair` and arguably `AC Service` are automotive — the rest are `Laptop Screen Replacement`, `CCTV Installation`, `Network Setup`, `Virus Removal`, `Data Recovery`, `Printer Service`, `UPS / IPS Service`, `Software Installation`, `Hardware Replacement`, `Cleaning Service`. 2. There is **no vehicle field anywhere** in the current schema — no registration, chassis, odometer, or fitment column exists in any of the 37 tables. Building automotive-specific columns would be inventing a requirement the codebase does not support. 3. The existing catalog is already fully generic, so "general retail" costs nothing extra — it is what the code does today. 4. A typed asset register is the only option that does not have to be retrofitted; adding vehicle fields to a hard-coded device table later would mean a schema and UI rewrite of the whole Service module |
+| **What this costs** | Three tables instead of one (`asset_types`, `asset_type_attributes`, `serviced_assets` + values) and a small dynamic-form renderer on the asset screen. Estimated at roughly two developer-days more than a fixed-column register — a marginal cost against the retrofit risk |
+| **What is explicitly not built** | Vehicle-specific business logic: fitment/compatibility matching between parts and vehicles, service-interval scheduling by odometer, and registration-number lookup. None of these exist in the current system. They become a **Recommended / Future Improvement** and are listed as such, buildable on top of the Vehicle asset type without schema change |
+| **Effect on the plan** | §5.1 serviced-asset register changes from a flat `[NEW]` row to a typed register. §13.6 gains `asset_types` and `asset_type_attributes`. Phase 8 effort rises slightly. Phase 2 (Catalog) is **unchanged** — it was already generic |
+| **Naming consequence** | The product remains named Carmart for continuity, but the domain model is not vehicle-bound. If the business is in fact automotive-only, nothing built here is wasted — the Vehicle asset type is already seeded and the unused Device type is simply not used |
+
+### B.4 Effect of the resolved decisions on scope
+
+| Removed from scope | Added to scope | Unchanged |
+|---|---|---|
+| Multi-currency tables and exchange rates (4) | Email/password registration (1) | Every `[EXISTS]` item in §1.15.1 |
+| Location UI, transfers, per-location permissions (6) | POS receipt printing, 80 mm + ESC/POS (7) | Every redesign item R-1…R-33, R-35, R-36 |
+| POS offline mode, local index, sync queue (8) | Departments and designations (10) | All 12 phases and the critical path |
+| Live payment-gateway integration (13) | Leave types with entitlement and balance (11) | The event catalogue in §2.5 |
+| `tax_rules` master table (14) | Holiday calendar and weekend configuration (12) | The read-model and fact-table design |
+| SRS-derived requirements (15) | Working-day payroll basis (12) | The migration and rollback strategy |
+| Vehicle fitment matching and odometer service intervals (5) | Typed serviced-asset register, Device + Vehicle types (5) | §6.3 accrual posting rules (3) — already correct as written |
+| — | Cash Flow and Cashbook repositioned as cash views, never "profit" (3) | §2 architecture and §13 database spine |
+
+**Net effect on the phase plan: no phase is added or removed, and the critical path is unchanged.**
+Phase 5 is unchanged by decision 3 — §6.3 was already written on the accrual basis.
+Phase 8 grows slightly (typed asset register, roughly two developer-days over a fixed-column design).
+Phase 6 grows (receipt printing) and shrinks (no offline mode).
+Phase 7 grows (registration) and shrinks (no live gateway, no tax master).
+Phase 9 grows the most (departments, designations, holidays, leave entitlement, working-day payroll).
+
+The detailed, task-level execution plan derived from these decisions is **[Carmart-Rebuild-Work-Plan.md](Carmart-Rebuild-Work-Plan.md)**.
 
 ---
 
